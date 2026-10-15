@@ -6,6 +6,7 @@
 |---|---|---|
 | Arena sandbox (Debian 12 x86_64, Node 22) | All LupyCore tests, lint, syntax check of the app | Swift 6.3.3 compiled to WebAssembly (`tools/swiftwasm`), Swift 6 language mode, strict concurrency |
 | GitHub `macos-latest` (macOS 26.6.2, Apple M1 VM, Xcode 26.6, Swift 6.3.3) | Same LupyCore tests natively; full app build; native self-test inside Lupy.app; GUI launch smoke with screenshots | `.github/workflows/mac-build.yml` (manual) |
+| Fresh GitHub `macos-14` (macOS 14.8.9) and `macos-latest` (macOS 26.6.2) VMs, Apple M1 virtual, that never saw the build | Download verification of the exact published file: download → contents → unzip → signature → install → launch/quit/relaunch → self-test → Gatekeeper preview | `verify` job in `.github/workflows/mac-build.yml` |
 | Founder's MacBook Air M1 | Acceptance checklist | `docs/MAC_ACCEPTANCE_CHECKLIST.md` — **not yet run** |
 
 ## Commands
@@ -16,6 +17,7 @@ scripts/test-core.sh          # all LupyCore tests (native swiftc on macOS, WASM
 node tools/swiftwasm/syntax-check.mjs App/Sources/*.swift   # SwiftSyntax parse of the app shell
 scripts/build-mac-app.sh      # macOS: build, ad-hoc sign, package, checksum
 scripts/smoke-mac-app.sh      # macOS: signature report, --self-test, GUI launch, memory/CPU, screenshots
+scripts/verify-mac-download.sh <zip> <sha256> <out> <expected-name>   # macOS: check a downloaded build like a person would
 ```
 
 ## Results (latest)
@@ -37,6 +39,37 @@ bare "done" claim not verified, torn-write recovery, backup round trip, 400 dura
 
 GUI launch smoke (same run): app running after 12 s with demo data in a temporary folder;
 physical footprint 49.5 MB; screenshots retrieved and reviewed (island pill, menu bar icon, Today).
+
+## Download verification (run 38817528779 — the file behind the founder's link)
+
+Artifact **12011451588** = `Lupy-0.1.0-09c8c7571c-macOS-arm64.zip`, 2,066,069 bytes, SHA-256
+`161f022e39deccc5467c6d7861c9b43b22ad01b1d6c80bfe1a4da2476968d747`, built from commit `09c8c75`.
+Uploaded as a single unwrapped file; GitHub's download endpoint serves it as `application/zip`
+under that exact file name. Each verification Mac fetched it through GitHub's artifact API (digest
+checked on download), then ran `scripts/verify-mac-download.sh`:
+
+| Check group | macOS 14.8.9 (`macos-14`) | macOS 26.6.2 (`macos-latest`) |
+|---|---|---|
+| File: browser file name, `.zip`, SHA-256 equals the build's, `unzip -t` | 4/4 | 4/4 |
+| Contents: Lupy.app is the only item; program + Info.plist present; no nested zip / source / stray metadata; licence notices included; no reserved Coucou/Mochi assets | 6/6 | 6/6 |
+| App: unzips like Finder; Info.plist (name, id, APPL, macOS 14.0, mic/speech texts); executable; arm64; built for 14.0; libraries all from macOS; icon; signature seal; `codesign --verify --deep --strict`; ad-hoc | 16/16 | 16/16 |
+| Install & run: into /Applications; signature intact; first launch (normal data folder) running; running copy is the installed one; data folder created; **quits cleanly**; relaunch with saved data; self-test + demo launch | 8/8 | 8/8 |
+| **Total** | **34/34** | **34/34** |
+| Native self-test inside the installed app | 12/12 | 12/12 |
+| Physical footprint, first launch / demo data | 31.9 MB / 34.5 MB | 44.2 MB / 44.3 MB |
+| CPU, demo data, frontmost / background (3 s samples) | 4.0 % / 2.1 % | 7.2 % / 3.1 % |
+
+Gatekeeper preview (informational; quarantined copy unzipped by Archive Utility): `spctl` →
+*rejected*; `syspolicy_check` → notary ticket missing (both) and “Internal Xprotect Error” (macOS 14
+only, XProtect definitions 5278; macOS 26 has 5287 and no such entry). Double-clicking showed
+macOS's security prompt on both: macOS 14 — “*“Lupy” cannot be opened because it is from an
+unidentified developer*” [OK]; macOS 26 — “*“Lupy” Not Opened*” [Move to Trash] [Done] (screenshots
+reviewed). macOS 14 did not show the malware warning (“will damage your computer”). The on-screen
+window probe worked on macOS 26 and returned nothing on macOS 14; the screenshot is the evidence
+there. Clicking through “Open Anyway” was not automated.
+
+Evidence: check runs “Lupy download check · macOS …” and “Lupy screenshot · … · first launch | demo
+data | island | security prompt” on commit `09c8c7571cecaff65047e9c5ad71387dee277e1b`.
 
 ## What is mocked
 
@@ -60,3 +93,6 @@ physical footprint 49.5 MB; screenshots retrieved and reviewed (island pill, men
 | Core test | Demo steps lost their "[Demo]" label | Demo goals written one labelled step per line |
 | Native run | 15 % CPU from always-running animations | Animations pause when Lupy is not frontmost; static sidebar; lower rates |
 | Native screenshot | Plan title showed the whole multi-line goal | First line + "(+N more)" |
+| Founder report | The repository's **Code → Download ZIP** is source code; the old build artifact was a zip inside a zip | Single-file artifact (`archive: false`) behind a direct link; every build now verifies the downloaded file on fresh macOS 14 and 26 machines |
+| Download check (build #4) | First-run welcome card (a SwiftUI sheet) blocked quitting — AppKit refuses to terminate while a sheet is attached (Cmd-Q, menu-bar Quit, log out / restart / shut down) | Welcome card drawn as an in-window overlay; build #5: quits cleanly on macOS 14 and 26 |
+| Screenshot review (build #4) | Download check said “opened without a security prompt” while its screenshots showed the prompt (the blocked process exists while the prompt is up) | Judge by on-screen windows; screenshots stay the ground truth |

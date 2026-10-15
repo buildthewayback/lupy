@@ -9,26 +9,48 @@ This guide is for a Mac with Apple silicon (your MacBook Air M1). Lupy needs **m
 
 ## 1. Download
 
-1. Open the Lupy repository on GitHub and click **Actions**.
-2. Click the workflow **“Mac build (manual)”**, then the most recent run with a green tick.
-3. At the bottom of the run page, under **Artifacts**, click **Lupy-macOS-…** to download it.
-4. Open the downloaded file in Finder (double-click). You get a file named like
-   `Lupy-0.1.0-<code>-macOS-arm64.zip` — double-click it too. You now have **Lupy.app**.
-5. Drag **Lupy.app** into your **Applications** folder.
+**Direct link** — sign in to GitHub first, with the account that can see the Lupy repository:
 
-*Optional check:* the run's “Lupy build report” lists the file's SHA-256 fingerprint and the exact
-code version it was built from.
+**https://github.com/toastmangoapp-cloud/lupy/actions/runs/38817528779/artifacts/12011451588**
+
+1. Click the link. Your browser downloads one file, **`Lupy-0.1.0-09c8c7571c-macOS-arm64.zip`**
+   (about 2 MB).
+2. Double-click that file in your **Downloads** folder. You get **Lupy.app** (the cat icon) — the
+   app itself, and the only thing inside. *(Safari often unzips it for you; then Lupy is already in
+   Downloads.)*
+3. Drag **Lupy.app** into your **Applications** folder.
+
+> **Do not use the green “Code → Download ZIP” button** on the repository page. That button gives
+> you Lupy's *source code* (folders of text files), not the app.
+
+*If the link shows “Not Found”:* you are not signed in to GitHub, or you are signed in with an
+account that cannot see the (private) repository. The link works until **13 January 2027**.
+
+*Optional check:* the file's SHA-256 fingerprint is
+`161f022e39deccc5467c6d7861c9b43b22ad01b1d6c80bfe1a4da2476968d747` (built by GitHub Actions run
+38817528779 from commit `09c8c7571cecaff65047e9c5ad71387dee277e1b`).
 
 ## 2. Open Lupy the first time
 
-1. Double-click **Lupy** in Applications.
-2. macOS shows a message that it **could not verify** Lupy. Click **Done** (not “Move to Trash”).
-3. Open **System Settings → Privacy & Security** and scroll down to **Security**.
-   You will see “Lupy was blocked to protect your Mac.” Click **Open Anyway**, then confirm with
-   your password or Touch ID.
-4. Lupy opens. (On macOS 14 Sonoma you can instead Control-click Lupy → **Open** → **Open**.)
+Lupy is not notarized by Apple, so macOS stops the **first** double-click. That is expected and
+safe to get past. What you see depends on your macOS version (Apple menu → **About This Mac**):
 
-You only do this once per downloaded version.
+**macOS 15 Sequoia or macOS 26 Tahoe**
+1. Double-click **Lupy** in Applications. macOS says **“Lupy” Not Opened**. Click **Done**
+   (not “Move to Trash”).
+2. Open **System Settings → Privacy & Security** and scroll down to **Security**: “Lupy was blocked
+   to protect your Mac.” Click **Open Anyway** and confirm (macOS asks once more and wants your
+   password or Touch ID). The button is shown for about an hour after the blocked attempt — if it
+   is missing, double-click Lupy again first.
+
+**macOS 14 Sonoma**
+1. Double-click **Lupy** in Applications. macOS says **“Lupy” cannot be opened because it is from
+   an unidentified developer.** Click **OK**.
+2. Control-click (or right-click) **Lupy** in Applications → **Open** → **Open**.
+   *(System Settings → Privacy & Security → **Open Anyway** works too.)*
+
+Lupy opens with a short welcome card: type the name Lupy should call you and press **Get started**
+(or Return). You only do this once per downloaded version; after that Lupy opens normally.
 
 ## 3. What you will see
 
@@ -115,6 +137,8 @@ and may ask whether Lupy may use its Keychain items — choose **Always Allow**.
 
 | Problem | What to do |
 |---|---|
+| The download was a zip of folders and text files, with no Lupy app | That is the source code from the green **Code → Download ZIP** button. Use the direct link in §1 instead |
+| The download link shows “Not Found” | Sign in to GitHub with the account that can see the Lupy repository, then click the link again |
 | The island isn't visible | Menu-bar moon → turn on **Show notch island** |
 | No notifications | System Settings → Notifications → Lupy → Allow |
 | Dictation doesn't work | System Settings → Privacy & Security → Microphone and Speech Recognition → enable Lupy |

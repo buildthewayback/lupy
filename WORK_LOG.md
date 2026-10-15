@@ -60,3 +60,23 @@ Chronological, newest last. Times UTC. Each entry: package · what changed · te
 - Candidate: `Lupy-0.1.0-50c31bca33-macOS-arm64.zip` SHA-256 a40441c6f7b65a7bb5ffb28779ef4f9a577516053353cf6093493275f358338c inside artifact `Lupy-macOS-50c31bca…` (2,048,142 bytes, artifact digest sha256:4c983e6b…cc24, expires 2026-10-29).
 - Job 3 m 40 s ≈ 4 billed macOS minutes; campaign total ≈ 13 macOS minutes ≈ 134 Linux-eq (6.7 %).
 - LUPY_STATUS finalised with the six gates; draft PR opened for founder review (not merged).
+
+## 2026-10-15/16 — Founder's “Mac build delivery request” (the downloaded ZIP was source code)
+
+### 22:00 — Diagnosis
+- The founder had used the repository's green **Code → Download ZIP**, which is the source code. The real build (artifact of run 38794651725) was a GitHub artifact zip *containing* `Lupy-0.1.0-50c31bca33-macOS-arm64.zip` (zip inside a zip), reachable only through Actions menus. It did contain a valid Lupy.app, but it was not a one-link, one-file download.
+- Cannot download artifacts into the sandbox (artifact storage host is blocked), so the downloaded file has to be verified on GitHub's own Macs and reported back through check runs.
+
+### 22:17 — Packaging fix + download verification; build #4 (run 38816041405, commit 5eff8b4)
+- Workflow: single unwrapped file (`upload-artifact@v7`, `archive: false`, 90-day retention) → the link downloads `Lupy-<ver>-<sha10>-macOS-arm64.zip` directly; Coucou MIT notice copied into the app; new `verify` job (fresh `macos-14` + `macos-latest`) downloads that exact file and runs `scripts/verify-mac-download.sh` (34 checks + self-test + Gatekeeper preview). D-018.
+- Result: build OK; on both Macs every check passed **except one: Lupy did not quit within 8 s on first launch** (forced). Demo-data launch quit cleanly.
+- Root cause: the first-run welcome card was a SwiftUI `.sheet`; AppKit refuses `terminate:` while a sheet is attached (Cmd-Q, menu-bar Quit, and the quit request sent at log out / restart / shut down). Demo data marks onboarding complete, hence no sheet and a clean quit. Confirmed as known AppKit behaviour.
+- Screenshot review also showed the download check's Gatekeeper line was wrong (“opened without a prompt”) — the prompt was on screen on both Macs; the blocked process exists while the prompt is up.
+- 9 billed macOS minutes; cumulative ≈ 227 Linux-eq (11.4 %).
+
+### 22:30 — Fix; build #5 (run 38817528779, commit 09c8c75): DELIVERED
+- Welcome card is now an in-window overlay (name field focused, Return = Get started). D-019. Gatekeeper preview judged by on-screen windows; XProtect definitions version recorded.
+- Build OK (same single compiler warning as before). Artifact **12011451588** `Lupy-0.1.0-09c8c7571c-macOS-arm64.zip`, 2,066,069 bytes, SHA-256 `161f022e39deccc5467c6d7861c9b43b22ad01b1d6c80bfe1a4da2476968d747`, until 2027-01-13; served as `application/zip` under that name.
+- Downloaded-file verification: **34/34 checks + self-test 12/12 on macOS 14.8.9 and on macOS 26.6.2**; first launch quits cleanly; relaunch keeps data; security prompt seen on both (screenshots reviewed).
+- 7 billed macOS minutes; cumulative ≈ 300 Linux-eq (15.0 %).
+- Docs: INSTALL_GUIDE §1–2 + troubleshooting (direct link; “not Code → Download ZIP”; exact macOS 14 / 15+ prompts), LUPY_STATUS, TEST_REPORT (Download verification), KNOWN_LIMITATIONS (L-18 updated, L-20, L-21), DECISIONS (D-018, D-019), CI_BUDGET.

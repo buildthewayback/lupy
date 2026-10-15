@@ -1,26 +1,31 @@
 # LUPY_STATUS
 
-_Last updated: 2026-10-15 19:40 UTC · branch `arena/48b1c2c3-lupy` · final candidate commit `50c31bc`_
+_Last updated: 2026-10-15 22:45 UTC · branch `arena/48b1c2c3-lupy` · download candidate commit `09c8c75`_
 
 ## Where things stand (plain language)
 
 Lupy v0.1.0 is built. It is a real Mac app: it compiles on Apple's tools, its built-in self-test
-passes inside the finished app, and it launches with a small memory footprint (about 50 MB). You can
-download it today. It has **not yet been tried on your own MacBook**, and it has **not yet talked to
-a real AI provider or to your GitHub** — those need your keys and your hands (15–30 minutes with
-`docs/MAC_ACCEPTANCE_CHECKLIST.md`).
+passes inside the finished app, and it launches with a small memory footprint (about 30–50 MB). You can
+download it today with one link (below). The exact file that link serves was downloaded and
+checked on two fresh GitHub Mac machines (macOS 14 and macOS 26): it contains only **Lupy.app**,
+installs, opens, quits and reopens, and passes its self-test. It has **not yet been tried on your
+own MacBook**, and it has **not yet talked to a real AI provider or to your GitHub** — those need
+your keys and your hands (15–30 minutes with `docs/MAC_ACCEPTANCE_CHECKLIST.md`).
 
-## Download the candidate
+## Download the app (one link)
 
-1. GitHub → **Actions** → “Mac build (manual)” → run **38794651725** (15 Oct 2026, green).
-2. Artifact **`Lupy-macOS-50c31bca33d2b52760302097ba1c602bb375933b`** (2.0 MB; available until **29 Oct 2026**).
-3. Inside: **`Lupy-0.1.0-50c31bca33-macOS-arm64.zip`** — SHA-256
-   `a40441c6f7b65a7bb5ffb28779ef4f9a577516053353cf6093493275f358338c`.
-4. Install: `docs/INSTALL_GUIDE.md` (no Terminal; first open via System Settings → “Open Anyway”).
+**https://github.com/toastmangoapp-cloud/lupy/actions/runs/38817528779/artifacts/12011451588**
+(sign in to GitHub first; works until **13 Jan 2027**)
 
-Provenance: built by GitHub Actions on macOS 26.6.2 (Apple M1, arm64), Xcode 26.6, from commit
-`50c31bca33d2b52760302097ba1c602bb375933b`; ad-hoc signed (not Developer ID, not notarized);
-requires macOS 14+.
+- You get one file: **`Lupy-0.1.0-09c8c7571c-macOS-arm64.zip`** — 2,066,069 bytes, SHA-256
+  `161f022e39deccc5467c6d7861c9b43b22ad01b1d6c80bfe1a4da2476968d747`. Inside: **Lupy.app** only.
+- Install and first open: `docs/INSTALL_GUIDE.md` §1–2 (no Terminal; first open via “Open Anyway”).
+- **Not** the green “Code → Download ZIP” button — that is the source code, not the app.
+
+Provenance: GitHub Actions run 38817528779 (15 Oct 2026), built on macOS 26.6.2 (Apple M1, arm64)
+with Xcode 26.6 from commit `09c8c7571cecaff65047e9c5ad71387dee277e1b`; ad-hoc signed (not
+Developer ID, not notarized); Apple-silicon only; requires macOS 14+. Download verification
+evidence: `docs/TEST_REPORT.md` → “Download verification”.
 
 ## Status gates
 
@@ -28,9 +33,9 @@ requires macOS 14+.
 |---|---|---|
 | **Implemented** | Yes — core + Mac app (≈ 8.9k lines core incl. tests, ≈ 2.6k lines app) | this branch |
 | **Sandbox-validated** | Yes — 83 test cases / 515 checks pass | `docs/TEST_REPORT.md` (Swift 6.3.3 on WebAssembly) |
-| **Native-build-validated** | Yes — same 83 tests pass natively; app builds with Xcode 26.6 (3 successful builds, first try) | runs 38792443609, 38793640196, 38794651725 |
-| **Installable artifact produced** | Yes — ad-hoc-signed zip with SHA-256 and build info (not notarized) | run 38794651725 |
-| **Mac runtime validated** | Partly — launched and self-tested **on a GitHub macOS VM**: self-test 12/12 (real-disk crash recovery, backup, Keychain), launch OK, 50 MB footprint, screenshots reviewed. **Not yet on the founder's Mac.** | build report check runs |
+| **Native-build-validated** | Yes — same 83 tests pass natively; app builds with Xcode 26.6 (5 successful builds) | runs 38792443609, 38793640196, 38794651725, 38816041405, 38817528779 |
+| **Installable artifact produced** | Yes — one ad-hoc-signed zip containing only Lupy.app, with SHA-256, behind a direct link (not notarized) | run 38817528779, artifact 12011451588 |
+| **Mac runtime validated** | Partly — the **downloaded file** was verified on fresh GitHub macOS **14.8.9** and **26.6.2** VMs (Apple M1, virtual): 34/34 checks each — contents, signature, install to Applications, first launch, quit, relaunch — plus self-test 12/12; Gatekeeper prompt seen as expected; screenshots reviewed. **Not yet on the founder's Mac.** | download-check check runs of run 38817528779 |
 | **Founder accepted** | No — pending `docs/MAC_ACCEPTANCE_CHECKLIST.md` | — |
 
 ## What works, what needs you, what isn't built
@@ -63,10 +68,11 @@ requires macOS 14+.
 
 ## GitHub Actions usage
 
-4 macOS runs (1 accidental 34-second run, 3 deliberate builds) ≈ **13 billed macOS minutes ≈ 134
-Linux-equivalent minutes ≈ 6.7 %** of a 2,000-minute Free allowance. The account's real remaining
-balance is **unknown** (billing API not accessible to the agent); if nothing else used minutes this
-month, about 1,866 remain. Ledger: `docs/CI_BUDGET.md`.
+6 macOS runs (1 accidental 34-second run, 5 deliberate builds; builds #4–#5 also verified the
+download on two fresh Macs) ≈ **29 billed macOS minutes ≈ 300 Linux-equivalent minutes ≈ 15 %** of a
+2,000-minute Free allowance. The account's real remaining balance is **unknown** (billing API not
+accessible to the agent); if nothing else used minutes this month, about 1,700 remain. Ledger:
+`docs/CI_BUDGET.md`.
 
 ## Decisions for you (none block using Lupy)
 

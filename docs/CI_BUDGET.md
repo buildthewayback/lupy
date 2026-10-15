@@ -17,13 +17,17 @@
 3. The only workflow is `mac-build.yml` (macOS): it runs **only** when a commit changes
    `ci/mac-build-request.txt` or when started manually from the Actions tab. Other pushes do not
    start it. (Changed after the 18:26 incident; commit text no longer matters.)
-4. `timeout-minutes: 25` caps the worst case at ≈ 258 Linux-eq minutes (12.9 %) per run.
+4. Time caps: `build` 25 min + two `verify` jobs 12 min each ⇒ worst case 49 macOS min ≈ 506 Linux-eq
+   (25 %) per run. Typical since build #4: 7–9 billed macOS minutes per run (three jobs, each rounded up).
 5. `concurrency` with `cancel-in-progress: true` prevents overlapping runs. The agent token cannot
    call the cancel API (HTTP 403), so concurrency is the only cancellation lever.
-6. Target: ≤ 4 macOS runs in this campaign (expected 4–7 min each ⇒ ≈ 40–75 Linux-eq each).
-   Actual: 4 runs (1 accidental, 3 deliberate), ≈ 13 billed macOS minutes ≈ 134 Linux-eq (6.7 % of 2,000).
-   Remaining for the account: unknown (billing API 403); ≈ 1,866 if nothing else ran this month.
-7. Artifacts: one small zip (the app), `retention-days: 14`.
+6. Target: ≤ 4 macOS runs in the original campaign (met: 4). The founder's delivery request of
+   2026-10-16 (“the ZIP is source code”) needed new builds: #4 (single-file download + verification;
+   found a quit defect) and #5 (fix; delivered). Actual total: 6 runs ≈ 29 billed macOS minutes
+   ≈ 300 Linux-eq (15.0 % of 2,000). Remaining for the account: unknown (billing API 403); ≈ 1,700
+   if nothing else ran this month.
+7. Artifacts: one unwrapped ≈ 2 MB zip per build (the app), `retention-days: 90` (builds #1–#3: 14 days).
+   Free plan artifact storage is 500 MB; 5 artifacts ≈ 10 MB.
 8. No paid runners, no overage, no public repo, no paid services.
 
 ## Usage ledger
@@ -34,6 +38,8 @@
 | 2026-10-15 19:15 | 38792443609 | request file (build #1) | 2 m 54 s job | API reports 0 ms → **3 macOS min** assumed | ≈ 31.0 | ≈ 41.3 (2.1 %) | **App built first try**; self-test 12/12; launch OK; artifact 2.0 MB (retained to 10-29) |
 | 2026-10-15 19:24 | 38793640196 | request file (build #2) | 4 m 07 s job | API reports 0 ms → **5 macOS min** assumed | ≈ 51.7 | ≈ 93.0 (4.6 %) | Build OK; self-test 12/12; footprint 49.5 MB; CPU 12.4 % front / 5.5 % back (VM) |
 | 2026-10-15 19:31 | 38794651725 | request file (final build #3) | 3 m 40 s job | API reports 0 ms → **4 macOS min** assumed | ≈ 41.3 | ≈ 134.3 (6.7 %) | **Final candidate** from 50c31bc; self-test 12/12; footprint 50.0 MB; CPU 8.3 % front / 3.9 % back (VM); artifact 2.0 MB until 10-29 |
+| 2026-10-15 22:17 | 38816041405 | request file (build #4 — single-file download + verification on fresh macOS 14 and 26) | build 2 m 56 s · verify 2 m 12 s (macos-latest) · 2 m 06 s (macos-14) | per-job round-up → **9 macOS min** (3+3+3) | ≈ 93.0 | ≈ 227.3 (11.4 %) | Build OK; downloaded file 33/34 on each Mac — **first-launch quit blocked by the welcome sheet** (fixed in 09c8c75) |
+| 2026-10-15 22:30 | 38817528779 | request file (build #5 — quit fix) | build 2 m 26 s · verify 1 m 41 s (macos-latest) · 1 m 30 s (macos-14) | **7 macOS min** (3+2+2) | ≈ 72.3 | ≈ 299.6 (15.0 %) | **Delivered build**: 34/34 + self-test 12/12 on both Macs; artifact 12011451588 (2,066,069 B) until 2027-01-13 |
 
 ## Incident 2026-10-15 18:26 — accidental macOS run
 
