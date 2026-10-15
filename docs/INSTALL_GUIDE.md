@@ -33,8 +33,10 @@ You only do this once per downloaded version.
 ## 3. What you will see
 
 - A **Lupy window** with Today, Projects, Tasks, Needs you, Handoffs, Memory, Activity, Usage and Settings.
-- A small black **island at the top of the screen** around the camera notch with Lupy's face and a
-  counter of things that need you. Click it to open it; it closes when you move away.
+- A small black **island at the top centre of the screen** (in the menu bar — your MacBook Air M1
+  has no camera notch, so it appears as a short black pill; on notched Macs it wraps around the
+  notch). It shows Lupy's face and a counter of things that need you. Click it to open it; it
+  closes when you move the pointer away.
 - A **moon icon in the menu bar** for quick access, pausing everything, or quitting.
 - A short welcome screen the first time; type the name Lupy should call you.
 

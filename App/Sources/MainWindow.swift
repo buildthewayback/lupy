@@ -221,7 +221,8 @@ struct CaptureBar: View {
                 } else if model.hasUsableModel {
                     Toggle("Plan with cloud model", isOn: $useModel).toggleStyle(.switch).controlSize(.small)
                 } else {
-                    Text("Offline planning (no cloud model set up)").font(.system(size: 11.5)).foregroundColor(LupyTheme.muted)
+                    Text("Offline planning").font(.system(size: 11.5)).foregroundColor(LupyTheme.muted).lineLimit(1)
+                        .help("No cloud model is set up, so Lupy plans with offline rules. Add one in Settings → Cloud model providers.")
                 }
                 Spacer()
                 Button(askMode ? "Ask" : "Plan it", action: submit).buttonStyle(LupyPrimaryButtonStyle()).disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

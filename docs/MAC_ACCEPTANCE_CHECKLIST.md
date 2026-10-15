@@ -7,7 +7,7 @@ write what happened — that feedback drives the next round.
 | # | Check | How | Expected |
 |---|---|---|---|
 | 1 | Install & first open | Follow INSTALL_GUIDE §1–2 | Lupy opens after “Open Anyway”; no “damaged” message |
-| 2 | Island around the notch | Look at the top of the screen | Black island hugging the notch, Lupy's face left, counter right |
+| 2 | Island at the top centre | Look at the top of the screen (the M1 Air has no notch) | Short black pill in the menu bar: Lupy's face left, counter right; it must not cover menus you use |
 | 3 | Island interaction | Click it; move the pointer away | Opens with greeting + items; closes ~1.5 s after you leave |
 | 4 | Memory footprint | Activity Monitor → Lupy → Memory | Roughly 60–150 MB at idle (Lupy runs no local AI) |
 | 5 | Idle CPU | Activity Monitor → % CPU after 1 minute idle | Near 0–2 % |

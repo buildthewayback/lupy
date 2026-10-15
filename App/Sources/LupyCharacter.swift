@@ -27,7 +27,9 @@ struct LupyCharacterView: View {
     var fps: Double = 24
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / fps, paused: !animated)) { timeline in
+        // Calm moods only need a slow tick (blinks, gentle bob); active moods get the requested rate.
+        let rate = (mood == .idle || mood == .sleeping || mood == .happy) ? min(fps, 4) : fps
+        TimelineView(.animation(minimumInterval: 1.0 / rate, paused: !animated)) { timeline in
             let t = animated ? timeline.date.timeIntervalSinceReferenceDate : 1.0
             Canvas { context, canvasSize in
                 LupyRenderer.draw(context, size: canvasSize, mood: mood, t: t)

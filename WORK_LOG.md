@@ -42,9 +42,15 @@ Chronological, newest last. Times UTC. Each entry: package · what changed · te
 - GUI launch with demo data: running, RSS ≈ 121 MB; CPU ≈ 15 % (ps lifetime average) → too high; screenshots retrieved via check runs show the island pill, menu-bar icon and Today screen rendering correctly.
 - Artifact `Lupy-macOS-d119a7a…` 2.0 MB (zip SHA-256 476992c7…5d53), retained to 2026-10-29. Job 2 m 54 s ≈ 3 billed macOS minutes.
 
-### 19:40 — Fixes from native evidence + action ledger (Tested in sandbox; app part pending build #2)
+### 19:24 — Fixes from native evidence + action ledger (Tested in sandbox; app part pending build #2)
 - CPU: attention summary cached per revision; sidebar character static; window animations only while Lupy is frontmost; island animates only when something needs you or Lupy is active; lower frame rates. Smoke test now samples instantaneous CPU with `top` (foreground and background) and physical footprint with `vmmap`.
 - Plan titles: first line + "(+N more)" instead of the whole multi-line goal.
 - Action ledger (`beginAction`/`finishAction`/`resolveUnknownAction`): policy-gated, idempotent, crash-safe "outcome unknown"; used by **Save to Documents/Lupy**, which writes the file, reads it back and compares SHA-256 before recording file evidence. "Needs you" lists interrupted actions to settle.
 - Ask Lupy mode, model-written brief, advisory model reading of agent replies (UI for already-tested core features). Notices bounded to 800 in memory.
 - Core tests **83/83, 515 checks**.
+
+### 19:31 — Build #2 results recorded; final adjustments; delivery docs
+- Build #2 (run 38793640196, commit bfb822a): build OK, self-test 12/12, physical footprint **49.5 MB**, CPU 12.4 % frontmost / 5.5 % background in the CI VM. Job 4 m 07 s ≈ 5 billed macOS minutes; cumulative ≈ 93 Linux-eq (4.6 %).
+- Correction: the founder's MacBook Air M1 has **no notch** — the island appears as the top-centre pill seen in CI screenshots; guide, checklist and matrix corrected.
+- Calm moods animate at 4 fps, island at 4 fps; "Offline planning" label no longer wraps.
+- Added docs: EXECUTION_STRATEGY (D-017), ARCHITECTURE, FUNCTIONAL_MATRIX, TEST_REPORT, PERFORMANCE, KNOWN_LIMITATIONS (19 items), MAC_ACCEPTANCE_CHECKLIST, INSTALL_GUIDE; WORK_PACKAGES detailed.

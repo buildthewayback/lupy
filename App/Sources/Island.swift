@@ -195,7 +195,7 @@ struct IslandCompactView: View {
         let summary = model.attention
         HStack(spacing: 0) {
             HStack(spacing: 6) {
-                LupyCharacterView(mood: model.mood, size: 22, animated: model.animates(.island), fps: 6)
+                LupyCharacterView(mood: model.mood, size: 22, animated: model.animates(.island), fps: 4)
                 if !hasNotch {
                     Text(model.islandHeadline).font(.system(size: 11, weight: .semibold)).foregroundColor(LupyTheme.body).lineLimit(1)
                 }
