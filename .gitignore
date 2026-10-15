@@ -1,0 +1,33 @@
+# Build artefacts
+build/
+App/build/
+App/Lupy.xcodeproj/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+dist/
+out/
+
+# Dev-only Swift-on-WebAssembly toolchain (fetched by npm, never committed)
+tools/swiftwasm/node_modules/
+tools/swiftwasm/.cache/
+node_modules/
+.cache/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Secrets and private operational data — never commit
+*.p12
+*.cer
+*.mobileprovision
+*.key
+*.pem
+.env
+.env.*
+secrets/
+lupy-data/
+*.lupybackup
+private/

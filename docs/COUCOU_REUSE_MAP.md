@@ -1,0 +1,23 @@
+# Coucou → Lupy reuse map
+
+Upstream inspected: `Louis-CFM/coucou` @ `f09ac0b451128781b88b0f8a77f69bab622b9f24` (2026-10-15).
+Labels per requirements §18: Reuse as-is · Reuse with changes · Replace · New build required · Unverified.
+
+| Capability (Coucou source) | What it really does (verified in code) | Lupy decision | Notes |
+|---|---|---|---|
+| Island panel — `App/IslandWindowController.swift` (2,050 lines), `IslandPanel` | Borderless non-activating `NSPanel` at top-centre above the menu bar, click-through toggled by mouse polling, spring expand/collapse | **Reuse with changes** | Lupy keeps the pattern (panel level, collection behaviour, notch geometry, click-through) in a much smaller controller without Coucou's FSM/voice/drag code. |
+| Notch geometry — `CoucouKit/IslandScreenGeometry.swift` | Computes resting island width/height from `safeAreaInsets` + auxiliary areas | **Reuse with changes** | Adapted almost verbatim (MIT). |
+| Island shape — `IslandShape` in `App/IslandRootView.swift` | Animatable black shape with convex/concave top corners | **Reuse with changes** | Adapted (MIT). |
+| Card styling — `CardBackground`, `PrimaryButton`, `SecondaryButton` in `IslandViewContent.swift` | Dark card `#141518`, radius 20, radial state "wash" colours, capsule buttons | **Reuse with changes** | Same visual language for Lupy cards (approval = amber, question = cyan, error = red, done = green). |
+| Window theme — `HubTheme` in `App/FlowHub.swift` | OLED-black window palette (`#0E0F11` panel, `#18191C` card, `#8E939C` secondary…) | **Reuse with changes** | Lupy main window uses the same palette; accent changed to Lupy's moon-amber to avoid implying it is Coucou. |
+| Mochi character — `CoucouKit/BotEngine.swift` (1,901 lines), `MochiOutfitDrawing.swift`, `BotCanvasView.swift` | Character drawn in code with `Canvas` + `TimelineView` | **Replace** (asset reserved) | The *technique* (MIT code pattern: TimelineView-driven Canvas, paused when hidden) is reused; the character is an original wolf pup "Lupy". |
+| App icon, menu bar icon, sounds (`Assets.xcassets`, `Resources/sounds`) | Reserved assets | **Replace** | Original icon generated for Lupy; no bundled sounds. |
+| Keychain — `enum Keychain` in `App/ClaudeService.swift` | Generic-password items, `WhenUnlockedThisDeviceOnly`, non-synchronizable; key cache | **Reuse with changes** | Lupy service id `app.lupy.Lupy`; error handling added; never logs values. |
+| Provider calls — `ClaudeService.swift`, `LocalChat.swift`, Settings provider list | Direct URLSession calls to Anthropic/OpenAI/Gemini/DeepSeek/Qwen/Moonshot for the notch chat | **Replace** | Lupy needs budgets, routing, usage ledger, redaction, error taxonomy, provider-neutral adapters → new `LupyCore/Providers*`. Coucou's provider list informed the defaults. |
+| Approvals — `ApprovalQueue.swift`, `ApprovalView` | Queue of Claude Code/Codex permission requests from local hooks; Allow/Deny/Always | **Reuse with changes (UI pattern only)** | Lupy approvals come from its own `PolicyEngine`; the amber card + Allow/Deny pattern is kept. "Always" maps to a *narrow, expiring* standing approval. |
+| Agent sessions — `HookServer.swift` (3,790 lines), Claude/Codex/Gemini hook detection | Local HTTP hook server for CLI coding agents on the same Mac | **Not reused** | Founder's agents (Arena, Muse, Orin/ChatGPT) are web services; no local hooks exist for them. Lupy uses GitHub evidence + manual relay with honest "delivery unconfirmed" states. |
+| Integrations pollers (GitHub, Vercel, Stripe, Notion, n8n, Cal.com, Resend) | Status pills/cards polling third-party APIs | **GitHub: Replace** (evidence-oriented connector); others **not reused** in v1 | Lupy's GitHub connector verifies branches/commits/PRs/checks as independent evidence of delegated work. |
+| Dictation — `FlowDictation.swift`, `ParakeetEngine.swift` (FluidAudio), `MacDictation.swift` | Parakeet local ASR model + Apple speech | **Replace** | Local model excluded (RAM, founder rule). Lupy uses Apple Speech with on-device preference + review-before-send. |
+| Voice wake word, TTS (ElevenLabs), music, crypto, portfolio, phone link (CloudKit), desktop Mochi, notetaker | Various | **Not reused** | Out of Lupy scope or heavy/always-on. |
+| Tests — `tests/*.swift` + `scripts/test-*.sh` | Standalone swiftc binaries with simple asserts | **Reuse with changes (approach)** | Lupy core tests follow the same standalone-binary approach (works in sandbox and on macOS). |
+| Build — XcodeGen `project.yml`, `xcodebuild` on `macos-latest` | Proven CI build path | **Reuse with changes** | Single scheme, no packages, ad-hoc signing, macOS 14 target. |
