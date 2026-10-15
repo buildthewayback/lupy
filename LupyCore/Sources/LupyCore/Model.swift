@@ -331,6 +331,8 @@ public struct LupyTask: Codable, Equatable, Sendable, Identifiable {
     public var source: Principal
     /// Key used while the task was a plan draft, to resolve dependencies.
     public var planKey: String?
+    /// Status to return to when a paused task is resumed.
+    public var resumeStatus: TaskStatus?
 
     public init(id: LupyID, projectID: LupyID, title: String, details: String = "", kind: TaskKind = .general,
                 owner: TaskOwner = .founder, status: TaskStatus = .planned, priority: PriorityInputs = PriorityInputs(),
@@ -343,8 +345,20 @@ public struct LupyTask: Codable, Equatable, Sendable, Identifiable {
         self.attempts = 0; self.requiresFounderAcceptance = requiresFounderAcceptance
         self.createdAt = createdAt; self.updatedAt = createdAt; self.startedAt = nil; self.completedAt = nil
         self.lastProgressAt = nil; self.nextCheckAt = nil; self.evidenceEpoch = createdAt; self.tags = []
-        self.source = source; self.planKey = nil
+        self.source = source; self.planKey = nil; self.resumeStatus = nil
     }
+}
+
+/// A deliverable or text produced for the founder (model drafts, daily briefs, answers).
+public struct DraftDocument: Codable, Equatable, Sendable, Identifiable {
+    public var id: LupyID
+    public var taskID: LupyID?
+    public var projectID: LupyID?
+    public var title: String
+    public var body: String
+    public var source: Principal
+    public var createdAt: Timestamp
+    public var contentHash: String
 }
 
 // MARK: - Evidence

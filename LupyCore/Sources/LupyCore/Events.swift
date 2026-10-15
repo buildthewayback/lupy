@@ -24,6 +24,7 @@ public enum EventPayload: Codable, Equatable, Sendable {
     case usageRecorded(UsageRecord)
     case noticeUpserted(Notice)
     case connectorUpdated(ConnectorStatus)
+    case draftUpserted(DraftDocument)
     case note(text: String, relatedID: LupyID?)
     case recovery(RecoveryReport)
     case migration(from: Int, to: Int)
@@ -54,6 +55,7 @@ public enum EventPayload: Codable, Equatable, Sendable {
         case .usageRecorded: return "usageRecorded"
         case .noticeUpserted: return "noticeUpserted"
         case .connectorUpdated: return "connectorUpdated"
+        case .draftUpserted: return "draftUpserted"
         case .note: return "note"
         case .recovery: return "recovery"
         case .migration: return "migration"
@@ -69,6 +71,7 @@ public enum EventPayload: Codable, Equatable, Sendable {
         case .taskUpserted(let t): return t.projectID
         case .memoryUpserted(let m): return m.scope.projectID
         case .decisionUpserted(let d): return d.projectID
+        case .draftUpserted(let d): return d.projectID
         default: return nil
         }
     }
@@ -113,6 +116,7 @@ public struct LupyState: Codable, Equatable, Sendable {
     public var usage: [UsageRecord] = []
     public var notices: [LupyID: Notice] = [:]
     public var connectors: [String: ConnectorStatus] = [:]
+    public var drafts: [LupyID: DraftDocument] = [:]
     public var lastSeq: Int64 = 0
     public var lastEventAt: Timestamp?
     public var schema: Int = LupyEvent.currentSchema
@@ -167,6 +171,7 @@ public struct LupyState: Codable, Equatable, Sendable {
             if let tid = u.taskID, var t = tasks[tid] { t.spentCents += u.costCents; tasks[tid] = t }
         case .noticeUpserted(let n): notices[n.id] = n
         case .connectorUpdated(let c): connectors[c.id] = c
+        case .draftUpserted(let d): drafts[d.id] = d
         case .note: break
         case .recovery: break
         case .migration(_, let to): schema = to

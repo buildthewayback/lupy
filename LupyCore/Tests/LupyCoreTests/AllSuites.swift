@@ -11,6 +11,10 @@ func allSuites() -> [TestSuite] {
     [
         primitivesSuite(),
         storeSuite(),
+        safetyPolicySuite(),
+        workSuite(),
+        providerSuite(),
+        engineSuite(),
     ]
 }
 
