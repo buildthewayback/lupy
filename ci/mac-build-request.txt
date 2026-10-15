@@ -1,2 +1,2 @@
-Build requested: 2026-10-15T19:15Z
-Reason: first full native build of Lupy.app (core tests + app compile + self-test + launch smoke)
+Build requested: 2026-10-15T19:45Z
+Reason: build #2 — validate CPU fix, action ledger UI, Ask mode; measure CPU/memory properly
