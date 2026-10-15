@@ -33,9 +33,13 @@ sleep 12
 PID=$(pgrep -x Lupy | head -1 || true)
 if [ -n "${PID}" ]; then
   echo "running: yes (pid $PID)" >> "$REPORT"
-  ps -o rss=,%cpu= -p "$PID" | awk '{printf "memory (RSS): %.1f MB, CPU: %s%%\n", $1/1024, $2}' >> "$REPORT"
-  sleep 5
-  ps -o rss=,%cpu= -p "$PID" | awk '{printf "after 5 s idle — memory (RSS): %.1f MB, CPU: %s%%\n", $1/1024, $2}' >> "$REPORT"
+  ps -o rss= -p "$PID" | awk '{printf "resident memory (RSS, includes shared system frameworks): %.1f MB\n", $1/1024}' >> "$REPORT"
+  vmmap --summary "$PID" 2>/dev/null | grep -E "^Physical footprint" | sed 's/^/Activity Monitor "Memory" (physical footprint): /' >> "$REPORT" || true
+  # Instantaneous CPU: last of several top samples, 3 s apart (ps %cpu is a lifetime average).
+  top -l 4 -s 3 -pid "$PID" -stats pid,cpu | awk '$1 ~ /^[0-9]+$/ {c=$2} END {print "CPU while frontmost (3 s sample): " c "%"}' >> "$REPORT"
+  osascript -e 'tell application "Finder" to activate' >/dev/null 2>&1 || true
+  sleep 3
+  top -l 4 -s 3 -pid "$PID" -stats pid,cpu | awk '$1 ~ /^[0-9]+$/ {c=$2} END {print "CPU in background (3 s sample): " c "%"}' >> "$REPORT"
   ls "$SMOKE_DIR" >> "$REPORT" 2>&1 && echo "data folder created: yes" >> "$REPORT"
 else
   echo "running: NO — the app exited or failed to launch" >> "$REPORT"

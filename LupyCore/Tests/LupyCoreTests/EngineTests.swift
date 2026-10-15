@@ -383,6 +383,43 @@ func engineSuite() -> TestSuite {
             try h.engine.accept(task.id)
             t.equal(h.engine.state.tasks[task.id]?.status, .completed)
         },
+        TestCase("action ledger: founder-initiated action is verified, duplicates skipped, crash leaves outcome unknown") { t in
+            let h = try Harness()
+            let p = h.project("Files & notes")
+            let task = try h.engine.addTask(projectID: p.id, title: "Export notes summary", kind: .writing)
+            let a = h.engine.makeAction(kind: .localFileWrite, title: "Save summary.md", target: "/Users/f/Documents/Lupy/summary.md",
+                                        projectID: p.id, taskID: task.id, originator: .founder, idempotencyKey: "save:summary:v1")
+            let rec = try h.engine.beginAction(a)!
+            t.equal(h.engine.state.actions[rec.id]?.state, .executing)
+            try h.engine.finishAction(rec.id, verified: true, summary: "File written and read back (sha256 ok)", reference: a.target, contentHash: "abc", evidenceKind: .fileObservation)
+            t.equal(h.engine.state.actions[rec.id]?.state, .succeeded)
+            t.expect(h.engine.state.evidence(for: task.id).contains { $0.kind == .fileObservation && $0.independence == .independent && $0.verdict == .supports })
+            t.expect(try h.engine.beginAction(a) == nil, "same idempotency key → skipped")
+            // A model-proposed write in Prepare mode needs approval and does not start.
+            let m = h.engine.makeAction(kind: .localFileWrite, title: "Model wants to write", target: "/tmp/x", projectID: p.id, originator: .model(provider: "o", model: "m"), idempotencyKey: "m1")
+            t.throwsError { _ = try h.engine.beginAction(m, by: .lupy) }
+            t.equal(h.engine.state.pendingApprovals.count, 1)
+            // Crash while executing → reported as interrupted, never assumed done.
+            let b = h.engine.makeAction(kind: .localFileWrite, title: "Save other.md", target: "/Users/f/Documents/Lupy/other.md", projectID: p.id, originator: .founder, idempotencyKey: "save:other")
+            let rec2 = try h.engine.beginAction(b)!
+            let report = try h.restart()
+            t.equal(report.interruptedActions, [rec2.id])
+            t.expect(h.engine.attention().items.contains { $0.kind == .recovery })
+            try h.engine.resolveUnknownAction(rec2.id, happened: false, note: "file not there")
+            t.equal(h.engine.state.actions[rec2.id]?.state, .failed)
+            try h.engine.setGlobalPause(true)
+            t.throwsError("paused: no actions") { _ = try h.engine.beginAction(h.engine.makeAction(kind: .localFileWrite, title: "x", target: "/y", originator: .founder, idempotencyKey: "z")) }
+        },
+        TestCase("notices are bounded in memory (journal keeps everything)") { t in
+            var s = LupyState()
+            for i in 0..<1001 {
+                let n = Notice(id: LupyID("ntc_\(pad(i, 5))"), title: "n", body: "", severity: .info, relatedID: nil, createdAt: Timestamp(millis: Int64(i)), pushed: false, dismissed: false, dedupeKey: "k\(i)")
+                s.apply(LupyEvent(id: LupyID("evt_\(i)"), seq: Int64(i + 1), at: Timestamp(millis: Int64(i)), by: .lupy, summary: "", payload: .noticeUpserted(n)))
+            }
+            t.equal(s.notices.count, 800)
+            t.notNil(s.notices["ntc_01000"], "newest kept")
+            t.expect(s.notices["ntc_00000"] == nil, "oldest dropped")
+        },
         TestCase("demo seeding is idempotent and exercises the main attention kinds") { t in
             let h = try Harness()
             try h.engine.seedDemo()

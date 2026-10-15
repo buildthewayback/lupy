@@ -19,7 +19,7 @@ Chronological, newest last. Times UTC. Each entry: package · what changed · te
 - `scripts/lint-core.sh` guards macOS-14 availability (WASM stdlib has no OS availability), stdlib-only purity, secrets.
 - Tests: `scripts/test-core.sh` → **24/24 passed, 125 checks** (Swift 6.3.3 WASM, Node 22).
 
-### 19:30 — WP-3/4/5/6/7 core logic (Tested in sandbox)
+### 18:52 — WP-3/4/5/6/7 core logic (Tested in sandbox)
 - Added: Safety (secret redaction incl. Luhn card check, PEM blocks, labelled secrets; prompt-injection signals; untrusted-content fencing), PolicyEngine (forbidden kinds, global pause, untrusted-origin access denial, project never-automate rules, autonomy modes, narrow expiring standing approvals with use/cost caps, founder-only grants), BudgetGuard (daily/monthly hard caps, per-task and per-call approval thresholds).
 - Verification engine (claims never verify; per-kind latest-evidence judgment; ambiguous ≠ contradicted; stale evidence ignored; elevated/strict oversight), lifecycle guards, transparent reliability rules per worker × task kind with founder override.
 - Planning: model-plan JSON validation (cycles, unknown deps, caps, clamping, default criteria, JSON extraction from prose), offline heuristic planner, deadline phrases in local time, dependency graph; explainable prioritization with project weights; scheduler (follow-up backoff, escalation, checkpoints, deadlines, stalls, neglect, daily review, budget warnings, bounded CI re-checks) with idempotency keys; notification budget (quiet hours, hourly cap, dedupe).
@@ -29,9 +29,22 @@ Chronological, newest last. Times UTC. Each entry: package · what changed · te
 - Tests: **80/80 passed, 498 checks** — incl. "agent says done, GitHub disagrees", injection, crash-restart, budget, pause, isolation scenarios.
 - Fixed during testing: redactor over-redaction ("Token economy"), founder override path from submitted, and a real verification flaw (PR-exists vs CI-failed judged "ambiguous" → now per-kind latest evidence).
 
-### 20:20 — WP-1/WP-9 macOS app shell written (not yet compiled)
+### 19:15 — WP-1/WP-9 macOS app shell written (not yet compiled)
 - `App/` (XcodeGen project, no third-party packages): entry point with `--self-test`, `--demo`, `--data-dir`; AppModel (engine owner, effect executor, 60 s scheduler tick, wake/terminate hooks); platform layer (disk store with F_FULLFSYNC + atomic rename, Keychain adapted from Coucou, HTTPS executor that injects keys at send time, notifications, memory probe); Apple Speech dictation with review-before-send; original Lupy wolf-pup character (Canvas/TimelineView, 7 moods); notch island adapted from Coucou (geometry, shape, panel level) with click-to-open and auto-close; main window (Today, Projects, Tasks + detail, Needs you/approvals, Handoffs, Memory, Activity, Usage & budget, Settings, Onboarding); menu-bar extra.
 - Original app icon rendered by `scripts/make-icon.py` from the same geometry as the in-app character.
 - `scripts/build-mac-app.sh` (Release arm64, ad-hoc sign, verify, ditto zip, SHA-256, BUILD_INFO) and `scripts/smoke-mac-app.sh` (codesign/Gatekeeper report, native self-test, GUI launch with demo data in a temp folder, RSS/CPU, screenshots).
 - Checks possible in the sandbox: SwiftSyntax parse of all app files (swift-format on WASM) = clean; 88 app→core call sites cross-checked against core signatures; core tests **81/81** (added demo seeding test; fixed demo labels).
 - Decisions D-015 (app target Swift 5 mode, minimal concurrency checking) and D-016 (Dock app + island + menu bar).
+
+### 19:19 — Native build #1 of the app: SUCCESS (run 38792443609, commit d119a7a)
+- Xcode 26.6 / macOS 26.6.2 arm64 runner: **BUILD SUCCEEDED on the first attempt** (1 warning), 6.4 MB arm64 app, ad-hoc signed (valid), Gatekeeper rejects (expected: not notarized).
+- Native self-test inside Lupy.app: 12/12 PASS incl. torn-write recovery on real disk, backup round trip, Keychain round trip, 400 durable writes in 557 ms (1.4 ms each incl. F_FULLFSYNC), ranking 7 ms, cold reload 28 ms.
+- GUI launch with demo data: running, RSS ≈ 121 MB; CPU ≈ 15 % (ps lifetime average) → too high; screenshots retrieved via check runs show the island pill, menu-bar icon and Today screen rendering correctly.
+- Artifact `Lupy-macOS-d119a7a…` 2.0 MB (zip SHA-256 476992c7…5d53), retained to 2026-10-29. Job 2 m 54 s ≈ 3 billed macOS minutes.
+
+### 19:40 — Fixes from native evidence + action ledger (Tested in sandbox; app part pending build #2)
+- CPU: attention summary cached per revision; sidebar character static; window animations only while Lupy is frontmost; island animates only when something needs you or Lupy is active; lower frame rates. Smoke test now samples instantaneous CPU with `top` (foreground and background) and physical footprint with `vmmap`.
+- Plan titles: first line + "(+N more)" instead of the whole multi-line goal.
+- Action ledger (`beginAction`/`finishAction`/`resolveUnknownAction`): policy-gated, idempotent, crash-safe "outcome unknown"; used by **Save to Documents/Lupy**, which writes the file, reads it back and compares SHA-256 before recording file evidence. "Needs you" lists interrupted actions to settle.
+- Ask Lupy mode, model-written brief, advisory model reading of agent replies (UI for already-tested core features). Notices bounded to 800 in memory.
+- Core tests **83/83, 515 checks**.

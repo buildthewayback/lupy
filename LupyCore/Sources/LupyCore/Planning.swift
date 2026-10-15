@@ -240,7 +240,9 @@ public enum HeuristicPlanner {
         }
         if stepTexts.count > 1 { warnings.append("Offline plan (no model): steps follow the order you wrote them. Review dependencies.") }
         else { warnings.append("Offline plan (no model): one step. Add a cloud model for richer plans, or edit steps yourself.") }
-        return PlanDraft(summary: "Plan for: \(TextUtil.truncate(goal, 120))", tasks: tasks, risks: [], questions: [], warnings: warnings)
+        let lines = goal.split(whereSeparator: { $0.isNewline }).map { TextUtil.trimmed(String($0)) }.filter { !$0.isEmpty }
+        let headline = TextUtil.truncate(lines.first ?? goal, 100) + (lines.count > 1 ? " (+\(lines.count - 1) more)" : "")
+        return PlanDraft(summary: "Plan for: \(headline)", tasks: tasks, risks: [], questions: [], warnings: warnings)
     }
 
     static func defaultCriterion(kind: TaskKind, title: String) -> String {

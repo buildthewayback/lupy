@@ -65,7 +65,7 @@ struct MenuBarContent: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
-                LupyCharacterView(mood: model.mood, size: 36)
+                LupyCharacterView(mood: model.mood, size: 36, fps: 12)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Lupy").font(.system(size: 13, weight: .semibold))
                     Text(model.islandHeadline).font(.system(size: 11)).foregroundColor(LupyTheme.secondary)

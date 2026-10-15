@@ -169,7 +169,13 @@ public struct LupyState: Codable, Equatable, Sendable {
         case .usageRecorded(let u):
             usage.append(u)
             if let tid = u.taskID, var t = tasks[tid] { t.spentCents += u.costCents; tasks[tid] = t }
-        case .noticeUpserted(let n): notices[n.id] = n
+        case .noticeUpserted(let n):
+            notices[n.id] = n
+            // Bound memory: keep the newest 800 notices in state (the journal keeps them all).
+            if notices.count > 1000 {
+                let drop = notices.values.sorted { ($0.createdAt, $0.id) < ($1.createdAt, $1.id) }.prefix(notices.count - 800)
+                for old in drop { notices[old.id] = nil }
+            }
         case .connectorUpdated(let c): connectors[c.id] = c
         case .draftUpserted(let d): drafts[d.id] = d
         case .note: break

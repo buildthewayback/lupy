@@ -56,6 +56,9 @@ final class AppModel {
     var islandPinned = false
     var islandGeometry: IslandGeometry?
     var showIsland: Bool = UserDefaults.standard.object(forKey: "showIsland") as? Bool ?? true
+    /// Animations run only while Lupy is the active app (saves CPU/battery); the island keeps a slow pulse when something needs you.
+    var appActive = true
+    @ObservationIgnored private var attentionCache: (Int, AttentionSummary)?
 
     func setShowIsland(_ on: Bool) {
         showIsland = on
@@ -113,11 +116,25 @@ final class AppModel {
 
     var state: LupyState { _ = revision; return engine?.state ?? LupyState() }
 
+    /// Computed once per revision (views read it many times per render).
     var attention: AttentionSummary {
-        _ = revision
-        return engine?.attention() ?? AttentionSummary(items: [], activeCount: 0, waitingOnOthers: 0, unverifiedCount: 0,
-                                                       budget: BudgetGuard.status(LupyState(), now: SystemClock().now()), paused: false, nextUp: [])
+        let r = revision
+        if let cached = attentionCache, cached.0 == r { return cached.1 }
+        let a = engine?.attention() ?? AttentionSummary(items: [], activeCount: 0, waitingOnOthers: 0, unverifiedCount: 0,
+                                                        budget: BudgetGuard.status(LupyState(), now: SystemClock().now()), paused: false, nextUp: [])
+        attentionCache = (r, a)
+        return a
     }
+
+    /// Whether Lupy's character animates in a given place (saves CPU when Lupy is in the background).
+    func animates(_ place: AnimationPlace) -> Bool {
+        switch place {
+        case .island: return appActive || mood == .needsYou || mood == .worried
+        case .window: return appActive
+        }
+    }
+
+    enum AnimationPlace { case island, window }
 
     var isBusy: Bool { !busyJobs.isEmpty }
 
@@ -234,6 +251,12 @@ final class AppModel {
         NotificationCenter.default.addObserver(forName: NSApplication.willTerminateNotification, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor in try? self?.engine?.store.snapshot() }
         }
+        NotificationCenter.default.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.appActive = true }
+        }
+        NotificationCenter.default.addObserver(forName: NSApplication.didResignActiveNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.appActive = false }
+        }
         if let r = recovery, !r.isClean {
             say("Lupy recovered from an interrupted session. Details in Settings → Diagnostics.")
         }
@@ -304,6 +327,31 @@ final class AppModel {
         } catch {
             say("\(error)")
         }
+        changed()
+    }
+
+    /// Ask a question (needs an approved cloud model). The answer is saved under Today → Latest from Lupy.
+    func ask(_ question: String, projectID: LupyID?) {
+        prepared("Asking") { try $0.prepareQuestion(question, projectID: projectID) }
+    }
+
+    func writeBriefWithModel() {
+        prepared("Writing today's brief with") { try $0.prepareBrief() }
+    }
+
+    func analyzeReply(handoffID: LupyID, text: String) {
+        prepared("Reading the reply with") { try $0.prepareReplyAnalysis(handoffID: handoffID, text: text) }
+    }
+
+    private func prepared(_ verb: String, _ make: (LupyEngine) throws -> PreparedCall) {
+        guard let engine else { return }
+        do {
+            switch try make(engine) {
+            case .job(let job): say("\(verb) \(job.modelID)…"); run([.callModel(job)])
+            case .needsApproval: say("Lupy needs your OK to send this to the model — see Needs you.")
+            case .unavailable(let why): say(why)
+            }
+        } catch { say("\(error)") }
         changed()
     }
 
@@ -467,6 +515,50 @@ final class AppModel {
     }
 
     var dataSizeBytes: Int { disk?.totalSize() ?? 0 }
+
+    // MARK: Verified local actions
+
+    /// The only folder Lupy writes deliverables into (approved root for FilePolicy).
+    var deliverablesFolder: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Lupy", isDirectory: true)
+    }
+
+    /// Saves a draft as a Markdown file, then reads it back and compares SHA-256 before claiming success.
+    func saveDraftToFile(_ draft: DraftDocument) {
+        guard let engine else { return }
+        let folder = deliverablesFolder
+        let name = TextUtil.slug(draft.title) + "-" + draft.createdAt.dateOnly + ".md"
+        let url = folder.appendingPathComponent(name)
+        guard FilePolicy.isAllowed(url.path, approvedRoots: [folder.path]) else { say("That location is not allowed."); return }
+        let action = engine.makeAction(kind: .localFileWrite, title: "Save “\(TextUtil.truncate(draft.title, 60))” to Documents/Lupy", target: url.path,
+                                       detail: "\(draft.body.count) characters", projectID: draft.projectID, taskID: draft.taskID,
+                                       reversible: true, originator: .founder, idempotencyKey: "save:\(draft.id.raw):\(draft.contentHash.prefix(16))")
+        do {
+            guard let rec = try engine.beginAction(action) else { say("Already saved earlier."); changed(); return }
+            let bytes = Array(draft.body.utf8)
+            do {
+                try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+                try Data(bytes).write(to: url, options: .atomic)
+                let back = [UInt8](try Data(contentsOf: url))
+                let hash = SHA256Digest.hex(back)
+                let ok = hash == SHA256Digest.hex(bytes)
+                let summary = ok ? "Saved \(name) and read it back (SHA-256 \(hash.prefix(12))… matches)." : "Saved \(name) but the read-back did not match."
+                try engine.finishAction(rec.id, verified: ok, summary: summary, reference: url.path, contentHash: hash, evidenceKind: .fileObservation)
+                say(summary)
+                if ok { NSWorkspace.shared.activateFileViewerSelecting([url]) }
+            } catch {
+                try engine.finishAction(rec.id, verified: false, summary: "Could not save: \(error.localizedDescription)")
+                say("Saving failed: \(error.localizedDescription)")
+            }
+        } catch { say("\(error)") }
+        changed()
+    }
+
+    /// Actions that were running when Lupy last stopped (outcome unknown until you settle them).
+    var interruptedActions: [ActionRecord] {
+        let ids = Set(recovery?.interruptedActions ?? [])
+        return state.actions.values.filter { ids.contains($0.id) && ($0.state == .executing || $0.state == .outcomeUnknown) }.sorted { $0.createdAt < $1.createdAt }
+    }
 
     func revealDataFolder() { NSWorkspace.shared.activateFileViewerSelecting([dataURL]) }
 }

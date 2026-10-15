@@ -314,7 +314,11 @@ struct TaskDetailView: View {
                     SectionTitle(text: "Latest draft")
                     Text(d.body).font(.system(size: 12.5)).foregroundColor(LupyTheme.body).textSelection(.enabled)
                         .padding(12).background(CardBackground(wash: .soft, radius: 12))
-                    Button("Copy draft") { model.copy(d.body, announce: "Draft copied.") }.buttonStyle(LupySecondaryButtonStyle())
+                    HStack(spacing: 8) {
+                        Button("Copy draft") { model.copy(d.body, announce: "Draft copied.") }.buttonStyle(LupySecondaryButtonStyle())
+                        Button("Save to Documents/Lupy") { model.saveDraftToFile(d) }.buttonStyle(LupySecondaryButtonStyle())
+                            .help("Lupy writes the file, reads it back and checks its fingerprint before calling it saved.")
+                    }
                 }
             }
             .padding(24)
@@ -496,6 +500,12 @@ struct HandoffPanel: View {
                     }
                     .buttonStyle(LupyPrimaryButtonStyle()).disabled(reply.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     if let nf = handoff.nextFollowUpAt { Text("Next check-in \(relativeTime(nf))").font(.system(size: 11)).foregroundColor(LupyTheme.muted) }
+                    Spacer()
+                    if model.hasUsableModel, let last = handoff.notes.last(where: { if case .worker = $0.by { return true } else { return false } }) {
+                        Button("Have the model read the last reply") { model.analyzeReply(handoffID: handoff.id, text: last.text) }
+                            .buttonStyle(LupySecondaryButtonStyle())
+                            .help("Advisory summary only — it is never treated as evidence.")
+                    }
                 }
             }
             ForEach(Array(handoff.notes.suffix(6).enumerated()), id: \.offset) { _, n in
@@ -519,6 +529,24 @@ struct ApprovalsView: View {
             VStack(alignment: .leading, spacing: 14) {
                 Text("Needs you").font(.system(size: 20, weight: .semibold)).foregroundColor(LupyTheme.text)
                 ForEach(model.attention.items.filter { $0.kind != .approval }) { item in AttentionRow(item: item) }
+                let interrupted = model.interruptedActions
+                if !interrupted.isEmpty {
+                    SectionTitle(text: "Interrupted actions — did they happen?")
+                    ForEach(interrupted) { rec in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(rec.action.title).font(.system(size: 12.5, weight: .medium)).foregroundColor(LupyTheme.text)
+                                Text("Lupy stopped while doing this, so it can't know the outcome. Target: \(rec.action.target)").font(.system(size: 11)).foregroundColor(LupyTheme.secondary)
+                            }
+                            Spacer()
+                            Button("It did not happen") { model.act { try $0.resolveUnknownAction(rec.id, happened: false, note: "checked by you"); return [] } }
+                                .buttonStyle(LupySecondaryButtonStyle())
+                            Button("It happened") { model.act { try $0.resolveUnknownAction(rec.id, happened: true, note: "checked by you"); return [] } }
+                                .buttonStyle(LupySecondaryButtonStyle())
+                        }
+                        .padding(10).background(CardBackground(wash: .amber, radius: 12))
+                    }
+                }
                 SectionTitle(text: "Approvals (\(pending.count))")
                 if pending.isEmpty { Text("Nothing is waiting for approval.").font(.system(size: 12)).foregroundColor(LupyTheme.secondary) }
                 ForEach(pending) { a in ApprovalCard(request: a) }

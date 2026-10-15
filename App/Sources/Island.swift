@@ -195,7 +195,7 @@ struct IslandCompactView: View {
         let summary = model.attention
         HStack(spacing: 0) {
             HStack(spacing: 6) {
-                LupyCharacterView(mood: model.mood, size: 22, animated: true, fps: 12)
+                LupyCharacterView(mood: model.mood, size: 22, animated: model.animates(.island), fps: 6)
                 if !hasNotch {
                     Text(model.islandHeadline).font(.system(size: 11, weight: .semibold)).foregroundColor(LupyTheme.body).lineLimit(1)
                 }
@@ -232,7 +232,7 @@ struct IslandExpandedView: View {
         let summary = model.attention
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
-                LupyCharacterView(mood: model.mood, size: 44)
+                LupyCharacterView(mood: model.mood, size: 44, fps: 15)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(model.greeting).font(.system(size: 14, weight: .semibold)).foregroundColor(LupyTheme.text)
                     Text(model.islandHeadline).font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary).lineLimit(1)

@@ -1,2 +1,2 @@
-Build requested: 2026-10-15T20:22Z
+Build requested: 2026-10-15T19:15Z
 Reason: first full native build of Lupy.app (core tests + app compile + self-test + launch smoke)

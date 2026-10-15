@@ -29,7 +29,7 @@ struct MainWindow: View {
                         }
                     } header: {
                         HStack(spacing: 8) {
-                            LupyCharacterView(mood: model.mood, size: 26, fps: 15)
+                            LupyCharacterView(mood: model.mood, size: 26, animated: false)
                             Text("Lupy").font(.system(size: 13, weight: .semibold)).foregroundColor(LupyTheme.text)
                         }
                         .padding(.bottom, 4)
@@ -88,7 +88,7 @@ struct TodayView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 HStack(spacing: 14) {
-                    LupyCharacterView(mood: model.mood, size: 64)
+                    LupyCharacterView(mood: model.mood, size: 64, animated: model.animates(.window), fps: 12)
                     VStack(alignment: .leading, spacing: 4) {
                         Text(model.greeting).font(.system(size: 22, weight: .semibold)).foregroundColor(LupyTheme.text)
                         Text(statusLine(a)).font(.system(size: 13)).foregroundColor(LupyTheme.secondary)
@@ -119,7 +119,30 @@ struct TodayView: View {
                         }
                     }
                 }
-                SectionTitle(text: "Brief")
+                let notes = s.drafts.values.filter { $0.taskID == nil }.sorted { $0.createdAt > $1.createdAt }.prefix(3)
+                if !notes.isEmpty {
+                    SectionTitle(text: "Latest from Lupy")
+                    ForEach(Array(notes)) { d in
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text(d.title).font(.system(size: 12.5, weight: .semibold)).foregroundColor(LupyTheme.text).lineLimit(1)
+                                Spacer()
+                                Text(relativeTime(d.createdAt)).font(.system(size: 10.5)).foregroundColor(LupyTheme.muted)
+                                Button("Copy") { model.copy(d.body, announce: "Copied.") }.buttonStyle(LupySecondaryButtonStyle())
+                                Button("Save") { model.saveDraftToFile(d) }.buttonStyle(LupySecondaryButtonStyle())
+                            }
+                            Text(d.body).font(.system(size: 12)).foregroundColor(LupyTheme.body).lineLimit(12).textSelection(.enabled)
+                        }
+                        .padding(14).background(CardBackground(wash: .soft))
+                    }
+                }
+                HStack {
+                    SectionTitle(text: "Brief")
+                    Spacer()
+                    if model.hasUsableModel {
+                        Button("Write with model") { model.writeBriefWithModel() }.buttonStyle(LupySecondaryButtonStyle())
+                    }
+                }
                 Text(model.engine?.templateBrief() ?? "")
                     .font(.system(size: 12.5)).foregroundColor(LupyTheme.body)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -145,13 +168,14 @@ struct CaptureBar: View {
     @State private var text = ""
     @State private var projectID: LupyID?
     @State private var useModel = true
+    @State private var askMode = false
 
     var body: some View {
         let projects = model.state.activeProjects
         let dictation = model.dictation
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top, spacing: 10) {
-                TextField("What do you want to get done? e.g. “Invoice ACME by Friday, then follow up next week”", text: $text, axis: .vertical)
+                TextField(askMode ? "Ask Lupy anything about your work…" : "What do you want to get done? e.g. “Invoice ACME by Friday, then follow up next week”", text: $text, axis: .vertical)
                     .textFieldStyle(.plain)
                     .font(.system(size: 14))
                     .lineLimit(1...5)
@@ -181,17 +205,26 @@ struct CaptureBar: View {
             }
             if let err = dictation.error { Text(err).font(.system(size: 11.5)).foregroundColor(LupyTheme.red) }
             HStack(spacing: 12) {
+                Picker("", selection: $askMode) {
+                    Text("Plan a goal").tag(false)
+                    Text("Ask Lupy").tag(true)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 190)
+                .disabled(!model.hasUsableModel && !askMode)
                 Picker("Project", selection: Binding(get: { projectID ?? model.defaultCaptureProject }, set: { projectID = $0 })) {
                     ForEach(projects) { p in Text(p.name).tag(p.id) }
                 }
                 .frame(maxWidth: 260)
-                if model.hasUsableModel {
+                if askMode {
+                    EmptyView()
+                } else if model.hasUsableModel {
                     Toggle("Plan with cloud model", isOn: $useModel).toggleStyle(.switch).controlSize(.small)
                 } else {
                     Text("Offline planning (no cloud model set up)").font(.system(size: 11.5)).foregroundColor(LupyTheme.muted)
                 }
                 Spacer()
-                Button("Plan it", action: submit).buttonStyle(LupyPrimaryButtonStyle()).disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                Button(askMode ? "Ask" : "Plan it", action: submit).buttonStyle(LupyPrimaryButtonStyle()).disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     .keyboardShortcut(.return, modifiers: .command)
             }
         }
@@ -202,7 +235,11 @@ struct CaptureBar: View {
     private func submit() {
         let t = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !t.isEmpty else { return }
-        model.capture(t, projectID: projectID ?? model.defaultCaptureProject, useModel: useModel && model.hasUsableModel)
+        if askMode {
+            model.ask(t, projectID: projectID ?? model.defaultCaptureProject)
+        } else {
+            model.capture(t, projectID: projectID ?? model.defaultCaptureProject, useModel: useModel && model.hasUsableModel)
+        }
         text = ""
     }
 }
