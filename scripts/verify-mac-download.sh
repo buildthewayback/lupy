@@ -258,16 +258,35 @@ if command -v syspolicy_check >/dev/null 2>&1; then
   say "syspolicy_check distribution (Apple's notarization readiness check):"
   syspolicy_check distribution "$QAPP" 2>&1 | head -20 | sed 's/^/  /' >> "$REPORT"
 fi
+XPV=$(defaults read /Library/Apple/System/Library/CoreServices/XProtect.bundle/Contents/Info.plist CFBundleShortVersionString 2>/dev/null)
+say "XProtect malware definitions on this VM: version ${XPV:-unknown}"
 open "$QAPP" >> "$REPORT" 2>&1 &
 OPID=$!
 sleep 8
-if pgrep -x Lupy >/dev/null; then
-  say "result: the quarantined copy opened WITHOUT a security prompt on this VM"
+# Judge by what is on screen. While macOS shows its security prompt, the blocked Lupy process
+# already exists (it is held at launch), so "is a Lupy process running?" cannot tell the two
+# cases apart (build #4's report got this wrong; its screenshots showed the prompt).
+# Window owner names need no screen-recording permission; the prompt belongs to CoreServicesUIAgent.
+cat > "$OUT/onscreen.swift" <<'SWIFT'
+import CoreGraphics
+let info = (CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]]) ?? []
+for w in info { print(w[kCGWindowOwnerName as String] as? String ?? "?") }
+SWIFT
+ONSCREEN=$(swift "$OUT/onscreen.swift" 2>/dev/null | sort -u | paste -sd, -)
+say "apps with windows on screen 8 s after double-clicking: ${ONSCREEN:-unknown}"
+if [[ ",$ONSCREEN," == *",CoreServicesUIAgent,"* ]]; then
+  say "result: macOS blocked the double-click and showed its security prompt (screenshot) — expected for an app that is not notarized; the Open Anyway steps in INSTALL_GUIDE get past it"
+  shot gatekeeper
+  pkill -x Lupy 2>/dev/null
+elif [[ ",$ONSCREEN," == *",Lupy,"* ]]; then
+  say "result: the quarantined copy opened WITHOUT a security prompt on this VM (real Macs normally show one)"
+  shot gatekeeper
   quit_lupy
 else
-  say "result: the quarantined copy did not open by double-click — macOS showed its security prompt (see screenshot)"
+  say "result: no security prompt and no Lupy window detected — see screenshot"
+  shot gatekeeper
+  pkill -x Lupy 2>/dev/null
 fi
-shot gatekeeper
 kill "$OPID" 2>/dev/null
 
 finish

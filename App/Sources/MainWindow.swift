@@ -70,9 +70,23 @@ struct MainWindow: View {
         }
         .animation(.easeInOut(duration: 0.2), value: model.toast)
         .onAppear { model.openWindowAction = openWindow }
-        .sheet(isPresented: Binding(get: { !model.state.settings.onboardingComplete && model.startupError == nil },
-                                    set: { _ in })) {
-            OnboardingView().environment(model)
+        .overlay {
+            // First-launch welcome card, drawn inside the window rather than as a .sheet: AppKit refuses
+            // to quit while a sheet is attached (Cmd-Q, menu-bar Quit, and the quit request macOS sends
+            // at log out / restart / shut down), so a sheet here made Lupy impossible to quit until
+            // "Get started" was pressed. Found by the CI download check (first launch → quit).
+            if !model.state.settings.onboardingComplete && model.startupError == nil {
+                ZStack {
+                    Color.black.opacity(0.55)
+                        .ignoresSafeArea()
+                        .contentShape(Rectangle())
+                        .onTapGesture {}
+                    OnboardingView()
+                        .environment(model)
+                        .background(CardBackground(wash: .soft, radius: 18))
+                        .shadow(color: .black.opacity(0.45), radius: 24, y: 10)
+                }
+            }
         }
     }
 }

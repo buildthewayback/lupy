@@ -1,2 +1,2 @@
-Build requested: 2026-10-15T22:17Z
-Reason: build #4 — single-file download (Lupy.app zip, not a zip inside a zip) + verification of the downloaded file on fresh macOS 14 and macOS 26 machines
+Build requested: 2026-10-15T22:30Z
+Reason: build #5 — first-launch welcome card no longer blocks Quit (it was a sheet; AppKit refuses to quit while a sheet is attached; found by build #4's download check) + accurate Gatekeeper-preview wording in the download check

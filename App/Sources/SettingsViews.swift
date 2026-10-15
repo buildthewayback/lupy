@@ -325,6 +325,7 @@ struct AboutSettings: View {
 struct OnboardingView: View {
     @Environment(AppModel.self) private var model
     @State private var name = ""
+    @FocusState private var nameFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -342,20 +343,33 @@ struct OnboardingView: View {
                 Label("Your data stays on this Mac. Cloud models are optional; keys go in the Keychain.", systemImage: "lock")
             }
             .font(.system(size: 13))
-            TextField("What should I call you?", text: $name).textFieldStyle(.roundedBorder)
+            TextField("What should I call you?", text: $name)
+                .textFieldStyle(.roundedBorder)
+                .focused($nameFocused)
+                .onSubmit(finish)
             HStack {
                 Spacer()
-                Button("Get started") {
-                    var s = model.state.settings
-                    if !name.trimmingCharacters(in: .whitespaces).isEmpty { s.founderName = name.trimmingCharacters(in: .whitespaces) }
-                    s.onboardingComplete = true
-                    model.act { try $0.updateSettings(s); return [] }
-                }
-                .buttonStyle(LupyPrimaryButtonStyle())
+                Button("Get started", action: finish)
+                    .buttonStyle(LupyPrimaryButtonStyle())
+                    .keyboardShortcut(.defaultAction)
             }
         }
         .padding(28)
         .frame(width: 560)
-        .onAppear { name = model.state.settings.founderName }
+        .onAppear {
+            name = model.state.settings.founderName
+            nameFocused = true
+        }
+    }
+
+    private func finish() {
+        // Return can reach both the text field's submit and the default button; act once.
+        guard !model.state.settings.onboardingComplete else { return }
+        var s = model.state.settings
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty { s.founderName = trimmed }
+        s.onboardingComplete = true
+        let settings = s
+        model.act { try $0.updateSettings(settings); return [] }
     }
 }
