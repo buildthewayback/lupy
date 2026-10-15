@@ -27,4 +27,12 @@
 
 | Date (UTC) | Run | Trigger | Wall time | Billable (from API timing) | Linux-eq est. | Cumulative est. | Result |
 |---|---|---|---|---|---|---|---|
-| — | — | — | — | — | — | 0 | No runs yet |
+| 2026-10-15 18:26 | 38785570076 | push b2b0524 — **accidental**: the commit message itself quoted the trigger keyword | (cancelling) | (pending) | (pending) | (pending) | Cancelled via concurrency by the next push; trigger redesigned (see below) |
+
+## Incident 2026-10-15 18:26 — accidental macOS run
+
+The commit that introduced the workflow described its trigger keyword in its own message, so the
+job ran. The agent token cannot cancel runs (HTTP 403 on the cancel endpoint), so the run was
+cancelled through the workflow's `concurrency: cancel-in-progress` by pushing another commit.
+Fix: the trigger no longer depends on commit-message text; a build is requested only by changing
+`ci/mac-build-request.txt` (or by clicking "Run workflow").
