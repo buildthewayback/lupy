@@ -1,2 +1,2 @@
-Build requested: 2026-10-15T19:31Z
-Reason: final candidate build (build #3) from the final code commit
+Build requested: 2026-10-15T22:17Z
+Reason: build #4 — single-file download (Lupy.app zip, not a zip inside a zip) + verification of the downloaded file on fresh macOS 14 and macOS 26 machines

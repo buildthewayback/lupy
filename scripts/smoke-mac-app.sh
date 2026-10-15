@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
-# Native evidence for a built Lupy.app (macOS only; used by CI after build-mac-app.sh):
+# Native evidence for a Lupy.app (macOS only):
 #  1. code-signing and Gatekeeper status (honest: ad-hoc apps are not notarized)
 #  2. --self-test inside the real app binary (LupyCore + real disk adapter + Keychain)
 #  3. GUI launch with demo data in a throwaway folder: alive?, memory, CPU, screenshots
-# Writes dist/smoke-report.txt and base64 JPEG screenshots for the CI report.
+# Usage: scripts/smoke-mac-app.sh [path/to/Lupy.app] [output-dir]
+#   Defaults: the freshly built app (build/…/Release/Lupy.app) and dist/.
+#   CI runs it on the copy installed from the DOWNLOADED zip (scripts/verify-mac-download.sh).
+# Writes <output-dir>/smoke-report.txt, selftest.txt and base64 JPEG screenshots for the CI report.
 set -uo pipefail
-cd "$(dirname "$0")/.."
-APP="build/DerivedData/Build/Products/Release/Lupy.app"
+cd "$(dirname "$0")/.." || exit 1
+APP="${1:-build/DerivedData/Build/Products/Release/Lupy.app}"
 BIN="$APP/Contents/MacOS/Lupy"
-OUT=dist
+OUT="${2:-dist}"
 REPORT="$OUT/smoke-report.txt"
 mkdir -p "$OUT"
 fail=0
@@ -66,8 +69,10 @@ else
 fi
 
 if [ -n "${PID:-}" ]; then
-  osascript -e 'tell application id "app.lupy.Lupy" to quit' >/dev/null 2>&1 || kill "$PID" 2>/dev/null
-  sleep 2
+  osascript -e 'tell application id "app.lupy.Lupy" to quit' >/dev/null 2>&1 &
+  QPID=$!
+  for _ in 1 2 3 4 5 6 7 8; do pgrep -x Lupy >/dev/null || break; sleep 1; done
+  kill "$QPID" 2>/dev/null
   pgrep -x Lupy >/dev/null && { echo "quit: forced" >> "$REPORT"; pkill -x Lupy; } || echo "quit: clean" >> "$REPORT"
 fi
 rm -f "$OUT"/*.png

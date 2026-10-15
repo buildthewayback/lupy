@@ -32,3 +32,7 @@ lupy-data/
 *.lupybackup
 private/
 App/Resources/Info.plist
+
+# CI verification outputs (scripts/verify-mac-download.sh)
+verify-out/
+downloaded/

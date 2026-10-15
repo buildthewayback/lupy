@@ -33,14 +33,33 @@ if [ $status -ne 0 ]; then
   exit $status
 fi
 
+echo "== Adding third-party licence notices (Coucou MIT text must travel with every copy)"
+cp THIRD_PARTY_NOTICES.md "$APP/Contents/Resources/THIRD_PARTY_NOTICES.txt"
+
 echo "== Ad-hoc signing"
+xattr -cr "$APP"   # no stray extended attributes: they would end up as __MACOSX entries in the zip
 codesign --force --deep --sign - --timestamp=none "$APP"
 codesign --verify --deep --strict --verbose=2 "$APP"
 
 echo "== Packaging"
-ditto -c -k --sequesterRsrc --keepParent "$APP" "dist/${NAME}.zip"
+# One zip whose only top-level item is Lupy.app. ditto keeps the executable bit, symlinks and the
+# code signature intact (a plain artifact upload of the .app folder would strip them).
+ditto -c -k --keepParent "$APP" "dist/${NAME}.zip"
 (cd dist && shasum -a 256 "${NAME}.zip" > "${NAME}.zip.sha256")
 SIZE=$(du -sh "$APP" | cut -f1)
+
+echo "== Checking the package (unzip a copy the way Finder does)"
+CHECK="$(mktemp -d)"
+ditto -x -k "dist/${NAME}.zip" "$CHECK"
+TOP="$(ls -A "$CHECK")"
+if [ "$TOP" != "Lupy.app" ]; then
+  echo "package must contain exactly Lupy.app at the top level, found: $TOP"
+  exit 1
+fi
+test -x "$CHECK/Lupy.app/Contents/MacOS/Lupy" || { echo "program file missing or not executable in the package"; exit 1; }
+codesign --verify --deep --strict "$CHECK/Lupy.app" || { echo "code signature broken inside the package"; exit 1; }
+rm -rf "$CHECK"
+echo "package OK: contains only Lupy.app, executable present, signature intact"
 {
   echo "Lupy ${VERSION}"
   echo "commit: $(git rev-parse HEAD 2>/dev/null || echo unknown)"
@@ -51,6 +70,7 @@ SIZE=$(du -sh "$APP" | cut -f1)
   echo "bundle id: $(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP/Contents/Info.plist")"
   echo "app size: ${SIZE}"
   echo "signing: ad-hoc (not Developer ID, not notarized)"
+  echo "package: ${NAME}.zip — contains only Lupy.app ($(stat -f %z "dist/${NAME}.zip") bytes)"
   echo "sha256: $(cut -d' ' -f1 "dist/${NAME}.zip.sha256")  ${NAME}.zip"
 } > dist/BUILD_INFO.txt
 cat dist/BUILD_INFO.txt

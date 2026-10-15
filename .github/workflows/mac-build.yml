@@ -5,6 +5,14 @@
 #   - someone clicks "Run workflow" on the Actions tab (workflow_dispatch).
 # Other pushes do not start this workflow at all. Commit-message text never triggers it.
 # macOS minutes cost ~10x Linux minutes; see docs/CI_BUDGET.md.
+#
+# Jobs
+#   build  — native core tests, Release build, ONE zip whose only item is Lupy.app, uploaded as a
+#            single unwrapped file (archive: false): the artifact link downloads that zip itself,
+#            not a zip-inside-a-zip. Kept 90 days.
+#   verify — on fresh Macs (oldest supported macOS + newest), download that exact file back from
+#            GitHub and use it like a person would: unzip, inspect, install, launch, self-test.
+#            See scripts/verify-mac-download.sh.
 name: Mac build (manual)
 
 on:
@@ -21,6 +29,7 @@ on:
 permissions:
   contents: read
   checks: write
+  actions: read
 
 concurrency:
   group: mac-build-${{ github.ref }}
@@ -30,8 +39,13 @@ jobs:
   build:
     runs-on: macos-latest
     timeout-minutes: 25
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+      artifact_url: ${{ steps.upload.outputs.artifact-url }}
+      zip_name: ${{ steps.meta.outputs.zip_name }}
+      zip_sha256: ${{ steps.meta.outputs.zip_sha256 }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Toolchain
         run: |
@@ -45,7 +59,7 @@ jobs:
           set -o pipefail
           bash scripts/test-core.sh 2>&1 | tee core-tests.log
 
-      - name: Build Lupy.app
+      - name: Build and package Lupy.app
         run: |
           set -o pipefail
           command -v xcodegen >/dev/null || brew install xcodegen
@@ -54,41 +68,154 @@ jobs:
             exit 1
           }
 
-      - name: Self-test and launch smoke test
-        run: bash scripts/smoke-mac-app.sh 2>&1 | tee smoke.log
+      - name: Package facts
+        id: meta
+        run: |
+          set -euo pipefail
+          ls dist/*.zip > zips.txt
+          test "$(wc -l < zips.txt | tr -d ' ')" = 1
+          ZIP=$(cat zips.txt)
+          {
+            echo "zip_path=$ZIP"
+            echo "zip_name=$(basename "$ZIP")"
+            echo "zip_sha256=$(shasum -a 256 "$ZIP" | cut -d' ' -f1)"
+            echo "zip_size=$(stat -f %z "$ZIP")"
+          } | tee -a "$GITHUB_OUTPUT"
 
-      - name: Report back (check runs with logs + screenshots)
+      - name: Upload the app (one file, not wrapped in a second zip)
+        id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          path: ${{ steps.meta.outputs.zip_path }}
+          archive: false
+          retention-days: 90
+          overwrite: true
+          if-no-files-found: error
+
+      - name: Download link on the run page
+        env:
+          ZIP_NAME: ${{ steps.meta.outputs.zip_name }}
+          ZIP_SHA: ${{ steps.meta.outputs.zip_sha256 }}
+          ZIP_SIZE: ${{ steps.meta.outputs.zip_size }}
+          URL: ${{ steps.upload.outputs.artifact-url }}
+          DIGEST: ${{ steps.upload.outputs.artifact-digest }}
+        run: |
+          echo "artifact url: $URL"
+          echo "artifact digest: $DIGEST"
+          {
+            echo "## Download Lupy"
+            echo ""
+            echo "**[${ZIP_NAME}](${URL})** — ${ZIP_SIZE} bytes — SHA-256 \`${ZIP_SHA}\`"
+            echo ""
+            echo "The link downloads the zip itself. Double-click it to get **Lupy.app**, then drag Lupy into Applications."
+            echo "GitHub artifact digest: \`${DIGEST}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Report back (check run with logs)
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
+        env:
+          ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+          ARTIFACT_ID: ${{ steps.upload.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.upload.outputs.artifact-digest }}
         with:
           script: |
             const fs = require('fs');
             const read = (p, n) => { try { const s = fs.readFileSync(p, 'utf8'); return s.slice(-n); } catch { return '(missing)'; } };
             const summary = [
-              '## Build', '```', read('build.log', 22000), '```',
-              '## Smoke + self-test', '```', read('dist/smoke-report.txt', 14000), '```',
-              '## Core tests (tail)', '```', read('core-tests.log', 6000), '```',
+              '## Package', '```', read('dist/BUILD_INFO.txt', 3000), '```',
+              `artifact id: ${process.env.ARTIFACT_ID || '(none)'}`,
+              `artifact url: ${process.env.ARTIFACT_URL || '(none)'}`,
+              `artifact digest: ${process.env.ARTIFACT_DIGEST || '(none)'}`,
+              '## Build', '```', read('build.log', 30000), '```',
+              '## Core tests (tail)', '```', read('core-tests.log', 8000), '```',
             ].join('\n').slice(0, 65000);
+            await github.rest.checks.create({
+              owner: context.repo.owner, repo: context.repo.repo, head_sha: context.sha,
+              status: 'completed', conclusion: 'neutral', name: 'Lupy build report',
+              output: { title: 'Lupy mac build report', summary },
+            });
+
+  verify:
+    name: verify download (${{ matrix.os }})
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        # macos-14 = the oldest macOS Lupy supports. GitHub retires that runner on 2026-11-02 and fails
+        # it during brownouts (actions/runner-images#13518) — switch it to macos-15 after that date.
+        os: [macos-14, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Download the published app from GitHub (the exact file the link serves)
+        uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          path: downloaded
+          skip-decompress: true
+          digest-mismatch: error
+
+      - name: Artifact record on GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+        run: |
+          mkdir -p verify-out
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}" \
+            --jq '"name: \(.name)\nsize: \(.size_in_bytes) bytes\ndigest: \(.digest)\nexpires: \(.expires_at)"' \
+            | tee verify-out/artifact-record.txt
+          ls -la downloaded | tee -a verify-out/artifact-record.txt
+
+      - name: Verify like a person would (unzip, inspect, install, launch)
+        env:
+          EXPECTED_NAME: ${{ needs.build.outputs.zip_name }}
+          EXPECTED_SHA: ${{ needs.build.outputs.zip_sha256 }}
+        run: |
+          find downloaded -type f > files.txt
+          echo "downloaded files: $(wc -l < files.txt | tr -d ' ')"
+          test "$(wc -l < files.txt | tr -d ' ')" = 1
+          bash scripts/verify-mac-download.sh "$(cat files.txt)" "$EXPECTED_SHA" verify-out "$EXPECTED_NAME"
+
+      - name: Results on the run page
+        if: always()
+        run: |
+          {
+            echo "## Download check on $(sw_vers -productName) $(sw_vers -productVersion)"
+            echo '```'
+            cat verify-out/verify-report.txt 2>/dev/null || echo "(no report)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Report back (check runs with results + screenshots)
+        if: always()
+        uses: actions/github-script@v8
+        env:
+          RUNNER_LABEL: ${{ matrix.os }}
+        with:
+          script: |
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+            const read = (p, n) => { try { return fs.readFileSync(p, 'utf8').slice(-n); } catch { return '(missing)'; } };
+            let ver = 'macOS';
+            try { ver = 'macOS ' + execSync('sw_vers -productVersion').toString().trim(); } catch {}
+            const label = `${ver} (${process.env.RUNNER_LABEL})`;
             const base = { owner: context.repo.owner, repo: context.repo.repo, head_sha: context.sha, status: 'completed', conclusion: 'neutral' };
-            await github.rest.checks.create({ ...base, name: 'Lupy build report', output: { title: 'Lupy mac build report', summary } });
-            for (const [file, name] of [['dist/screenshot.b64', 'Lupy screenshot (screen)'], ['dist/island.b64', 'Lupy screenshot (island)']]) {
+            const summary = [
+              `## Download check on ${label}`,
+              '```', read('verify-out/artifact-record.txt', 3000), '```',
+              '```', read('verify-out/verify-report.txt', 42000), '```',
+              '## Smoke report (self-test + demo-data launch)', '```', read('verify-out/smoke-report.txt', 12000), '```',
+            ].join('\n').slice(0, 65000);
+            const title = `Lupy download check · ${label}`;
+            await github.rest.checks.create({ ...base, name: title, output: { title, summary } });
+            for (const [file, what] of [['first-launch', 'first launch'], ['screenshot', 'demo data'], ['island', 'island'], ['gatekeeper', 'security prompt']]) {
               let b = '';
-              try { b = fs.readFileSync(file, 'utf8'); } catch {}
+              try { b = fs.readFileSync(`verify-out/${file}.b64`, 'utf8'); } catch {}
               if (b.length > 100) {
+                const name = `Lupy screenshot · ${label} · ${what}`;
                 await github.rest.checks.create({ ...base, name, output: { title: name, summary: 'Base64-encoded JPEG in the text field.', text: b.slice(0, 65000) } });
               }
             }
-
-      - name: Upload app
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: Lupy-macOS-${{ github.sha }}
-          path: |
-            dist/*.zip
-            dist/*.sha256
-            dist/BUILD_INFO.txt
-            dist/smoke-report.txt
-            dist/selftest.txt
-          retention-days: 14
-          if-no-files-found: error
