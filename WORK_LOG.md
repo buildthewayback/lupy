@@ -54,3 +54,9 @@ Chronological, newest last. Times UTC. Each entry: package · what changed · te
 - Correction: the founder's MacBook Air M1 has **no notch** — the island appears as the top-centre pill seen in CI screenshots; guide, checklist and matrix corrected.
 - Calm moods animate at 4 fps, island at 4 fps; "Offline planning" label no longer wraps.
 - Added docs: EXECUTION_STRATEGY (D-017), ARCHITECTURE, FUNCTIONAL_MATRIX, TEST_REPORT, PERFORMANCE, KNOWN_LIMITATIONS (19 items), MAC_ACCEPTANCE_CHECKLIST, INSTALL_GUIDE; WORK_PACKAGES detailed.
+
+### 19:36 — Final candidate build #3: SUCCESS (run 38794651725, commit 50c31bc)
+- Native: 83/83 core tests; BUILD SUCCEEDED; self-test 12/12; footprint 50.0 MB (peak 51.9 MB); CPU 8.3 % frontmost / 3.9 % background in the CI VM; screenshot reviewed.
+- Candidate: `Lupy-0.1.0-50c31bca33-macOS-arm64.zip` SHA-256 a40441c6f7b65a7bb5ffb28779ef4f9a577516053353cf6093493275f358338c inside artifact `Lupy-macOS-50c31bca…` (2,048,142 bytes, artifact digest sha256:4c983e6b…cc24, expires 2026-10-29).
+- Job 3 m 40 s ≈ 4 billed macOS minutes; campaign total ≈ 13 macOS minutes ≈ 134 Linux-eq (6.7 %).
+- LUPY_STATUS finalised with the six gates; draft PR opened for founder review (not merged).
