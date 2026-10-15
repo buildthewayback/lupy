@@ -55,9 +55,9 @@ jobs:
           }
 
       - name: Self-test and launch smoke test
-        run: bash scripts/smoke-mac-app.sh
+        run: bash scripts/smoke-mac-app.sh 2>&1 | tee smoke.log
 
-      - name: Report back (check run with logs + screenshot)
+      - name: Report back (check runs with logs + screenshots)
         if: always()
         uses: actions/github-script@v7
         with:
@@ -65,18 +65,19 @@ jobs:
             const fs = require('fs');
             const read = (p, n) => { try { const s = fs.readFileSync(p, 'utf8'); return s.slice(-n); } catch { return '(missing)'; } };
             const summary = [
-              '## Core tests', '```', read('core-tests.log', 12000), '```',
-              '## Build (tail)', '```', read('build.log', 20000), '```',
-              '## Smoke', '```', read('dist/smoke-report.txt', 12000), '```',
+              '## Build', '```', read('build.log', 22000), '```',
+              '## Smoke + self-test', '```', read('dist/smoke-report.txt', 14000), '```',
+              '## Core tests (tail)', '```', read('core-tests.log', 6000), '```',
             ].join('\n').slice(0, 65000);
-            let shot = '';
-            try { shot = fs.readFileSync('dist/screenshot.b64', 'utf8'); } catch {}
-            await github.rest.checks.create({
-              owner: context.repo.owner, repo: context.repo.repo,
-              name: 'Lupy build report', head_sha: context.sha,
-              status: 'completed', conclusion: 'neutral',
-              output: { title: 'Lupy mac build report', summary, text: shot.slice(0, 65000) || 'no screenshot' },
-            });
+            const base = { owner: context.repo.owner, repo: context.repo.repo, head_sha: context.sha, status: 'completed', conclusion: 'neutral' };
+            await github.rest.checks.create({ ...base, name: 'Lupy build report', output: { title: 'Lupy mac build report', summary } });
+            for (const [file, name] of [['dist/screenshot.b64', 'Lupy screenshot (screen)'], ['dist/island.b64', 'Lupy screenshot (island)']]) {
+              let b = '';
+              try { b = fs.readFileSync(file, 'utf8'); } catch {}
+              if (b.length > 100) {
+                await github.rest.checks.create({ ...base, name, output: { title: name, summary: 'Base64-encoded JPEG in the text field.', text: b.slice(0, 65000) } });
+              }
+            }
 
       - name: Upload app
         if: success()
@@ -88,5 +89,6 @@ jobs:
             dist/*.sha256
             dist/BUILD_INFO.txt
             dist/smoke-report.txt
+            dist/selftest.txt
           retention-days: 14
           if-no-files-found: error

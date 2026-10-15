@@ -383,6 +383,16 @@ func engineSuite() -> TestSuite {
             try h.engine.accept(task.id)
             t.equal(h.engine.state.tasks[task.id]?.status, .completed)
         },
+        TestCase("demo seeding is idempotent and exercises the main attention kinds") { t in
+            let h = try Harness()
+            try h.engine.seedDemo()
+            try h.engine.seedDemo()
+            let kinds = Set(h.engine.attention().items.map(\.kind))
+            t.expect(kinds.isSuperset(of: [.planReview, .relay, .approval]), "\(kinds)")
+            t.equal(h.engine.state.goals.count, 2)
+            t.expect(h.engine.state.settings.onboardingComplete)
+            t.expect(h.engine.state.tasks.values.allSatisfy { $0.title.hasPrefix("[Demo]") }, "demo content is labelled")
+        },
         TestCase("brief, attention and diagnostics are informative without any model") { t in
             let h = try Harness()
             _ = try h.engine.addTask(projectID: h.project("Urgent income & clients").id, title: "Send quote to new client", priority: PriorityInputs(urgency: 4, consequence: 4, income: 5))

@@ -31,3 +31,4 @@ secrets/
 lupy-data/
 *.lupybackup
 private/
+App/Resources/Info.plist
