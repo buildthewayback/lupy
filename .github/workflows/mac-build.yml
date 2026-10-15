@@ -1,15 +1,16 @@
 # Lupy native macOS build — deliberately MANUAL to protect the Actions allowance.
 #
 # Runs only when:
-#   - a pushed commit message contains "[mac-build]", or
+#   - a pushed commit changes ci/mac-build-request.txt (deliberate build request), or
 #   - someone clicks "Run workflow" on the Actions tab (workflow_dispatch).
-# Every other push creates a *skipped* job, which bills 0 minutes.
+# Other pushes do not start this workflow at all. Commit-message text never triggers it.
 # macOS minutes cost ~10x Linux minutes; see docs/CI_BUDGET.md.
 name: Mac build (manual)
 
 on:
   push:
     branches: ['arena/**']
+    paths: ['ci/mac-build-request.txt']
   workflow_dispatch:
     inputs:
       reason:
@@ -27,7 +28,6 @@ concurrency:
 
 jobs:
   build:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[mac-build]')
     runs-on: macos-latest
     timeout-minutes: 25
     steps:
