@@ -1,2 +1,2 @@
-Build requested: 2026-10-15T19:45Z
-Reason: build #2 — validate CPU fix, action ledger UI, Ask mode; measure CPU/memory properly
+Build requested: 2026-10-15T19:31Z
+Reason: final candidate build (build #3) from the final code commit
