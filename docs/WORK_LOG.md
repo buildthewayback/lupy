@@ -34,3 +34,13 @@
     26.6.2, chat self-test **19/19** both, Coucou 13/13 + wake, control 9/9, island-conversation
     screenshots both Macs (decoded to `.cache/f8/`), CPU unchanged from F5 within noise. Campaign
     total ≈1,290 of 2,000 Linux-eq (64.5%).
+
+## 2026-10-16 (after F8) — founder feedback → LUPY 2 directive
+He tested download/open, island, and connected an AI key successfully. Feedback (full text in
+docs/LUPY2_PLAN.md): rebrand character to Lupy everywhere (remove Mochi/Coucou text, keep the
+art/animations); island = click-outside closes, input at bottom, hover zoom + labels, minimal,
+fast; quick-jumps for his daily areas; ONE API hub with any-key support (mainstream + free-token
+OpenAI-compatible like CodeCraft), auto-failover, current-model status in island, memory stable
+across model switches; far fewer settings; remove coding/unused features; RAM target well under
+1 GB (F8 already measures 46–93 MB physical); CI minutes scarce → research, ask, then 2–3 builds.
+Asked the 4 open questions before starting.
