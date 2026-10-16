@@ -1,0 +1,11 @@
+{
+  "name": "lupy-swiftwasm-devtool",
+  "private": true,
+  "description": "Development-only: runs the Swift compiler (compiled to WebAssembly) under Node so LupyCore can be compiled and tested on Linux sandboxes without a Swift toolchain. Never shipped in the app.",
+  "type": "module",
+  "dependencies": {
+    "@bjorn3/browser_wasi_shim": "0.4.2",
+    "@live-codes/swift-wasm": "0.1.0",
+    "@scalar/swift-fmt": "^0.3.0"
+  }
+}

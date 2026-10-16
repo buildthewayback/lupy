@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Lupy</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>app.lupy.Lupy</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ar</string>
+		<string>bn</string>
+		<string>es</string>
+		<string>fr</string>
+		<string>hi</string>
+		<string>id</string>
+		<string>pt-BR</string>
+		<string>ru</string>
+		<string>zh-Hans</string>
+	</array>
+	<key>CFBundleName</key>
+	<string>Lupy</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.2.0</string>
+	<key>CFBundleVersion</key>
+	<string>2</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSAccessibilityUsageDescription</key>
+	<string>Lupy reads the title of the active window for context and, only when you turn on computer control, operates apps for you while you watch its cursor.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Lupy uses this to jump to your terminal, send an email you approved, and control Music and Spotify.</string>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>Lupy records what your Mac plays only while you take notes of a call, to write down what the other people say.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Lupy looks up an email address when you ask it to prepare an email.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Lupy uses the microphone when you dictate, and to take notes of a call when you ask it to.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Lupy turns your voice into text that you can review before it is used.</string>
+	<key>NSSupportsAutomaticGraphicsSwitching</key>
+	<true/>
+</dict>
+</plist>
