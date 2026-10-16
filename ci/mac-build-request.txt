@@ -1,2 +1,2 @@
-Build requested: 2026-10-16T01:31Z
-Reason: build F1 — Lupy on Coucou (real Coucou app, original Mochi/icon/sounds, macOS 14 port, Lupy pages + island bridge, computer control with the Lupy cursor); first compile of the fork
+Build requested: 2026-10-16T01:37Z
+Reason: build F2 — fixes for the 3 compile errors of F1 (macOS 14.2 availability in Coucou NoteAudio; renamed helper)
