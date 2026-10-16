@@ -1,2 +1,2 @@
-Build requested: 2026-10-16T09:35Z
-Reason: build F7 — F6 compile fixes (captureInConversation, statusColor, Substring wraps); island conversation candidate
+Build requested: 2026-10-16T14:30Z
+Reason: build F8 — chat self-test assertion fixes (honest stop/pause behaviour, resume before follow-up); island-conversation check-run entry
