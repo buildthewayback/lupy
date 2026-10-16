@@ -55,19 +55,19 @@ enum LupyChatSelfTest {
         check("“approve it” approves the plan and creates the tasks", engine.state.tasks.count > tasksBefore,
               "\(engine.state.tasks.count - tasksBefore) new tasks")
         check("the approval answer reports the created steps",
-              chat.messages.last?.text.contains("approved") == true, chat.messages.last?.text.prefix(80) ?? "")
+              chat.messages.last?.text.contains("approved") == true, String(chat.messages.last?.text.prefix(80) ?? ""))
 
         // 3. A status question is answered from real state, offline.
         chat.send("what's next")
         let statusAnswer = chat.messages.last?.text ?? ""
         check("a status question is answered locally from real state",
-              statusAnswer.contains("Next up") || statusAnswer.contains("need you"), statusAnswer.prefix(80))
+              statusAnswer.contains("Next up") || statusAnswer.contains("need you"), String(statusAnswer.prefix(80)))
 
         // 4. An open question without a cloud model: the honest answer, never a guess.
         chat.send("Who owns the PENGLAI domain?")
         let askAnswer = chat.messages.last?.text ?? ""
         check("an open question without a model gets the honest no-model answer",
-              askAnswer.localizedCaseInsensitiveContains("no cloud model"), askAnswer.prefix(80))
+              askAnswer.localizedCaseInsensitiveContains("no cloud model"), String(askAnswer.prefix(80)))
 
         // 5. Screen work without computer control: the honest blocker.
         chat.send("Open Safari and search for Displate payouts")
@@ -75,7 +75,7 @@ enum LupyChatSelfTest {
         check("screen work without computer control explains the real blocker",
               controlAnswer.localizedCaseInsensitiveContains("computer control is off")
               || controlAnswer.localizedCaseInsensitiveContains("can't take over the screen"),
-              controlAnswer.prefix(90))
+              String(controlAnswer.prefix(90)))
 
         // 6. Pause and resume actually change the engine.
         chat.send("pause")
@@ -90,11 +90,11 @@ enum LupyChatSelfTest {
         check("“stop” rejects the waiting plan", !engine.state.plans.values.contains { $0.status == .proposed })
         let stopAnswer = chat.messages.last?.text ?? ""
         check("the stop answer reports what was actually stopped",
-              stopAnswer.localizedCaseInsensitiveContains("rejected"), stopAnswer.prefix(90))
+              stopAnswer.localizedCaseInsensitiveContains("rejected"), String(stopAnswer.prefix(90)))
         chat.send("stop")
         check("“stop” with nothing running says so honestly",
               chat.messages.last?.text.localizedCaseInsensitiveContains("nothing is executing") == true,
-              chat.messages.last?.text.prefix(60) ?? "")
+              String(chat.messages.last?.text.prefix(60) ?? ""))
 
         // 8. Follow-up turns carry the conversation's history (through the engine, no network).
         do {

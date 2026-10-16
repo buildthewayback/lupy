@@ -68,6 +68,19 @@ final class LupyChat {
         return "Listening"
     }
 
+    /// The dot colour that goes with `statusLine` — same conditions, same honesty.
+    var statusColor: String {
+        let control = LupyControlCenter.shared
+        if control.isActive { return "#F59E0B" }   // amber: my cursor is working the screen
+        if isWaiting { return "#22D3EE" }            // cyan: a cloud-model answer is being prepared
+        let model = LupyModel.shared
+        if model.attention.paused { return "#8E939C" }   // grey: paused
+        let a = model.attention
+        if !a.items.isEmpty { return "#FB7185" }     // rose: decisions are waiting for you
+        if a.activeCount > 0 { return "#34D399" }    // green: work is running
+        return "#A5B4FC"                             // soft indigo: listening
+    }
+
     // MARK: Sending — the interaction loop
 
     /// Routes one message: understand → do the real work → answer with what actually happened.

@@ -272,6 +272,35 @@ final class LupyModel {
         changed()
     }
 
+    /// Capture from the conversation surface: same engine path as `capture`, but the outcome
+    /// comes back to the chat (no toast) so `LupyChat` can answer with what actually happened.
+    func captureInConversation(_ text: String, projectID: LupyID, useModel: Bool) -> ConversationCaptureOutcome {
+        guard let engine else { return .failed(startupError ?? "Lupy is not ready.") }
+        do {
+            let goal = try engine.captureGoal(text, projectID: projectID)
+            if useModel {
+                switch try engine.prepareModelPlan(goalID: goal.id) {
+                case .job(let job):
+                    run([.callModel(job)])
+                    return .modelPlanStarted(job.modelID)
+                case .needsApproval:
+                    _ = try? engine.planHeuristically(goalID: goal.id)   // Lupy: decline-able backup, as in capture()
+                    return .needsApproval
+                case .unavailable(let why):
+                    let plan = try engine.planHeuristically(goalID: goal.id, extraWarning: why)
+                    selectedPlanID = plan.id
+                    return .offlinePlan(plan.id)
+                }
+            } else {
+                let plan = try engine.planHeuristically(goalID: goal.id)
+                selectedPlanID = plan.id
+                return .offlinePlan(plan.id)
+            }
+        } catch {
+            return .failed("\(error)")
+        }
+    }
+
     /// Ask a question (needs an approved cloud model). The answer is saved under Today → Latest from Lupy.
     func ask(_ question: String, projectID: LupyID?) {
         prepared("Asking") { try $0.prepareQuestion(question, projectID: projectID) }
@@ -508,4 +537,12 @@ final class LupyModel {
     }
 
     func revealDataFolder() { NSWorkspace.shared.activateFileViewerSelecting([dataURL]) }
+}
+
+/// What `captureInConversation` actually did — reported to the chat, never a toast.
+enum ConversationCaptureOutcome {
+    case offlinePlan(LupyID)
+    case modelPlanStarted(String)
+    case needsApproval
+    case failed(String)
 }
