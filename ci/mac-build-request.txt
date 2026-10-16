@@ -1,2 +1,2 @@
-Build requested: 2026-10-16T01:52Z
-Reason: build F3 — fix the CI control self-test runner (direct launch, TCC requirement parse, BLOCKED semantics)
+Build requested: 2026-10-16T02:05Z
+Reason: build F4 — delivery-observation fix (text inside the message box is never delivery evidence); expect control self-test 9/9
