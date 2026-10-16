@@ -74,3 +74,10 @@ captured on both. Billed: build 8.9 + verify 3.1 + verify 2.8 ≈ 16 macOS min �
 **Campaign total: F1–F8 ≈ 888 + 72 + 165 + 165 ≈ 1,290 of 2,000 Linux-eq (64.5%).** Above the
 70 % review threshold (1,400) we stop and ask the founder before any further run. macos-14
 runners retire 2 Nov 2026 (L-21) — the next campaign should move the verify matrix to macos-15.
+
+### F9 — LUPY 2 (planned as the campaign's only run)
+Run 38933932648, commit `4bced89` (work commit `c745886`). One build intended: syntax-checked
+everything, member-audited the new views, caught the missing `ProviderConfig` public init before
+the build (the F6 lesson), core tests 108/108 in-sandbox. If compile errors appear: fix → F10.
+Estimated ≈16 macOS min ≈ 165 Linux-eq → campaign total ≈1,455 of 2,000 (72.7%) — **at the
+stop-and-review threshold; no further runs without checking with the founder.**
