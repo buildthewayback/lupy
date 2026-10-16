@@ -17,7 +17,7 @@ privately), so several checks are about recognising the Coucou you know.
 | 6 | Offline plan | Today → “Renew passport then pay fee by Friday” → Plan it | Plan with 2 steps appears; nothing starts until Approve |
 | 7 | Approve + do | Approve, open first task, Mark done | Second task becomes Ready |
 | 8 | Restart survives | Quit Lupy (menu-bar moon → Quit) and reopen | Everything is still there |
-| 9 | Dictation | Today → the mic button on the capture box, speak, stop | Your words appear in the box for you to edit; nothing is sent automatically |
+| 9 | Dictation | Open the conversation (click the island or ⌃⌥Space), click the mic, speak, stop | Your words appear in the field for you to edit; nothing is sent until you press Send |
 | 10 | Cloud model (optional) | Lupy → Assistant → provider → key → Allow → Test | “works” message; Usage shows a tiny cost |
 | 11 | Model plan | Plan a goal with the model toggle on | Plan labelled with the model; Usage shows tokens and estimated cost |
 | 12 | Budget stop | Set daily limit to $0.00, plan a goal | Lupy refuses to call the model and plans offline, explaining why |
@@ -34,5 +34,9 @@ privately), so several checks are about recognising the Coucou you know.
 | 23 | Watch the cursor | Lupy → Computer control → “Show me” | An orange Lupy cursor with Mochi moves to TextEdit, a line is typed while you watch; your own mouse still works; Esc or Stop ends it |
 | 24 | Deliver a handoff | Handoffs → a handoff to an agent you use → “Deliver with Lupy” (set where you talk to that agent first) | Lupy opens it, types the brief, and asks before clicking Send; afterwards the handoff says Sent (seen on screen) or Delivery unconfirmed — honestly |
 | 25 | Esc and typing safety | During any computer control: press Esc; another time, just start typing | Everything still queued is cancelled; typing pauses Lupy so it never types over you |
+| 26 | Island conversation | Click the island (or press ⌃⌥Space) and type “invoice ACME by Friday” | A plan card appears in the conversation; Approve right there; the same conversation is in Today's panel |
+| 27 | Chat honesty | With no model key: ask “what's next”, then an open question, then “open Safari and…” | Status answered locally; the open question gets the honest no-model answer; screen work explains the control blocker |
+| 28 | Stop in chat | While a plan waits in the conversation, type “stop” | The plan is rejected and the answer says exactly what was stopped; “resume” lifts any pause |
+| 29 | Conversation persists | Quit and reopen | The conversation is where you left it (same messages, island and window) |
 
 Report anything confusing, slow or wrong — including wording.

@@ -120,11 +120,17 @@ data | island | security prompt” on commit `09c8c7571cecaff65047e9c5ad71387dee
 | Download check (build #4) | First-run welcome card (a SwiftUI sheet) blocked quitting — AppKit refuses to terminate while a sheet is attached (Cmd-Q, menu-bar Quit, log out / restart / shut down) | Welcome card drawn as an in-window overlay; build #5: quits cleanly on macOS 14 and 26 |
 | Screenshot review (build #4) | Download check said “opened without a security prompt” while its screenshots showed the prompt (the blocked process exists while the prompt is up) | Judge by on-screen windows; screenshots stay the ground truth |
 
-## 2026-10-16 — F6 campaign: the island conversation (directive: island = quick-access control centre)
+## 2026-10-16 — F6–F8 campaign: the island conversation (directive: island = quick-access control centre)
+
+Build loop: F6 failed on 9 compile errors (design-only symbols + Substring conversions); F7
+compiled but 2 self-test assertions expected less honesty than the app delivers (see F7 entry in
+CI_BUDGET.md); F8 green everywhere. CPU with the conversation open is unchanged from F5 within
+sampling noise (macOS 14: 27.9 % front / 18.8 % back vs 29.5 / 17.4; macOS 26: 57.7 / 29.4 vs
+59.6 / 32.4 — the 26 numbers are the virtualized runner, as in every build).
 
 | Suite | Where | Result |
 |---|---|---|
 | **Conversation** (new) — intent routing (goals, questions, status, commands, control, plan decisions), local status answers, `prepareConversationTurn` (history included, policy gate, usage recorded once), history cap | LupyCore, sandbox WASM + native runner | **106/106 cases, 658 checks** (was 96/606; +10 cases, +52 checks) |
-| Island conversation surface (`.lupyChat`) + shared `LupyChat` + window panel + hooks | App target — syntax-checked in sandbox (SwiftSyntax); compiled on the macOS runner | Build F6 |
-| **Chat self-test** (`Lupy --chat-self-test`): typed instruction → goal → plan card; "approve it" → tasks; status answered from real state; honest no-model answer; honest control blocker; pause/resume; "stop" (plan rejected / honest idle); follow-up history through the engine (no network); transcript persisted and decoded | App binary on the installed download, fresh data dir | Verify job of build F6 |
-| Island-chat screenshot (conversation surface with welcome + chips) | `smoke-mac-app.sh` second demo launch (`--show-island-chat`) | Check run of build F6 |
+| Island conversation surface (`.lupyChat`) + shared `LupyChat` + window panel + hooks | App target — compiled on the macOS runner | **Build F8 (run 38916058766): compiles, installs, launches** |
+| **Chat self-test** (`Lupy --chat-self-test`): typed instruction → goal → plan card; "approve it" → tasks; status answered from real state; honest no-model answer; honest control blocker; pause/resume; "stop" (plan rejected / honest idle); follow-up history through the engine (no network); transcript persisted and decoded | App binary on the installed download, fresh data dir | **Build F8: 19/19 checks on macOS 14.8.9 and 26.6.2** |
+| Island-chat screenshot (conversation surface with welcome + chips) | `smoke-mac-app.sh` second demo launch (`--show-island-chat`) | **Build F8: captured on both Macs** (check run “island conversation”; decoded copies in `.cache/f8/`) |

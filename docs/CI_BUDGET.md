@@ -54,13 +54,23 @@ cancelled through the workflow's `concurrency: cancel-in-progress` by pushing an
 Fix: the trigger no longer depends on commit-message text; a build is requested only by changing
 `ci/mac-build-request.txt` (or by clicking "Run workflow").
 
-### F6 — actual
-Failed in the build job after ~6.6 min (9 compile errors: `captureInConversation` and
-`statusColor` did not exist, 6 Substring→String conversions in the self-test) — verify jobs
-skipped. Cost ≈6.6 macOS min ≈ 135 Linux-equivalent. **Campaign total ≈1,023 of 2,000 (51.1%).**
+### F6 — actual (failed fast)
+Build job failed after ~6.6 min: 9 compile errors (two members that existed only in the design —
+`captureInConversation`, `statusColor` — and 6 Substring→String conversions in the self-test).
+Verify jobs skipped. Billed ≈ 7 macOS min ≈ 72 Linux-eq.
 
-### F6 campaign (island conversation) — planned
-F6 = first compile of the `.lupyChat` surface (+1 new view file, +3 hooked upstream files:
-IslandTypes, IslandRootView, IslandWindowController; IslandViewContent +2 lines). Core tests
-already green in-sandbox (106/106). If F6 compiles: F7 = delivery candidate. Estimated ≈13 + ≈13
-macOS minutes ≈ 268 Linux-equivalent (build F7, run 38913748036, fixes `ad08278`).
+### F7 — actual (compiled; verify failed on 2 self-test assertions)
+The island-conversation app **builds, installs, launches** — all 34 download checks green on both
+Macs except the new chat self-test: 17/19 checks passed. Both failures were the test expecting
+*less* honesty than the app delivers: with active tasks, “stop” pauses follow-ups for real
+(setGlobalPause), and the paused engine then (correctly) refuses the follow-up model call.
+Billed: build 10.1 + verify 3.0 + verify 2.7 ≈ 16 macOS min ≈ 165 Linux-eq.
+
+### F8 — DELIVERED (all green, both Macs)
+Run 38916058766, commit `e8afb0f`. 36/36 download checks on macOS 14.8.9 and 26.6.2, chat
+self-test **19/19** on both, Coucou 13/13 + wake, control 9/9, island-conversation screenshots
+captured on both. Billed: build 8.9 + verify 3.1 + verify 2.8 ≈ 16 macOS min ≈ 165 Linux-eq.
+
+**Campaign total: F1–F8 ≈ 888 + 72 + 165 + 165 ≈ 1,290 of 2,000 Linux-eq (64.5%).** Above the
+70 % review threshold (1,400) we stop and ask the founder before any further run. macos-14
+runners retire 2 Nov 2026 (L-21) — the next campaign should move the verify matrix to macos-15.

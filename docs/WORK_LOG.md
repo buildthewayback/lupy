@@ -20,3 +20,17 @@
    claimed success — grep first, trust later); exhaustive-switch audit over IslandView (all other
    switches have defaults; both `viewLayouts[view]!` sites covered).
 7. Commit `61a1685`; build **F6 requested** (run 38912345728, commit `39e4831`).
+8. F6 (run 38912345728, `39e4831`) failed fast: 9 compile errors — `captureInConversation` and
+   `statusColor` existed only in the design, 6 Substring→String conversions. Wrote the real
+   `captureInConversation` (outcome enum instead of toasts), `statusColor`, wrapped the substrings;
+   audited every `chat.`/`model.` member access against the real types (clean).
+9. F7 (run 38913748036, `5b9167f`) **compiled** — all 34 download checks green except the new chat
+   self-test (17/19). The two failures were the test expecting less honesty than the app delivers:
+   with active tasks, "stop" pauses follow-ups for real, and the paused engine correctly refuses
+   the follow-up model call. Fixed the assertions (accept the honest branches; "resume" before the
+   follow-up; print the unavailable reason). Also: the island-conversation check-run entry was
+   missing from the workflow's screenshot loop — added.
+10. **F8 (run 38916058766, `e8afb0f`) DELIVERED**: 36/36 download checks on macOS 14.8.9 and
+    26.6.2, chat self-test **19/19** both, Coucou 13/13 + wake, control 9/9, island-conversation
+    screenshots both Macs (decoded to `.cache/f8/`), CPU unchanged from F5 within noise. Campaign
+    total ≈1,290 of 2,000 Linux-eq (64.5%).
