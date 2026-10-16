@@ -171,6 +171,24 @@ func controlSuite() -> TestSuite {
             t.expect(DeliveryPlan.deliveryObserved(brief: brief, after: after))
             let stillInBox = UISnapshot(appName: "Safari", bundleID: "x", windowTitle: "x", elements: [el(2, "AXTextArea", value: brief, editable: true)])
             t.expect(!DeliveryPlan.deliveryObserved(brief: brief, after: stillInBox), "text still in the box is not a delivery")
+            // Safari also exposes the box's text through a second element that overlaps it (seen in
+            // CI, run 38837448095): still not a delivery once the box's frame is excluded.
+            let boxFrame = UIRect(x: 20, y: 300, width: 520, height: 90)
+            let duplicate = UISnapshot(appName: "Safari", bundleID: "x", windowTitle: "x", elements: [
+                UIElementInfo(id: 2, role: "AXTextArea", subrole: "", title: "", label: "Message", value: brief, placeholder: "Message",
+                              identifier: "", frame: boxFrame, enabled: true, focused: true, editable: true, actions: []),
+                UIElementInfo(id: 7, role: "AXGroup", subrole: "", title: "", label: "", value: brief, placeholder: "",
+                              identifier: "", frame: UIRect(x: 20, y: 300, width: 520, height: 90), enabled: true, focused: false, editable: false, actions: []),
+            ])
+            t.expect(!DeliveryPlan.deliveryObserved(brief: brief, after: duplicate, excluding: boxFrame),
+                     "the box's text echoed by an overlapping element is not a delivery")
+            let sent = UISnapshot(appName: "Safari", bundleID: "x", windowTitle: "x", elements: [
+                UIElementInfo(id: 2, role: "AXTextArea", subrole: "", title: "", label: "Message", value: "", placeholder: "Message",
+                              identifier: "", frame: boxFrame, enabled: true, focused: true, editable: true, actions: []),
+                UIElementInfo(id: 8, role: "AXStaticText", subrole: "", title: "", label: "", value: brief, placeholder: "",
+                              identifier: "", frame: UIRect(x: 20, y: 400, width: 520, height: 40), enabled: true, focused: false, editable: false, actions: []),
+            ])
+            t.expect(DeliveryPlan.deliveryObserved(brief: brief, after: sent, excluding: boxFrame), "the message below the box is a delivery")
         },
         TestCase("engine: a computer-control delivery is recorded honestly (seen → sent; unseen → unconfirmed)") { t in
             let h = try Harness()

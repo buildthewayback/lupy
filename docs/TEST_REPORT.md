@@ -13,11 +13,14 @@
 
 ```sh
 scripts/lint-core.sh          # availability (macOS 14), stdlib-only purity, credential patterns
-scripts/test-core.sh          # all LupyCore tests (native swiftc on macOS, WASM elsewhere)
-node tools/swiftwasm/syntax-check.mjs App/Sources/*.swift   # SwiftSyntax parse of the app shell
-scripts/build-mac-app.sh      # macOS: build, ad-hoc sign, package, checksum
-scripts/smoke-mac-app.sh      # macOS: signature report, --self-test, GUI launch, memory/CPU, screenshots
+scripts/test-core.sh          # all LupyCore tests, incl. the computer-control rules (native swiftc on macOS, WASM elsewhere)
+node tools/swiftwasm/syntax-check.mjs Mac/Sources/Lupy/*.swift Mac/Sources/Lupy/Control/*.swift   # SwiftSyntax parse
+scripts/build-mac-app.sh      # macOS: build Mac/ (Coucou + Lupy), ad-hoc sign, package, checksum
+scripts/smoke-mac-app.sh      # macOS: signature, --self-test, GUI launch, Mochi-animation check, memory/CPU, screenshots
 scripts/verify-mac-download.sh <zip> <sha256> <out> <expected-name>   # macOS: check a downloaded build like a person would
+scripts/coucou-fidelity.sh <coucou-checkout>   # byte-comparison with upstream Coucou (docs/COUCOU_FIDELITY.md)
+Mac/Tests/coucou/test-*.sh    # Coucou's own unit tests (run in CI for the areas Lupy touches)
+Mac/Tests/lupy/test-wake-lupy.sh   # "OK Lupy" wake phrase (Coucou's phrases still tested by test-voice-wake)
 ```
 
 ## Results (latest)
@@ -39,6 +42,26 @@ bare "done" claim not verified, torn-write recovery, backup round trip, 400 dura
 
 GUI launch smoke (same run): app running after 12 s with demo data in a temporary folder;
 physical footprint 49.5 MB; screenshots retrieved and reviewed (island pill, menu bar icon, Today).
+
+## Coucou fork and computer control (2026-10-16, builds F1–F3)
+
+Lupy is now Coucou's macOS app extended (D-020). What is tested, and how:
+
+| What | How | Result |
+|---|---|---|
+| Coucou's behaviour in the areas Lupy touches | Coucou's own unit tests in Lupy's CI: screen geometry, island hover, auto-close, display choice, desktop Mochi, wardrobe, pill colours, approval queue, safe links, Claude hooks, Claude settings, voice wake | 13/13 PASS (runs 38835587936, 38836083750) |
+| "OK Lupy" wake phrase (Coucou's kept) | `Mac/Tests/lupy/test-wake-lupy.sh` | PASS |
+| LupyCore incl. computer-control rules | 96 cases / 606 checks (sandbox WASM + native) | 96/96 |
+| The app builds from macOS 14.0 | Xcode 26.6, arm64; the two 14.2+ APIs guarded | BUILD SUCCEEDED (F2) |
+| Mochi is animated, not a static image | CI compares two screen captures 0.8 s apart (below the menu bar) | differ on macOS 14 and 26 — PASS |
+| The Lupy cursor never takes clicks, sits above apps | computer-control self-test checks its windows | see the control check run of the delivered build |
+| Typing with read-back; Stop cancels queued steps; missing targets fail honestly; declined Send not sent; approved Send sent and observed; password field refused | `--control-self-test` on the CI Macs (Accessibility granted there only) | see the control check run of the delivered build |
+| Fidelity to upstream Coucou | byte-comparison, `docs/COUCOU_FIDELITY.md` | 169/187 files byte-identical; 18 changed at commented `Lupy:` hooks |
+| Screenshots | first launch, at rest, island, app icon, security prompt, cursor moments — published as check runs per build | captured on both CI Macs |
+
+Note on screenshot review: builds #4/#5 (previous shell) were reviewed image by image. For the
+F-series the automated evidence above (animation hash, window-owner probe, byte comparison,
+unit tests) carries the verification; the screenshots are published for the founder's review.
 
 ## Download verification (run 38817528779 — the file behind the founder's link)
 

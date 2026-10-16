@@ -60,4 +60,4 @@ Owner for all packages: the Arena agent (one coordinated workstream; no parallel
 - **Result:** builds from known commits with checksums (see `LUPY_STATUS.md` for the current candidate). Not notarized (L-04).
 
 ## WP-10 — Delivery package
-- `LUPY_STATUS.md`, `docs/INSTALL_GUIDE.md`, `docs/MAC_ACCEPTANCE_CHECKLIST.md`, `docs/TEST_REPORT.md`, `docs/FUNCTIONAL_MATRIX.md`, `docs/PERFORMANCE.md`, `docs/KNOWN_LIMITATIONS.md`, `docs/CI_BUDGET.md`, `docs/EXECUTION_STRATEGY.md`, `docs/ARCHITECTURE.md`; pull request (draft, not merged).
+- `LUPY_STATUS.md`, `docs/INSTALL_GUIDE.md`, `docs/MAC_ACCEPTANCE_CHECKLIST.md`, `docs/TEST_REPORT.md`, `docs/REQUIREMENTS_STATUS.md, `docs/PERFORMANCE.md`, `docs/KNOWN_LIMITATIONS.md`, `docs/CI_BUDGET.md`, `docs/EXECUTION_STRATEGY.md`, `docs/ARCHITECTURE.md`; pull request (draft, not merged).

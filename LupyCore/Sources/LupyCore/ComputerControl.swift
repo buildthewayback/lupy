@@ -516,13 +516,19 @@ public enum DeliveryPlan {
     }
 
     /// After sending: the brief's first words should appear on screen (the conversation) and the box
-    /// should be empty again. This is UI observation — evidence of delivery, not of the work.
-    public static func deliveryObserved(brief: String, after snap: UISnapshot) -> Bool {
+    /// should be empty again. `excluding` is the message box's frame: browsers expose the box's text
+    /// through more than one element, so text inside the box is never delivery evidence — only text
+    /// somewhere else on screen is. This is UI observation — evidence of delivery, not of the work.
+    public static func deliveryObserved(brief: String, after snap: UISnapshot, excluding box: UIRect? = nil) -> Bool {
         let probe = TextUtil.truncate(TextUtil.trimmed(brief), 40).lowercased()
         let head = probe.hasSuffix("…") ? String(probe.dropLast()) : probe
         guard head.count >= 8 else { return false }
+        func inBox(_ r: UIRect) -> Bool {
+            guard let b = box else { return false }
+            return r.x < b.x + b.width + 8 && r.x + r.width + 8 > b.x && r.y < b.y + b.height + 8 && r.y + r.height + 8 > b.y
+        }
         return snap.elements.contains { e in
-            !e.isTextInput && ([e.value, e.title, e.label].contains { $0.lowercased().contains(head) })
+            !e.isTextInput && !inBox(e.frame) && ([e.value, e.title, e.label].contains { $0.lowercased().contains(head) })
         }
     }
 }

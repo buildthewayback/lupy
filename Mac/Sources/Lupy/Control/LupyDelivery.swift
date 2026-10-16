@@ -92,7 +92,10 @@ enum LupyDelivery {
     static func observeDelivery(brief: String) -> Bool {
         guard let app = NSWorkspace.shared.frontmostApplication else { return false }
         let (snap, _) = LupyAX.snapshot(of: app, maxElements: 900, timeBudget: 2.5)
-        return DeliveryPlan.deliveryObserved(brief: brief, after: snap)
+        // The message box's own frame is excluded: its text (however the browser exposes it) is
+        // not delivery evidence — only the message appearing elsewhere on screen is.
+        let box = ElementMatcher.best(ElementQuery(DeliveryPlan.messageBox, role: .textInput), in: snap.elements)?.element.frame
+        return DeliveryPlan.deliveryObserved(brief: brief, after: snap, excluding: box)
     }
 }
 

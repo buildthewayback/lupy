@@ -48,7 +48,7 @@ evidence: `docs/TEST_REPORT.md` → “Download verification”.
   Gemini, DeepSeek, OpenRouter…), GitHub proof of coding work.
 - **Not built in v1 (by design, documented):** sending email/social/Displate posts, browser/app
   automation, direct Arena/Muse/ChatGPT connections (no usable APIs), notarized signing.
-  See `docs/KNOWN_LIMITATIONS.md` (19 items) and `docs/FUNCTIONAL_MATRIX.md`.
+  See `docs/KNOWN_LIMITATIONS.md` and `docs/REQUIREMENTS_STATUS.md` (the one completion record).
 
 ## Work packages
 

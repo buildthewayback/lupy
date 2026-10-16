@@ -1,0 +1,100 @@
+# Requirements and completion status — one authoritative record
+
+States (per the founder's directives):
+- **COMPLETE AND VERIFIED** — implemented, with test evidence.
+- **IMPLEMENTED, NOT FULLY VERIFIED** — implementation exists; specified verification incomplete (says what is missing).
+- **BLOCKED BY A SPECIFIC DEPENDENCY** — a named external dependency prevents completion.
+- **NOT STARTED** / **NOT APPLICABLE** (with reason).
+
+Evidence keys: **[T]** LupyCore test suite (`scripts/test-core.sh`, 96 cases / 606 checks — sandbox WASM + native runner);
+**[CT]** Coucou's own unit tests for the areas Lupy touches (`Mac/Tests/coucou/`, run in CI); **[S]** native self-test
+inside the built app (`--self-test`, real disk + Keychain); **[V]** download verification on fresh GitHub Macs
+(macOS 14.8.9 + 26.6.2; `scripts/verify-mac-download.sh`, run + check runs); **[CS]** computer-control self-test
+(`--control-self-test`); **[F]** `docs/COUCOU_FIDELITY.md` (byte-comparison with upstream Coucou); **[D]** documented
+design/decision. This record supersedes `docs/FUNCTIONAL_MATRIX.md` (D-027).
+
+## 1. Coucou fidelity (founder's regressions from Build 5)
+
+| Requirement | State | Implementation | Verification / evidence | Remaining |
+|---|---|---|---|---|
+| Original Coucou app icon and branding | COMPLETE AND VERIFIED | `Mac/CoucouAssets/Assets.xcassets` (upstream files, untouched) | [F] byte-identical; icon rendered from the downloaded app in the CI report; private-use terms in `Mac/CoucouAssets/NOTICE.md` | Founder sees it in Finder/Dock (Build F2+) |
+| Original Mochi character with its real animations (not a static cat) | COMPLETE AND VERIFIED | Coucou's own `BotEngine`, `MochiOutfitDrawing`, `BotCanvasView`, `DesktopMochi`, `GreetingCanvasView`, island views — unmodified | [F] all 12 character/island files byte-identical; [V] "animation: frames 0.8 s apart differ — Mochi is animated, not static" on macOS 14 and 26 | Founder's eyes on his Air |
+| Original interface, layout, styling, interactions | COMPLETE AND VERIFIED | Coucou's window (`FlowHub`), island, Settings, sounds — unmodified; Lupy's pages are new pages in that window built from Coucou's components | [F] 169 of 187 Coucou files byte-identical; 18 changed only at commented `Lupy:` hooks; [CT] island hover/auto-close/display-choice/desktop Mochi/wardrobe/approval queue tests pass | Founder's comparison with the Coucou he knows |
+| Original sounds | COMPLETE AND VERIFIED | `Mac/CoucouAssets/sounds` (29 wav) + Coucou's `SoundEngine` | [F] byte-identical; [V] "Coucou's original sounds included (29 .wav files)" in the downloaded app | Audible check on the founder's Mac |
+| Island fits a Mac without a notch (founder's Air) | COMPLETE AND VERIFIED | Coucou's own non-notch design: 80×24 resting bar, click-through except on itself, Mochi draggable onto the desktop — unmodified | [CT] screen-geometry + island-hover tests; [V] island screenshot captured on both CI Macs (neither has a notch — same class of screen as the founder's Air) | Founder's Air |
+| Coucou's coding-agent integrations (hooks, pills, GitHub pulse…) keep working | IMPLEMENTED, NOT FULLY VERIFIED | All compiled in (own socket folder `~/Library/Application Support/Lupy`, so a real Coucou install is untouched) | [CT] claude-hooks, claude-settings, approval-queue, safe-links tests pass | Live agents on the founder's Mac (needs his Claude Code/Codex setups) |
+| Flow dictation, Notetaker, voice with "OK Coucou" | COMPLETE AND VERIFIED (code) / NOT FULLY VERIFIED (live) | Unmodified Coucou code; "OK **Lupy**" wake phrase added alongside Coucou's; Apple Intelligence paths compiled out (D-023) so the brain is Coucou's rule parser or a cloud model with the founder's key | [CT] voice-wake tests + new OK-Lupy test pass | Microphone/speech on the founder's Mac; a provider key for the cloud brain |
+| Name/branding: the product is Lupy, not Coucou | COMPLETE AND VERIFIED | User-facing "Coucou" → "Lupy" (10 languages), own bundle id/data/Keychain, credit line names Coucou and its author | [T]+[V] screenshots/About; `scripts/rebrand-strings.py` round-trip | — |
+
+## 2. Mac adaptation
+
+| Requirement | State | Implementation | Verification / evidence | Remaining |
+|---|---|---|---|---|
+| Runs on the founder's macOS version | COMPLETE AND VERIFIED for 14.0+ | `Mac/project.yml` targets macOS 14.0 (upstream 15.0); the two 14.2+ APIs in Coucou's call-note audio are guarded | Builds and runs on macOS 14.8.9 and 26.6.2 [V]; on 14.0–14.1 a call note explains system audio needs 14.2 | Founder's exact version (About This Mac) |
+| Window: sizing, resizing, focus, multi-display | COMPLETE AND VERIFIED (Coucou's own behaviour) | Coucou's window controller, unchanged; Lupy pages follow its min size | [V] launch/quit/reopen on both CI Macs; screenshots | Founder's desktop arrangement |
+| No dependency on an absent Dynamic Island | COMPLETE AND VERIFIED | Coucou's own geometry (see §1) | [CT] geometry tests; [V] no-notch CI screens | — |
+| Permissions handled explicitly | COMPLETE AND VERIFIED | Coucou's Info.plist usage texts (extended for computer control); Lupy asks for Accessibility only when computer control is turned on | [V] Info.plist checks in the download verification | Founder grants mic/speech/accessibility on his Mac |
+
+## 3. Lupy's assistant (capabilities carried from the campaign)
+
+| Requirement | State | Verification / evidence | Remaining |
+|---|---|---|---|
+| Goal capture → plan (offline heuristic + cloud model with validation, repair, fallback) | COMPLETE AND VERIFIED | [T] planning suites; [S] | — |
+| Plan review / edit / approve / reject; priority with explanations | COMPLETE AND VERIFIED | [T] | — |
+| Task lifecycle with guards, dependencies, checkpoints, pause/resume/cancel/reopen | COMPLETE AND VERIFIED | [T] | — |
+| Ownership: "agent says done" never verifies; per-kind evidence; GitHub evidence; worker reliability | COMPLETE AND VERIFIED (GitHub: mocked) | [T], [S] | GitHub live: founder token |
+| Handoffs: brief writer, manual relay honesty ("delivery unconfirmed"), reply = claim | COMPLETE AND VERIFIED | [T], [S] | — |
+| Handoff delivery by computer control (new) | see §4 | — | — |
+| Follow-ups, escalation, missed checkpoints/deadlines, daily review | COMPLETE AND VERIFIED | [T] | — |
+| Notifications with budget (quiet hours, cap, dedupe) + island notices with Coucou sounds | COMPLETE AND VERIFIED (core) / NOT FULLY VERIFIED (delivery) | [T]; island note path exercised in [CS] | Real notification delivery on founder's Mac |
+| Safety: policy gate, autonomy modes, standing approvals, never-automate, global pause, injection defence, redaction | COMPLETE AND VERIFIED | [T] | — |
+| Providers: OpenAI/Anthropic/Gemini/OpenAI-compatible; routing, retries, budgets, usage ledger | COMPLETE AND VERIFIED (mocked) | [T] | Live calls: founder keys |
+| Durable journal, recovery, backup/restore, export/import | COMPLETE AND VERIFIED | [T], [S] (real disk) | — |
+| Memory with isolation, sensitive withholding, conflict resolution | COMPLETE AND VERIFIED | [T] | — |
+| Action ledger with verification (e.g. Save to Documents with SHA-256 read-back) | COMPLETE AND VERIFIED | [T], [S], and now every computer-control step | — |
+| UI truthfully reflects state (honest "not connected", progress, errors) | COMPLETE AND VERIFIED | [T] diagnostics; pages ported 1:1 | Founder usability pass |
+| Direct Arena/Muse/ChatGPT APIs | NOT APPLICABLE | No usable API known; manual relay + computer-control delivery instead | Revisit if APIs appear |
+| Email / social / publishing actions | NOT STARTED (out of v1 scope; policy requires approval anyway) | [D] | Founder decision |
+
+## 4. Computer control and the Lupy cursor (new capability)
+
+| Requirement | State | Implementation | Verification / evidence | Remaining |
+|---|---|---|---|---|
+| Rules: target matching, safety classification, session state machine, strict model-step parsing, delivery observation | COMPLETE AND VERIFIED | `LupyCore/ComputerControl.swift` | [T] 13 cases (96/96 total) | — |
+| Distinct visible cursor; user's pointer never moved; overlay click-through | COMPLETE AND VERIFIED | `LupyCursorOverlay` (transparent, `ignoresMouseEvents`, above apps) | [CS] click-through + level checks; cursor screenshots in CI | Founder watches it on his Mac |
+| Truthful phases (locating / executing / succeeded / failed / waiting for your OK) tied to real actions | COMPLETE AND VERIFIED | `LupyControlCenter` (locate → classify → gate → execute → read back → record) | [CS] read-backs, failure honesty, ledger entries | — |
+| Policy gate: consequential actions need the founder; passwords/CAPTCHA/2FA refused | COMPLETE AND VERIFIED | `ControlSafety` + engine action ledger (outside model text) | [T] policy suite; [CS] declined/approved Send, password refusal | — |
+| Stop/pause safety (Esc, Stop button, menu bar, Pause Lupy; queued steps cancelled; user typing pauses) | COMPLETE AND VERIFIED | `ControlRun.stop`, key monitors, global pause hook | [T] state machine; [CS] Stop cancels queued step | — |
+| Handoff delivery ("Deliver with Lupy") | IMPLEMENTED, NOT FULLY VERIFIED | `LupyDelivery` + per-agent targets; `recordControlDelivery` (seen → sent; unseen → delivery unconfirmed) | [T] delivery rules + engine honesty; [CS] sends on a local chat page | Real Arena/Muse/ChatGPT on the founder's Mac |
+| Model-driven steps ("Do something on screen") | IMPLEMENTED, NOT FULLY VERIFIED | `prepareControlStep` (consent, budget, ledger; screen fenced as untrusted) + `ControlAgent` strict parsing | [T] parsing/fencing; [CS] end-to-end without a model key is declined honestly | Needs founder's model key for a live run |
+| Off by default; explicit enable + Accessibility permission | COMPLETE AND VERIFIED | `LupyControlCenter.enabled`, settings page | Code + UI; CI grants Accessibility only on its own machines | — |
+
+## 5. Product-quality work beyond the explicit list
+
+| Improvement | Why | State |
+|---|---|---|
+| Welcome card can never block quitting (D-019) | Build 5 defect class | COMPLETE AND VERIFIED (inline card; [V] quits cleanly on first launch, both Macs) |
+| CI animation check | A static Mochi must never ship again | COMPLETE AND VERIFIED ([V] both Macs) |
+| Compiler errors surfaced first in build reports | F1's errors were buried in a 30k-char log tail | COMPLETE AND VERIFIED (F2 report) |
+| Coucou's sounds/notices/licences verified inside the downloaded app | Reserved-asset and licence compliance | COMPLETE AND VERIFIED ([V]) |
+| `docs/COUCOU_FIDELITY.md` generated from a byte-comparison | Fidelity claims need evidence, not adjectives | COMPLETE AND VERIFIED (regenerable: `scripts/coucou-fidelity.sh`) |
+| Coucou's unit tests run in Lupy's CI | Lupy's hooks must not break Coucou behaviour | COMPLETE AND VERIFIED (13 suites, F1/F2) |
+| Keyboard: Return sends the capture box; ⌘Return primary action | Founder flows | COMPLETE AND VERIFIED (ported UI) |
+
+## 6. Build and delivery
+
+| Item | State |
+|---|---|
+| Build | GitHub Actions, manual trigger only; build F-series on `arena/48b1c2c3-lupy` |
+| Artifact | One zip containing only Lupy.app, ad-hoc signed, SHA-256 published (see `LUPY_STATUS.md` for the current link) |
+| Notarization | BLOCKED BY A SPECIFIC DEPENDENCY — paid Apple Developer membership (founder decision) |
+| Install/usage instructions | `docs/INSTALL_GUIDE.md` (updated for this build) |
+
+## 7. Founder-only validation (engineering work complete; needs the founder's Mac)
+
+1. Install and first open (guide §1–2) — icon, Mochi alive, island bar, sounds.
+2. Grant Accessibility when first turning on computer control; watch the demo ("Show me").
+3. Dictate into the capture box (mic + speech permissions).
+4. Add one provider key (Lupy → Assistant) and try "Ask Lupy".
+5. Deliver one real handoff with "Deliver with Lupy" to the agent he actually uses.
+6. His comparison of the whole experience against the Coucou he remembers.
