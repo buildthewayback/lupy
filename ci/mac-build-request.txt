@@ -1,2 +1,2 @@
-Build requested: 2026-10-16T02:05Z
-Reason: build F4 — delivery-observation fix (text inside the message box is never delivery evidence); expect control self-test 9/9
+Build requested: 2026-10-16T02:19Z
+Reason: build F5 — pause the window Mochis/particles in background (F4 measured 29-53% CPU with the window open); final delivery candidate
