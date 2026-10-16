@@ -75,8 +75,15 @@ captured on both. Billed: build 8.9 + verify 3.1 + verify 2.8 ≈ 16 macOS min �
 70 % review threshold (1,400) we stop and ask the founder before any further run. macos-14
 runners retire 2 Nov 2026 (L-21) — the next campaign should move the verify matrix to macos-15.
 
-### F9 — LUPY 2 (planned as the campaign's only run)
-Run 38933932648, commit `4bced89` (work commit `c745886`). One build intended: syntax-checked
+### F9 — actual: one compile error (≈6.9 min, verify skipped)
+`LupyPagesSettings.swift:549` — a multi-statement non-ViewBuilder view (`privacy`) missing an
+explicit `return` (opaque return type). Fixed (`366f9a1`). Billed ≈ 7 macOS min ≈ 72 Linux-eq.
+Lesson for the sandbox checker: parse-only syntax checks can't catch opaque-return inference.
+
+### F10 — LUPY 2 candidate
+Run 38935284222, commit `95bad4d` (work commits `c745886`+`366f9a1`). Same content as F9 plus the
+return fix. After F10 the campaign is at the stop-and-review threshold — no further runs without
+the founder's OK. Estimated ≈16 macOS min ≈ 165 Linux-eq. One build intended: syntax-checked
 everything, member-audited the new views, caught the missing `ProviderConfig` public init before
 the build (the F6 lesson), core tests 108/108 in-sandbox. If compile errors appear: fix → F10.
 Estimated ≈16 macOS min ≈ 165 Linux-eq → campaign total ≈1,455 of 2,000 (72.7%) — **at the
