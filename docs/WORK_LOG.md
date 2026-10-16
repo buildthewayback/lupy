@@ -61,3 +61,11 @@ Asked the 4 open questions before starting.
    wake-spotter contextual strings now bias "Lupy".
 5. Tests: LupyCore 108/108, 668 checks (new: any-key flow; 429 auto-failover). Chat self-test
    wording check updated ("no AI API is set up"). Fidelity regenerated with the new divergence.
+11. F9 failed on one compile error (missing `return` in a multi-statement non-ViewBuilder view —
+    parse-only syntax checks cannot catch that). F10: build green, macOS 14 fully green, but ONE
+    contradictory control check on macOS 26 ("declined" step + "seen on screen: true"); code
+    review found the decision path airtight and the test ambiguous (both Send phases observed
+    the same brief string the declined phase had typed into the box) → distinct brief per phase;
+    single-job rerun refused by the API. **F11 (run 38938047078, `735de9b`) DELIVERED: all green
+    both Macs** — 36/36 download, chat 19/19, control 9/9 (clean "run: finished"), memory 46–57 MB.
+    Campaign total ≈1,932/2,000 Linux-eq (96.6%) — allowance spent; next builds wait for November.

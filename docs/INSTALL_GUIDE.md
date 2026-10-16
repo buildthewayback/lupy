@@ -14,9 +14,9 @@ This guide is for a Mac with Apple silicon (your MacBook Air M1). Lupy needs **m
 
 **Direct link** — sign in to GitHub first, with the account that can see the Lupy repository:
 
-**https://github.com/toastmangoapp-cloud/lupy/actions/runs/38916058766/artifacts/12053306142**
+**https://github.com/toastmangoapp-cloud/lupy/actions/runs/38938047078/artifacts/12062097803**
 
-1. Click the link. Your browser downloads one file, **`Lupy-0.2.0-e8afb0ff37-macOS-arm64.zip`**
+1. Click the link. Your browser downloads one file, **`Lupy-0.2.0-735de9b36b-macOS-arm64.zip`**
    (about 19 MB).
 2. Double-click that file in your **Downloads** folder. You get **Lupy.app** — the app itself, and
    the only thing inside. *(Safari often unzips it for you; then Lupy is already in Downloads.)*
@@ -28,8 +28,8 @@ This guide is for a Mac with Apple silicon (your MacBook Air M1). Lupy needs **m
 *If the link shows “Not Found”:* you are not signed in to GitHub, or you are signed in with an
 account that cannot see the (private) repository. The link works until **14 January 2027**.
 
-*Optional check:* the file's SHA-256 fingerprint is `5cacdd5c852afdc35dc37214ee5e40a355f97835dbd8a7a7dd57296fb2fc42e9` (built by GitHub Actions run
-38916058766 from commit `e8afb0ff372e8daf00d7ea2441cb9f5ac374745d`).
+*Optional check:* the file's SHA-256 fingerprint is `269543964d21f8bec7f61c635246eb365d8e7749ca22881e5cf9315ef683009c` (built by GitHub Actions run
+38938047078 from commit `735de9b36b58737fd2ca6482871eea52fcbe4070`).
 
 ## 2. Open Lupy the first time
 

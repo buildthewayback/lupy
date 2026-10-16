@@ -101,3 +101,11 @@ everything, member-audited the new views, caught the missing `ProviderConfig` pu
 the build (the F6 lesson), core tests 108/108 in-sandbox. If compile errors appear: fix → F10.
 Estimated ≈16 macOS min ≈ 165 Linux-eq → campaign total ≈1,455 of 2,000 (72.7%) — **at the
 stop-and-review threshold; no further runs without checking with the founder.**
+
+
+### F11 — DELIVERED (all green, both Macs)
+Run 38938047078, commit `735de9b`. 36/36 download checks on macOS 14.8.9 and 26.6.2, chat
+self-test 19/19 both, control 9/9 both (the disambiguated approved-Send check passes cleanly:
+"run: finished; seen on screen: true"), memory 46–57 MB. Artifact 12062097803.
+**Campaign total: F1–F11 ≈ 1,932 of 2,000 Linux-eq (96.6%) — the monthly allowance is spent.
+No more CI runs until the allowance resets (November) or the founder upgrades the plan.**

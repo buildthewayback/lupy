@@ -134,3 +134,13 @@ sampling noise (macOS 14: 27.9 % front / 18.8 % back vs 29.5 / 17.4; macOS 26: 5
 | Island conversation surface (`.lupyChat`) + shared `LupyChat` + window panel + hooks | App target — compiled on the macOS runner | **Build F8 (run 38916058766): compiles, installs, launches** |
 | **Chat self-test** (`Lupy --chat-self-test`): typed instruction → goal → plan card; "approve it" → tasks; status answered from real state; honest no-model answer; honest control blocker; pause/resume; "stop" (plan rejected / honest idle); follow-up history through the engine (no network); transcript persisted and decoded | App binary on the installed download, fresh data dir | **Build F8: 19/19 checks on macOS 14.8.9 and 26.6.2** |
 | Island-chat screenshot (conversation surface with welcome + chips) | `smoke-mac-app.sh` second demo launch (`--show-island-chat`) | **Build F8: captured on both Macs** (check run “island conversation”; decoded copies in `.cache/f8/`) |
+
+
+## 2026-10-16 (LUPY 2) — F9–F11
+| Suite | Result |
+|---|---|
+| LupyCore incl. new "any key just works" (custom provider → discovery → auto-enable → routes) and 429 auto-failover tests | **108/108 cases, 668 checks** (sandbox, 0 CI min) |
+| Island UX (click-outside close, hover pop, quick jumps, hover labels), AI APIs card, rebrand | Build F11 green both Macs; island-conversation screenshots captured |
+| Chat self-test | **19/19 both Macs** |
+| Control self-test (approved-Send now observes a distinct brief — see F10 note in CI_BUDGET.md) | **9/9 both Macs**, cleanly ("run: finished; seen on screen: true") |
+| Build loop | F9: 1 compile error (missing `return`, opaque type) → F10: green build + macOS 14, one contradictory macOS 26 control flake → F11: **all green** |

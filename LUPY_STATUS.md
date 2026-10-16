@@ -1,10 +1,10 @@
 # LUPY_STATUS
 
-_Last updated: 2026-10-16 14:50 UTC · branch `arena/48b1c2c3-lupy` · delivered commit `e8afb0f` (build F8) — the island conversation_
+_Last updated: 2026-10-16 19:45 UTC · branch `arena/48b1c2c3-lupy` · delivered commit `735de9b` (build F11) — LUPY 2: simple front, monster back_
 
 ## Where things stand (plain language)
 
-**Lupy is now Coucou — and the island is Lupy's.** The real Coucou app (by Louis Raillé) with its
+**Lupy 2: simple front, monster back.** The character is **Lupy** (no Mochi/Coucou text left). The real Coucou app (by Louis Raillé) with its
 animated Mochi, its icon, its sounds, its island and its window — extended with Lupy's assistant
 inside it. **Click the island (or press ⌃⌥Space) and Lupy's conversation opens right there**:
 type, or dictate and correct the transcript before sending. One shared conversation lives in the
@@ -20,18 +20,18 @@ your keys and your hands (the acceptance checklist walks you through it).
 
 ## Download the app (one link)
 
-**https://github.com/toastmangoapp-cloud/lupy/actions/runs/38916058766/artifacts/12053306142**
+**https://github.com/toastmangoapp-cloud/lupy/actions/runs/38938047078/artifacts/12062097803**
 (sign in to GitHub first; works until **14 Jan 2027**)
 
-- You get one file: **`Lupy-0.2.0-e8afb0ff37-macOS-arm64.zip`** — 19,541,131 bytes, SHA-256
-  `5cacdd5c852afdc35dc37214ee5e40a355f97835dbd8a7a7dd57296fb2fc42e9`. Inside: **Lupy.app** only.
+- You get one file: **`Lupy-0.2.0-735de9b36b-macOS-arm64.zip`** — 19,570,456 bytes, SHA-256
+  `269543964d21f8bec7f61c635246eb365d8e7749ca22881e5cf9315ef683009c`. Inside: **Lupy.app** only.
 - Install and first open: `docs/INSTALL_GUIDE.md` §1–2 (no Terminal; first open via “Open Anyway”).
 - **Not** the green “Code → Download ZIP” button — that is the source code, not the app.
 - **Please keep this build to yourself:** it contains Coucou's character, icon and sounds, included
   for your private use with your decision of 2026-10-16 (see `Mac/CoucouAssets/NOTICE.md`).
 
-Provenance: GitHub Actions run 38916058766 (16 Oct 2026), built on macOS 26.6.2 (Apple M1, arm64)
-with Xcode 26.6 from commit `e8afb0ff372e8daf00d7ea2441cb9f5ac374745d`; Coucou f09ac0b + Lupy
+Provenance: GitHub Actions run 38938047078 (16 Oct 2026), built on macOS 26.6.2 (Apple M1, arm64)
+with Xcode 26.6 from commit `735de9b36b58737fd2ca6482871eea52fcbe4070`; Coucou f09ac0b + Lupy
 (`docs/COUCOU_FIDELITY.md`: 169 of 187 Coucou files byte-identical); ad-hoc signed (not Developer
 ID, not notarized); Apple-silicon only; requires macOS 14+.
 
@@ -42,8 +42,8 @@ ID, not notarized); Apple-silicon only; requires macOS 14+.
 | **Implemented** | Yes — Coucou's app + Lupy's assistant + computer control with the Lupy cursor (≈ 100k lines Coucou incl. Lupy hooks, ≈ 4.7k lines Lupy app-side, ≈ 9k lines LupyCore incl. tests) | this branch; `docs/COUCOU_FIDELITY.md` |
 | **Sandbox-validated** | Yes — 96 test cases / 608 checks (incl. 13 computer-control rule cases) | `scripts/test-core.sh` (Swift 6.3.3 on WebAssembly) |
 | **Native-build-validated** | Yes — **106 tests** (conversation routing included) natively; Coucou's 13 unit suites for touched areas + the OK-Lupy wake test; app builds with Xcode 26.6 for macOS 14.0+ | runs 38835587936 … 38916058766 (F1–F8) |
-| **Installable artifact produced** | Yes — one ad-hoc-signed zip containing only Lupy.app (with Coucou's artwork, sounds and notices), behind a direct link | run 38916058766, artifact 12053306142 |
-| **Mac runtime validated** | Partly — the **downloaded file** verified on fresh GitHub macOS **14.8.9** and **26.6.2** VMs (Apple M1, virtual): **36/36 download checks each**, self-test 12/12, **conversation self-test 19/19** (goal→plan→approve, status, honest no-model, control blocker, pause/resume, stop, follow-up history, persistence), **computer control 9/9** (typing with read-back, Stop, honesty, declined/approved Send, password refusal), Mochi animated, CPU unchanged from F5, quits cleanly. **Not yet on the founder's Mac.** | check runs of run 38916058766 |
+| **Installable artifact produced** | Yes — one ad-hoc-signed zip containing only Lupy.app (with Coucou's artwork, sounds and notices), behind a direct link | run 38938047078, artifact 12062097803 |
+| **Mac runtime validated** | Partly — the **downloaded file** verified on fresh GitHub macOS **14.8.9** and **26.6.2** VMs (Apple M1, virtual): **36/36 download checks each**, self-test 12/12, **conversation self-test 19/19** (goal→plan→approve, status, honest no-model, control blocker, pause/resume, stop, follow-up history, persistence), **computer control 9/9** (typing with read-back, Stop, honesty, declined/approved Send, password refusal), Mochi animated, CPU unchanged from F5, quits cleanly. **Not yet on the founder's Mac.** | check runs of run 38938047078 |
 | **Founder accepted** | No — pending `docs/MAC_ACCEPTANCE_CHECKLIST.md` (now Coucou-fidelity- and computer-control-aware) | — |
 
 ## What Lupy is, in one minute
