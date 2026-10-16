@@ -1,2 +1,2 @@
-Build requested: 2026-10-16T02:19Z
-Reason: build F5 — pause the window Mochis/particles in background (F4 measured 29-53% CPU with the window open); final delivery candidate
+Build requested: 2026-10-16T09:05Z
+Reason: build F6 — first compile of the island conversation surface (.lupyChat, D-028–D-031); chat self-test + island-chat screenshot in verification
