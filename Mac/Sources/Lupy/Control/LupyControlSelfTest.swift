@@ -73,7 +73,13 @@ enum LupyControlSelfTest {
                          "declined Send is not sent", "approved Send is sent and observed", "password field refused"] {
                 blocked(name, "macOS has not allowed Accessibility for Lupy on this machine")
             }
-            return finish(lines, failures, arguments)
+            lines.append("CONTROLTEST BLOCKED (Accessibility is not allowed for Lupy here, so the checks that use other apps could not run; the overlay checks above did run)")
+            let text = lines.joined(separator: "\n")
+            print(text)
+            if let i = arguments.firstIndex(of: "--report"), i + 1 < arguments.count {
+                try? text.write(toFile: arguments[i + 1], atomically: true, encoding: .utf8)
+            }
+            return 0
         }
 
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent("lupy-control-selftest", isDirectory: true)

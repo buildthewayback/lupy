@@ -1,15 +1,22 @@
 #!/usr/bin/env bash
 # CI only (GitHub-hosted Mac): allow /Applications/Lupy.app to use Accessibility, as the founder
 # does in System Settings → Privacy & Security → Accessibility, so the computer-control self-test
-# can run unattended. Writes a TCC entry bound to the app's exact code signature (its cdhash).
-# Never used on the founder's Mac. If the machine refuses (SIP), the self-test reports BLOCKED.
+# can run unattended. Writes a TCC entry bound to the app's exact code signature.
+# Never used on the founder's Mac. If the machine refuses, the self-test reports BLOCKED (honest).
 set -uo pipefail
 APP="${1:-/Applications/Lupy.app}"
 BUNDLE_ID=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP/Contents/Info.plist")
 echo "SIP: $(csrutil status 2>&1 | tail -1)"
-REQ=$(codesign -d -r- "$APP" 2>&1 | sed -n 's/^designated => //p')
+OUT=$(codesign -d -r- "$APP" 2>&1 || true)
+# The designated requirement; if codesign did not spell it out, build it from the cdhash.
+REQ=$(printf '%s\n' "$OUT" | sed -nE 's/^.*designated[^=]*=> *//p' | head -1)
+if [ -z "$REQ" ]; then
+  CDHASH=$(printf '%s\n' "$OUT" | sed -nE 's/^CDHash=//p' | head -1)
+  [ -n "$CDHASH" ] && REQ="identifier \"$BUNDLE_ID\" and cdhash H\"$CDHASH\""
+fi
 echo "designated requirement: $REQ"
-echo "$REQ" | csreq -r- -b /tmp/lupy.csreq || { echo "could not compile the code requirement"; exit 0; }
+if [ -z "$REQ" ]; then echo "no code requirement could be derived"; exit 0; fi
+printf '%s\n' "$REQ" | csreq -r- -b /tmp/lupy.csreq || { echo "could not compile the code requirement"; exit 0; }
 HEX=$(xxd -p /tmp/lupy.csreq | tr -d '\n')
 for DB in "/Library/Application Support/com.apple.TCC/TCC.db" "$HOME/Library/Application Support/com.apple.TCC/TCC.db"; do
   [ -f "$DB" ] || continue
