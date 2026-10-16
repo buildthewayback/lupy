@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/../../.."
+TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/coucou-github-pulse.XXXXXX")"
+trap 'rm -rf "$TEST_DIR"' EXIT
+swiftc Mac/Sources/App/GitHubPulse.swift \
+    Mac/Tests/coucou/GitHubPulseTests.swift -o "$TEST_DIR/github-pulse-tests"
+"$TEST_DIR/github-pulse-tests"
