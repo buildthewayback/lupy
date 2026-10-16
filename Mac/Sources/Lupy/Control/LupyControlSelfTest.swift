@@ -157,16 +157,19 @@ enum LupyControlSelfTest {
                   run4?.summary ?? "no run")
             control.autoDecision = true
             phase("approved")
+            // A different brief for the approved run: the declined run's text stays in the
+            // message box, so observing the SAME string could never prove a send happened.
+            let sentBrief = brief + " — approved run"
             let run5 = await runToEnd(control, title: "Self-test: approved Send", steps: [
                 .waitFor(ElementQuery(DeliveryPlan.messageBox, role: .textInput), seconds: 10),
-                .setText(ElementQuery(DeliveryPlan.messageBox, role: .textInput), text: brief),
+                .setText(ElementQuery(DeliveryPlan.messageBox, role: .textInput), text: sentBrief),
                 .press(ElementQuery(DeliveryPlan.sendButton, role: .button)),
             ])
             try? await Task.sleep(nanoseconds: 800_000_000)
-            let observed = LupyDelivery.observeDelivery(brief: brief)
+            let observed = LupyDelivery.observeDelivery(brief: sentBrief)
             phase("sent")
             check("a Send you approve is clicked and the message is then seen on screen", run5?.state == .finished && observed,
-                  "\(run5?.summary ?? "no run"); seen on screen: \(observed)")
+                  "run: \(run5?.state.rawValue ?? "none"); \(run5?.summary ?? "no run"); seen on screen: \(observed)")
             // Password field: refused even when asked by element number (as a model would).
             if let app = NSWorkspace.shared.frontmostApplication {
                 let (snap, _) = LupyAX.snapshot(of: app)
