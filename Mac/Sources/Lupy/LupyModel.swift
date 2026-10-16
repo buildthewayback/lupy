@@ -352,6 +352,64 @@ final class LupyModel {
         changed()
     }
 
+    /// The "Add API" flow for a known provider: key + allow + enable in one tap,
+    /// then auto-discover its models. This is the founder's single setup step.
+    func enableProvider(_ providerID: String, key: String) {
+        guard let engine, var p = engine.state.providers[providerID] else { return }
+        let k = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !k.isEmpty, LupySecrets.save(p.keychainAccount, k) else {
+            say("Could not store the key in the Keychain.")
+            return
+        }
+        do {
+            try engine.setProviderKeyPresent(providerID, present: true)
+            try engine.approveProvider(providerID, approved: true)
+            if !p.enabled {
+                p.enabled = true
+                try engine.upsertProvider(p)
+            }
+            say("\(p.displayName) added — checking which models it offers…")
+            refreshModels(providerID)
+        } catch {
+            say("\(error)")
+        }
+        changed()
+    }
+
+    /// The "any key" flow for a service Lupy doesn't know: name + the link they gave you + key.
+    /// Creates an OpenAI-compatible provider, approves and enables it, then discovers models.
+    func addCustomProvider(name: String, baseURL: String, key: String) {
+        guard let engine else { return }
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        var link = baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !link.isEmpty, !link.hasPrefix("http") { link = "https://" + link }
+        let k = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty, !link.isEmpty, URL(string: link) != nil, !k.isEmpty else {
+            say("Fill in a name, the link the service gave you, and the key — then press Add.")
+            return
+        }
+        let id = "custom." + trimmedName.lowercased().replacingOccurrences(of: " ", with: "-")
+        let existing = engine.state.providers[id]
+        let config = ProviderConfig(id: id, kind: .openAICompatible, displayName: trimmedName, baseURL: link,
+                                    keychainAccount: "provider.\(id)", models: existing?.models ?? [],
+                                    enabled: true, founderApproved: existing?.founderApproved ?? false,
+                                    hasKey: existing?.hasKey ?? false, priceAsOf: "unknown (estimate)",
+                                    dataNotice: "Requests go to \(link) under that service's own terms.",
+                                    createdAt: existing?.createdAt ?? LupySystemClock().now())
+        do {
+            try engine.upsertProvider(config)
+            if LupySecrets.save(config.keychainAccount, k) {
+                try engine.setProviderKeyPresent(id, present: true)
+                try engine.approveProvider(id, approved: true)
+            }
+            say("\(trimmedName) added — checking which models it offers…")
+            refreshModels(id)
+        } catch {
+            say("\(error)")
+        }
+        changed()
+    }
+
     func removeKey(providerID: String) {
         guard let engine, let p = engine.state.providers[providerID] else { return }
         LupySecrets.delete(p.keychainAccount)
@@ -383,7 +441,8 @@ final class LupyModel {
             switch ProviderAPI.parseListModels(kind, status: r.status, body: r.body, now: LupySystemClock().now()) {
             case .success(let ids):
                 try? self.engine?.addDiscoveredModels(providerID, modelIDs: ids)
-                self.say("\(name) offers \(ids.count) model(s). New ones were added (off, priced conservatively — edit prices).")
+                try? self.engine?.enableDefaultModelIfNeeded(providerID)   // Lupy: any key just works
+                self.say("\(name) offers \(ids.count) model(s); Lupy can use them now. Prices are estimates — edit them in Details if you care.")
             case .failure(let e):
                 self.say("\(name): \(e.category.label). \(e.message)")
             }

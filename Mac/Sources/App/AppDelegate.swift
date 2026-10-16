@@ -87,7 +87,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         add(NoteTaker.shared.isRecording ? String(localized: "notes.stop") : String(localized: "hub.record-call"),
             #selector(toggleCallRecording))
         menu.addItem(.separator())
-        add(String(localized: "Open Coucou"), #selector(openIsland))
+        add(String(localized: "Open Lupy"), #selector(openIsland))
         add(NSLocalizedString("Settings…", comment: ""), #selector(openSettings))
         return menu
     }
@@ -132,7 +132,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         demoMenuItem = demoItem
         menu.addItem(demoItem)
         menu.addItem(.separator())
-        menu.addItem(withTitle: NSLocalizedString("Open Coucou", comment: ""), action: #selector(openIsland), keyEquivalent: "")
+        menu.addItem(withTitle: NSLocalizedString("Open Lupy", comment: ""), action: #selector(openIsland), keyEquivalent: "")
         menu.addItem(.separator())
         menu.addItem(withTitle: NSLocalizedString("Weekly recap", comment: ""), action: #selector(openWeeklyRecap), keyEquivalent: "")
         #if !APPSTORE

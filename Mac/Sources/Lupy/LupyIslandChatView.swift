@@ -11,6 +11,10 @@ struct LupyIslandChatView: View {
     @State private var draft = ""
     @FocusState private var focused: Bool
     @State private var dictation = MacDictation()
+    @State private var jumps: [LupyQuickJump] = LupyQuickJump.load()
+    @State private var addingJump = false
+    @State private var newJumpName = ""
+    @State private var newJumpURL = ""
 
     private var chat: LupyChat { LupyChat.shared }
     private var model: LupyModel { LupyModel.shared }
@@ -26,6 +30,8 @@ struct LupyIslandChatView: View {
                         .font(.system(size: 10.5))
                         .foregroundColor(Color(hex: "#F4505E"))
                 }
+                if addingJump { jumpEditor }
+                jumpRow
                 inputRow
             }
             .padding(.leading, 84)
@@ -35,7 +41,7 @@ struct LupyIslandChatView: View {
         }
         .onAppear { focused = true }
         .onChange(of: dictation.isRecording) { _, recording in
-            // Mochi tells the truth about what Lupy is doing: attentive while listening.
+            // Lupy tells the truth about what he is doing: attentive while listening.
             NotificationCenter.default.post(name: .triggerEmote, object: recording ? BotEmote.listening : BotEmote.happy)
         }
         .onChange(of: dictation.transcript) { _, _ in
@@ -80,6 +86,7 @@ struct LupyIslandChatView: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .hoverTip("Pills")
             .help("Show the island's pills")
             Button {
                 model.open(.lupyToday)
@@ -92,6 +99,7 @@ struct LupyIslandChatView: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .hoverTip("Workspace")
             .help("Open the Lupy workspace — the same conversation continues there")
         }
     }
@@ -149,6 +157,72 @@ struct LupyIslandChatView: View {
         }
     }
 
+    // MARK: Quick jumps — the founder's daily places, one tap from the conversation
+
+    private var jumpRow: some View {
+        HStack(spacing: 6) {
+            jumpChip(icon: "safari", label: "Browser", tip: "Open your web browser") { LupyQuickJump.openBrowser() }
+            ForEach(jumps) { jump in
+                jumpChip(icon: "globe", label: jump.name, tip: jump.url) {
+                    if let url = URL(string: jump.url) { NSWorkspace.shared.open(url) }
+                }
+            }
+            Spacer(minLength: 4)
+            Button {
+                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) { addingJump.toggle() }
+            } label: {
+                Image(systemName: addingJump ? "xmark" : "plus")
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundColor(Color(hex: "#8E939C"))
+                    .frame(width: 18, height: 16)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .hoverTip(addingJump ? "Cancel" : "Add a shortcut")
+        }
+    }
+
+    private func jumpChip(icon: String, label: String, tip: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 3) {
+                Image(systemName: icon).font(.system(size: 8.5))
+                Text(label).font(.system(size: 10.5))
+            }
+            .foregroundColor(Color(hex: "#C5C8CD"))
+            .padding(.horizontal, 8).padding(.vertical, 3)
+            .background(Color.white.opacity(0.07))
+            .clipShape(Capsule())
+            .contentShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .hoverTip(tip)
+    }
+
+    /// Tiny inline editor — name + link, no windows, no tech words.
+    private var jumpEditor: some View {
+        HStack(spacing: 6) {
+            TextField("Name (e.g. Displate)", text: $newJumpName)
+                .textFieldStyle(.plain).font(.system(size: 11)).frame(width: 110)
+            TextField("Link (https://…)", text: $newJumpURL)
+                .textFieldStyle(.plain).font(.system(size: 11))
+            Button("Add") {
+                let name = TextUtil.trimmed(newJumpName)
+                var link = TextUtil.trimmed(newJumpURL)
+                if !link.isEmpty, !link.hasPrefix("http") { link = "https://" + link }
+                guard !name.isEmpty, URL(string: link) != nil, link.hasPrefix("http") else { return }
+                jumps.append(LupyQuickJump(name: name, url: link))
+                LupyQuickJump.save(jumps)
+                newJumpName = ""; newJumpURL = ""
+                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) { addingJump = false }
+            }
+            .font(.system(size: 10.5, weight: .semibold))
+            .disabled(TextUtil.trimmed(newJumpName).isEmpty || TextUtil.trimmed(newJumpURL).isEmpty)
+        }
+        .padding(.horizontal, 8).padding(.vertical, 4)
+        .background(Color.white.opacity(0.05))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
     // MARK: Input — type or dictate, correct, then send
 
     private var inputRow: some View {
@@ -173,6 +247,7 @@ struct LupyIslandChatView: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .hoverTip(dictation.isRecording ? "Stop" : "Speak")
             .help(dictation.isRecording ? "Stop dictation — the text stays editable" : "Dictate (right-click to choose the language)")
             .contextMenu { LupyDictationLanguageMenu(dictation: dictation) }
 
@@ -361,4 +436,70 @@ struct LupyDictationLanguageMenu: View {
             }
         }
     }
+}
+
+// MARK: - Quick jumps (the founder's daily places, stored app-side like the dictation language)
+
+struct LupyQuickJump: Identifiable, Codable, Equatable {
+    var id: String { name.lowercased() }
+    var name: String
+    var url: String
+
+    static let storageKey = "lupy.quickJumps"
+
+    static func load() -> [LupyQuickJump] {
+        guard let data = UserDefaults.standard.data(forKey: storageKey),
+              let list = try? JSONDecoder().decode([LupyQuickJump].self, from: data) else { return [] }
+        return list
+    }
+
+    static func save(_ jumps: [LupyQuickJump]) {
+        if let data = try? JSONEncoder().encode(jumps) {
+            UserDefaults.standard.set(data, forKey: storageKey)
+        }
+    }
+
+    /// Open the default web browser (Safari if present, else the system default handler).
+    static func openBrowser() {
+        let safari = URL(fileURLWithPath: "/Applications/Safari.app")
+        let fallback = URL(string: "https://www.google.com")!
+        if FileManager.default.fileExists(atPath: safari.path) {
+            NSWorkspace.shared.openApplication(at: safari, configuration: NSWorkspace.OpenConfiguration())
+        } else {
+            NSWorkspace.shared.open(fallback)
+        }
+    }
+}
+
+// MARK: - HoverTip — an instant label when the pointer rests on a button
+
+/// macOS tooltips (.help) wait a second before appearing; the founder asked for immediate
+/// "what is this?" labels. This shows a small capsule to the right on hover.
+struct HoverTipModifier: ViewModifier {
+    let text: String
+    @State private var hovered = false
+
+    func body(content: Content) -> some View {
+        content.overlay(alignment: .trailing) {
+            if hovered {
+                Text(text)
+                    .font(.system(size: 9.5, weight: .medium))
+                    .foregroundColor(Color(hex: "#F1F2F4"))
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background(Color.black.opacity(0.85))
+                    .clipShape(Capsule())
+                    .fixedSize()
+                    .offset(x: 26, y: 10)
+                    .transition(.opacity)
+                    .allowsHitTesting(false)
+                    .zIndex(2)
+            }
+        }
+        .onHover { hovered = $0 }
+        .animation(.easeInOut(duration: 0.12), value: hovered)
+    }
+}
+
+extension View {
+    func hoverTip(_ text: String) -> some View { modifier(HoverTipModifier(text: text)) }
 }

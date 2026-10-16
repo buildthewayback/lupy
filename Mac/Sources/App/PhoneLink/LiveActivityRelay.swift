@@ -209,9 +209,9 @@ final class LiveActivityRelay {
                 }
             }
             if reached > 0 {
-                log("Mochi left for the iPhone (\(state.agent), \(state.statusText))")
+                log("Lupy left for the iPhone (\(state.agent), \(state.statusText))")
             } else {
-                log("Mochi couldn't reach the iPhone (see the relay line above)")
+                log("Lupy couldn't reach the iPhone (see the relay line above)")
             }
         }
     }
@@ -266,7 +266,7 @@ final class LiveActivityRelay {
         sent = nil
         guard startSent == startedAt else {
             // The start never went out: nothing to end on the iPhone.
-            log("Mochi is back on the Mac")
+            log("Lupy is back on the Mac")
             return
         }
         Task {
@@ -281,7 +281,7 @@ final class LiveActivityRelay {
                 await post(event: "end", token: phone.updateToken, env: phone.env, state: last,
                            dismissAfter: dismissAfter, phoneID: id)
             }
-            log(dismissAfter == 0 ? "Mochi is back on the Mac" : "agents done, the iPhone shows it for \(dismissAfter / 60) min")
+            log(dismissAfter == 0 ? "Lupy is back on the Mac" : "agents done, the iPhone shows it for \(dismissAfter / 60) min")
         }
     }
 

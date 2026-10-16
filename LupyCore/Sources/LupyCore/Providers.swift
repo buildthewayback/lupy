@@ -299,6 +299,12 @@ public enum ProviderCatalog {
             p("openrouter", .openAICompatible, "OpenRouter", "https://openrouter.ai/api/v1", [
                 ModelSpec(id: "openai/gpt-5-mini", displayName: "GPT-5 mini via OpenRouter", inputCentsPerMTok: 30, outputCentsPerMTok: 250, contextTokens: 400_000, maxOutputTokens: 8000),
             ], "Requests go to openrouter.ai and are forwarded to the chosen model's provider."),
+            p("groq", .openAICompatible, "Groq", "https://api.groq.com/openai/v1", [
+                ModelSpec(id: "llama-3.3-70b-versatile", displayName: "Llama 3.3 70B (Groq)", inputCentsPerMTok: 59, outputCentsPerMTok: 79, contextTokens: 128_000, maxOutputTokens: 8000),
+            ], "Requests go to api.groq.com under Groq's terms."),
+            p("mistral", .openAICompatible, "Mistral", "https://api.mistral.ai/v1", [
+                ModelSpec(id: "mistral-small-latest", displayName: "Mistral Small", inputCentsPerMTok: 20, outputCentsPerMTok: 60, contextTokens: 128_000, maxOutputTokens: 8000),
+            ], "Requests go to api.mistral.ai under Mistral's terms."),
         ]
     }
 }

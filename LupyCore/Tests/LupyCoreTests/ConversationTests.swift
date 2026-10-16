@@ -130,5 +130,62 @@ func conversationSuite() -> TestSuite {
             }
             t.expect(job.request.messages.count < 20, "history is capped (got \(job.request.messages.count) messages)")
         },
+
+        TestCase("any key just works: a custom provider is usable right after adding it") { t in
+            let h = try Harness()
+            // The "Another…" flow: name + link + key creates an OpenAI-compatible provider,
+            // approved and enabled; discovery then makes a model usable automatically.
+            let now = h.clock.now()
+            let config = ProviderConfig(id: "custom.codecraft", kind: .openAICompatible, displayName: "CodeCraft",
+                                        baseURL: "https://api.codecraft.example/v1", keychainAccount: "provider.custom.codecraft",
+                                        models: [], enabled: true, founderApproved: false, hasKey: false,
+                                        priceAsOf: "unknown", dataNotice: "test", createdAt: now)
+            try h.engine.upsertProvider(config)
+            try h.engine.setProviderKeyPresent("custom.codecraft", present: true)
+            try h.engine.approveProvider("custom.codecraft", approved: true)
+            // No models yet: nothing to route to.
+            if case .job = try h.engine.prepareConversationTurn(question: "hi", history: [], projectID: nil) {
+                t.fail("routed with zero models")
+            }
+            // Discovery finds models (all off by default)…
+            try h.engine.addDiscoveredModels("custom.codecraft", modelIDs: ["cc-mini", "cc-pro"])
+            // …and enableDefaultModelIfNeeded turns the cheapest on so the key just works.
+            try h.engine.enableDefaultModelIfNeeded("custom.codecraft")
+            guard case .job(let job) = try h.engine.prepareConversationTurn(question: "hi", history: [], projectID: nil) else {
+                t.fail("expected a prepared job after auto-enable"); return
+            }
+            t.equal(job.providerID, "custom.codecraft", "routes to the custom provider")
+            t.equal(job.modelID, "cc-mini", "the auto-enabled cheapest model is used")
+            t.expect(job.http.url.contains("api.codecraft.example"), "request goes to the custom base URL")
+            // A second call to enableDefaultModelIfNeeded changes nothing (a model is already on).
+            try h.engine.enableDefaultModelIfNeeded("custom.codecraft")
+            t.equal(h.engine.state.providers["custom.codecraft"]!.models.filter(\.enabled).count, 1, "still exactly one enabled model")
+        },
+
+        TestCase("auto-failover: a rate-limited API moves over to another allowed one") { t in
+            let h = try Harness()
+            try h.enableProvider("openai")
+            try h.enableProvider("gemini")
+            guard case .job(var job) = try h.engine.prepareConversationTurn(question: "hi", history: [], projectID: nil) else {
+                t.fail("expected a prepared job"); return
+            }
+            t.equal(job.providerID, "openai", "first route goes to the cheaper provider")
+            // The API answers 429 (limit) every time: bounded retries on the same provider,
+            // then the chain switches route — the founder never sees a dead assistant.
+            for attempt in 1...3 {
+                let r = try h.engine.completeModelJob(job.id, status: 429,
+                                                      body: Array(#"{"error":{"message":"rate limit exceeded","type":"rate_limit_error"}}"#.utf8),
+                                                      latencyMillis: 8)
+                guard case .callModel(let next)? = r.effects.last else { t.fail("expected a retry at attempt \(attempt)"); return }
+                if attempt < 3 { t.equal(next.providerID, "openai", "retry stays on the provider first") }
+                else { t.equal(next.providerID, "gemini", "switched to the other allowed provider after the limit") }
+                job = next
+            }
+            // The switched job is a Gemini call, so the success body is Gemini-shaped.
+            let okBody = Array(#"{"candidates":[{"content":{"parts":[{"text":"Here via the backup."}],"role":"model"},"finishReason":"STOP"}],"usageMetadata":{"promptTokenCount":30,"candidatesTokenCount":10}}"#.utf8)
+            let ok = try h.engine.completeModelJob(job.id, status: 200, body: okBody, latencyMillis: 8)
+            t.expect(ok.ok, "the fallback provider answers")
+            t.expect(h.engine.state.usage.filter { !$0.ok }.count >= 3, "failed attempts are recorded honestly")
+        },
     ])
 }

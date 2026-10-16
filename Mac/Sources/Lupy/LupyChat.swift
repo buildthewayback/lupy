@@ -33,6 +33,9 @@ final class LupyChat {
     private(set) var messages: [LupyChatMessage] = []
     /// Model jobs whose answer this conversation is still waiting for (shown as “thinking”).
     private(set) var waitingJobIDs: Set<String> = []
+    /// Which model the in-flight turn is using, e.g. "gemini-2.5-flash" — shown in the island
+    /// so the founder always sees what is actually running (updates when a retry switches route).
+    private(set) var waitingModelLabel: String?
     private(set) var lastActivityAt = Date()
 
     @ObservationIgnored private var storeURL: URL
@@ -59,7 +62,7 @@ final class LupyChat {
     var statusLine: String {
         let control = LupyControlCenter.shared
         if control.isActive { return control.statusLine }
-        if isWaiting { return "Thinking with your cloud model…" }
+        if isWaiting { return waitingModelLabel.map { "Thinking via \($0)…" } ?? "Thinking with your cloud model…" }
         let model = LupyModel.shared
         if model.attention.paused { return "Paused — say “resume” to continue" }
         let a = model.attention
@@ -153,7 +156,7 @@ final class LupyChat {
         let model = LupyModel.shared
         guard let engine = model.engine else { reply(model.startupError ?? "Lupy is not ready."); return }
         guard model.hasUsableModel else {
-            reply("I can't answer that on my own — I have no cloud model to ask (keys stay in your Mac's Keychain; add one in Lupy → Assistant).\n\n"
+            reply("I can't answer that on my own — no AI API is set up yet. Paste any key under Lupy → Assistant → AI APIs (it stays in your Mac's Keychain) and questions like this get real answers.\n\n"
                 + "Offline I can still: plan goals, tell you what's next (“what's next”), and work the screen with my own cursor when computer control is on.")
             return
         }
@@ -161,6 +164,7 @@ final class LupyChat {
             switch try engine.prepareConversationTurn(question: text, history: conversationHistory(), projectID: projectID) {
             case .job(let job):
                 waitingJobIDs.insert(job.id.raw)
+                waitingModelLabel = job.modelID
                 AppState.shared.stateOverride = .thinking
                 SoundEngine.shared.play("blip")
                 model.run([.callModel(job)])
@@ -253,10 +257,14 @@ final class LupyChat {
         if !result.ok, let next = retryJobs.first(where: { waitingAppliesTo($0) }) {
             waitingJobIDs.remove(jobID.raw)
             waitingJobIDs.insert(next.id.raw)
+            waitingModelLabel = next.modelID   // the island shows the route switch honestly
             return true   // still thinking — the retry's answer will arrive
         }
         waitingJobIDs.remove(jobID.raw)
-        if waitingJobIDs.isEmpty { AppState.shared.stateOverride = nil }
+        if waitingJobIDs.isEmpty {
+            AppState.shared.stateOverride = nil
+            waitingModelLabel = nil
+        }
         if result.ok {
             SoundEngine.shared.play("question")
             reply(result.message)

@@ -26,7 +26,7 @@ struct LupyControlPage: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(control.enabled ? "Lupy may operate apps when you ask" : "Computer control is off")
                             .font(.system(size: 18, weight: .bold))
-                        Text("Lupy never moves your pointer. It presses buttons and fills fields directly through macOS Accessibility, and its own orange cursor with Mochi shows you each real action. Esc or Stop ends it at once; if you start typing, it pauses.")
+                        Text("Lupy never moves your pointer. It presses buttons and fills fields directly through macOS Accessibility, and its own orange cursor with Lupy on it shows you each real action. Esc or Stop ends it at once; if you start typing, it pauses.")
                             .font(.system(size: 13)).foregroundColor(Color(hex: "#B7BBC2"))
                             .fixedSize(horizontal: false, vertical: true)
                     }

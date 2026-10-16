@@ -722,8 +722,8 @@ enum VoiceAnswer {
             return (main + others).trimmingCharacters(in: .whitespaces)
 
         case .weatherToday, .weatherTomorrow:
-            if s.weatherOff { return t("Active la météo dans les réglages de Coucou, section Voix.", "Turn on weather in Coucou's settings, Voice section.") }
-            if s.weatherNoCity { return t("Indique ta ville dans les réglages de Coucou, section Voix.", "Set your city in Coucou's settings, Voice section.") }
+            if s.weatherOff { return t("Active la météo dans les réglages de Lupy, section Voix.", "Turn on weather in Lupy's settings, Voice section.") }
+            if s.weatherNoCity { return t("Indique ta ville dans les réglages de Lupy, section Voix.", "Set your city in Lupy's settings, Voice section.") }
             guard let w = s.weather else { return t("Je n'arrive pas à avoir la météo pour l'instant.", "I can't get the weather right now.") }
             let sky = weatherText(w.code, fr: fr)
             var out: String
@@ -753,7 +753,7 @@ enum VoiceAnswer {
         case .codexPlan:  return "Codex"
         case .agents:     return "Claude Code"
         case .music:      return "Music"
-        case .pills:      return "Coucou"
+        case .pills:      return "Lupy"
         case .weatherToday, .weatherTomorrow: return "Météo"
         }
     }

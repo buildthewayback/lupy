@@ -919,6 +919,17 @@ final class IslandWindowController: NSWindowController {
         NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged]) { _ in
             MainActor.assumeIsolated { IslandWindowController.trackMouseLook() }
         }
+        // Lupy: clicking in another app also closes the expanded island (global mouse events
+        // arrive even when the click belongs to the other app).
+        NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [weak self] event in
+            MainActor.assumeIsolated {
+                guard let self, self.state.mode == .expanded else { return }
+                let mouse = NSEvent.mouseLocation
+                if self.islandPanel?.frame.contains(mouse) != true {
+                    self.collapse()
+                }
+            }
+        }
         NSEvent.addLocalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged]) { event in
             MainActor.assumeIsolated { IslandWindowController.trackMouseLook() }
             return event
@@ -930,6 +941,11 @@ final class IslandWindowController: NSWindowController {
         NSEvent.addLocalMonitorForEvents(matching: .leftMouseDown) { [weak self] event in
             guard let self else { return event }
             MainActor.assumeIsolated {
+                // Lupy: a click anywhere outside the island closes it — no X to hunt for.
+                // (collapse() itself refuses while an approval is waiting — approvals always win.)
+                if self.state.mode == .expanded && !self.wasInIsland {
+                    self.collapse()
+                }
                 guard self.wasInIsland else { return }
                 self.fsm.userInteracted()
                 self.pendingIslandClick = true

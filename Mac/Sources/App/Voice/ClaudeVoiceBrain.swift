@@ -171,7 +171,7 @@ final class ClaudeVoiceBrain {
         ],
         [
             "name": "service_info",
-            "description": "Read the user's real data that Coucou already has: Stripe sales and balance, GitHub stars/PRs/CI, Vercel deployments, Resend emails, n8n runs, Notion pages, Cal.com bookings, agent sessions (Claude Code, Codex…), Claude or Codex plan usage, music now playing, active pills.",
+            "description": "Read the user's real data that Lupy already has: Stripe sales and balance, GitHub stars/PRs/CI, Vercel deployments, Resend emails, n8n runs, Notion pages, Cal.com bookings, agent sessions (Claude Code, Codex…), Claude or Codex plan usage, music now playing, active pills.",
             "input_schema": [
                 "type": "object",
                 "properties": [

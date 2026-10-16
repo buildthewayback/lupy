@@ -136,3 +136,19 @@ conversation and one state. Implemented in the F6–F8 campaign (delivered build
 | 8 | Complete a task, inspect the result | Engine lifecycle [T]; answers/plan outcomes recorded with evidence (action ledger) | Founder's pass |
 | 9 | Change settings, restart, preferences persist | Engine settings journal [T]/[S]; dictation language UserDefaults; second-launch check **36/36 in F8** | Founder's pass |
 | 10 | Animations match real states; no excessive background CPU | **[V] F8 re-measure with the conversation open (unchanged from F5)**; animation check both Macs | Founder's feel |
+
+## 7. LUPY 2 — simple front, monster back (founder feedback after F8, 2026-10-16)
+
+| Requirement | State | Implementation | Verification / evidence |
+|---|---|---|---|
+| Character called Lupy; no leftover Coucou/Mochi text in the UI | IMPLEMENTED, NOT FULLY VERIFIED | D-033 sweep: menus, settings, voice brains, errors, recap; licence notices still credit Louis Raillé (required) | Code grep clean of user-visible Mochi/Coucou; F9 screenshots |
+| Click outside the island closes it; no X button | IMPLEMENTED, NOT FULLY VERIFIED | D-034: local + global click monitors; `collapse()` still refuses during approvals | Code; founder's hands |
+| Compact island pops on hover; opens snappier | IMPLEMENTED, NOT FULLY VERIFIED | scale 1.12 spring on hover; content delay 0.16→0.08 s | Founder's feel |
+| Instant hover labels on island buttons | IMPLEMENTED, NOT FULLY VERIFIED | HoverTip capsules (Pills / Workspace / Speak / Stop / Browser / +) | Founder's feel |
+| Quick jumps for daily things (browser + chat for now, "+" to add) | IMPLEMENTED, NOT FULLY VERIFIED | jump row above the input: Browser chip + custom name/link chips (UserDefaults, L-29) | Code; F9 island-chat screenshot |
+| ONE place for all AI keys; any key works | IMPLEMENTED, NOT FULLY VERIFIED | D-032 AI APIs card: presets + Another… (OpenAI-compatible), auto-discovery, auto-enable cheapest | [T] "any key just works" test (108/108) |
+| Auto-switch when an API is limited; island shows the running model | IMPLEMENTED, NOT FULLY VERIFIED | engine bounded-retry → route switch (existing) + `Thinking via <model>…` status | [T] rate-limit failover test; live check needs his keys |
+| Memory consistent across model changes | COMPLETE AND VERIFIED (design) | history + memory are engine-side state passed into every request regardless of provider | [T] history-inclusion tests |
+| Fewer, simpler settings; coding things hidden | IMPLEMENTED, NOT FULLY VERIFIED | 13 cards → 8; budget folded into autonomy; GitHub/connectors/workers hidden (engine intact); Coucou agents/chat/integrations pages out of the sidebar | Code; F9 screenshots |
+| RAM well under 1 GB | COMPLETE AND VERIFIED | F8 measured 46–93 MB physical footprint on both CI Macs; LUPY 2 removes rendered UI, not the (small) engine | Verify jobs measure memory each build |
+| Keep Coucou extras (music, mail, notes, clipboard) | COMPLETE AND VERIFIED | Untouched upstream features | F5–F8 checks |

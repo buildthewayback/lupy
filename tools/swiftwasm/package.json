@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@bjorn3/browser_wasi_shim": "0.4.2",
-    "@live-codes/swift-wasm": "0.1.0"
+    "@live-codes/swift-wasm": "0.1.0",
+    "@scalar/swift-fmt": "^0.3.0"
   }
 }

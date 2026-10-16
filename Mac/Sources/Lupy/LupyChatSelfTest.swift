@@ -67,7 +67,7 @@ enum LupyChatSelfTest {
         chat.send("Who owns the PENGLAI domain?")
         let askAnswer = chat.messages.last?.text ?? ""
         check("an open question without a model gets the honest no-model answer",
-              askAnswer.localizedCaseInsensitiveContains("no cloud model"), String(askAnswer.prefix(80)))
+              askAnswer.localizedCaseInsensitiveContains("no ai api is set up"), String(askAnswer.prefix(80)))
 
         // 5. Screen work without computer control: the honest blocker.
         chat.send("Open Safari and search for Displate payouts")

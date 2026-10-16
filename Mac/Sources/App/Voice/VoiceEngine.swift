@@ -614,7 +614,7 @@ final class VoiceEngine: ObservableObject {
             // Logged once per turn (no words): helps when an answer seems unheard.
             if !loggedDropWhileSpeaking {
                 loggedDropWhileSpeaking = true
-                appendAppLog("nb.log", "[Voice] words heard while Coucou was speaking: ignored")
+                appendAppLog("nb.log", "[Voice] words heard while Lupy was speaking: ignored")
             }
             return
         }

@@ -1750,7 +1750,7 @@ final class HookServer: @unchecked Sendable {
                                                      label: "~/.gemini/settings.json")
         if let raw = settings["hooks"], !(raw is [String: Any]) {
             throw NSError(domain: "Coucou", code: 2, userInfo: [
-                NSLocalizedDescriptionKey: "~/.gemini/settings.json: \"hooks\" has an unexpected type — Coucou has not touched it."
+                NSLocalizedDescriptionKey: "~/.gemini/settings.json: \"hooks\" has an unexpected type — Lupy has not touched it."
             ])
         }
         let base = hookBase()
@@ -1767,7 +1767,7 @@ final class HookServer: @unchecked Sendable {
         for (geminiEvent, normalizedEvent, timeout) in events {
             if let raw = hooks[geminiEvent], !(raw is [[String: Any]]) {
                 throw NSError(domain: "Coucou", code: 2, userInfo: [
-                    NSLocalizedDescriptionKey: "~/.gemini/settings.json: \"hooks\"[\"\(geminiEvent)\"] has an unexpected type — Coucou has not touched it."
+                    NSLocalizedDescriptionKey: "~/.gemini/settings.json: \"hooks\"[\"\(geminiEvent)\"] has an unexpected type — Lupy has not touched it."
                 ])
             }
             var groups = hooks[geminiEvent] as? [[String: Any]] ?? []
@@ -1791,7 +1791,7 @@ final class HookServer: @unchecked Sendable {
                                                      label: "~/.gemini/settings.json")
         if let raw = settings["hooks"], !(raw is [String: Any]) {
             throw NSError(domain: "Coucou", code: 2, userInfo: [
-                NSLocalizedDescriptionKey: "~/.gemini/settings.json: \"hooks\" has an unexpected type — Coucou has not touched it."
+                NSLocalizedDescriptionKey: "~/.gemini/settings.json: \"hooks\" has an unexpected type — Lupy has not touched it."
             ])
         }
         if var hooks = settings["hooks"] as? [String: Any] {
@@ -1889,12 +1889,12 @@ final class HookServer: @unchecked Sendable {
         do { data = try Data(contentsOf: url) }
         catch {
             throw NSError(domain: "Coucou", code: 2, userInfo: [
-                NSLocalizedDescriptionKey: "\(label) cannot be read — Coucou has not touched it."
+                NSLocalizedDescriptionKey: "\(label) cannot be read — Lupy has not touched it."
             ])
         }
         guard let obj = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else {
             throw NSError(domain: "Coucou", code: 2, userInfo: [
-                NSLocalizedDescriptionKey: "\(label) is not valid JSON — Coucou has not touched it."
+                NSLocalizedDescriptionKey: "\(label) is not valid JSON — Lupy has not touched it."
             ])
         }
         return obj
@@ -2000,7 +2000,7 @@ final class HookServer: @unchecked Sendable {
         var root = try Self.strictReadJSONObject(at: Self.codexHooksURL, label: "~/.codex/hooks.json")
         if let raw = root["hooks"], !(raw is [String: Any]) {
             throw NSError(domain: "Coucou", code: 2, userInfo: [
-                NSLocalizedDescriptionKey: "~/.codex/hooks.json: \"hooks\" has an unexpected type — Coucou has not touched it."
+                NSLocalizedDescriptionKey: "~/.codex/hooks.json: \"hooks\" has an unexpected type — Lupy has not touched it."
             ])
         }
         let base = hookBase()
@@ -2022,7 +2022,7 @@ final class HookServer: @unchecked Sendable {
         for (event, timeout, statusMsg) in events {
             if let raw = hooks[event], !(raw is [[String: Any]]) {
                 throw NSError(domain: "Coucou", code: 2, userInfo: [
-                    NSLocalizedDescriptionKey: "~/.codex/hooks.json: \"hooks\"[\"\(event)\"] has an unexpected type — Coucou has not touched it."
+                    NSLocalizedDescriptionKey: "~/.codex/hooks.json: \"hooks\"[\"\(event)\"] has an unexpected type — Lupy has not touched it."
                 ])
             }
             var groups = hooks[event] as? [[String: Any]] ?? []
@@ -2046,7 +2046,7 @@ final class HookServer: @unchecked Sendable {
         var root = try Self.strictReadJSONObject(at: Self.codexHooksURL, label: "~/.codex/hooks.json")
         if let raw = root["hooks"], !(raw is [String: Any]) {
             throw NSError(domain: "Coucou", code: 2, userInfo: [
-                NSLocalizedDescriptionKey: "~/.codex/hooks.json: \"hooks\" has an unexpected type — Coucou has not touched it."
+                NSLocalizedDescriptionKey: "~/.codex/hooks.json: \"hooks\" has an unexpected type — Lupy has not touched it."
             ])
         }
         if var hooks = root["hooks"] as? [String: Any] {
@@ -2131,7 +2131,7 @@ final class HookServer: @unchecked Sendable {
                                                   label: "~/.copilot/hooks/coucou.json")
         if let raw = root["hooks"], !(raw is [String: Any]) {
             throw NSError(domain: "Coucou", code: 2, userInfo: [
-                NSLocalizedDescriptionKey: "~/.copilot/hooks/coucou.json: \"hooks\" has an unexpected type — Coucou has not touched it."
+                NSLocalizedDescriptionKey: "~/.copilot/hooks/coucou.json: \"hooks\" has an unexpected type — Lupy has not touched it."
             ])
         }
         let base = hookBase()
@@ -2152,7 +2152,7 @@ final class HookServer: @unchecked Sendable {
         for (event, timeout) in events {
             if let raw = hooks[event], !(raw is [[String: Any]]) {
                 throw NSError(domain: "Coucou", code: 2, userInfo: [
-                    NSLocalizedDescriptionKey: "~/.copilot/hooks/coucou.json: \"hooks\"[\"\(event)\"] has an unexpected type — Coucou has not touched it."
+                    NSLocalizedDescriptionKey: "~/.copilot/hooks/coucou.json: \"hooks\"[\"\(event)\"] has an unexpected type — Lupy has not touched it."
                 ])
             }
             var entries = hooks[event] as? [[String: Any]] ?? []
@@ -2247,7 +2247,7 @@ final class HookServer: @unchecked Sendable {
                                                       label: "~/.config/muse/settings.json")
         if let raw = settings["hooks"], !(raw is [String: Any]) {
             throw NSError(domain: "Coucou", code: 2, userInfo: [
-                NSLocalizedDescriptionKey: "~/.config/muse/settings.json: \"hooks\" has an unexpected type — Coucou has not touched it."
+                NSLocalizedDescriptionKey: "~/.config/muse/settings.json: \"hooks\" has an unexpected type — Lupy has not touched it."
             ])
         }
         let base = hookBase()
@@ -2266,7 +2266,7 @@ final class HookServer: @unchecked Sendable {
         for (event, timeoutSec) in events {
             if let raw = hooks[event], !(raw is [[String: Any]]) {
                 throw NSError(domain: "Coucou", code: 2, userInfo: [
-                    NSLocalizedDescriptionKey: "~/.config/muse/settings.json: \"hooks\"[\"\(event)\"] has an unexpected type — Coucou has not touched it."
+                    NSLocalizedDescriptionKey: "~/.config/muse/settings.json: \"hooks\"[\"\(event)\"] has an unexpected type — Lupy has not touched it."
                 ])
             }
             var groups = hooks[event] as? [[String: Any]] ?? []
@@ -2290,7 +2290,7 @@ final class HookServer: @unchecked Sendable {
                                                       label: "~/.config/muse/settings.json")
         if let raw = settings["hooks"], !(raw is [String: Any]) {
             throw NSError(domain: "Coucou", code: 2, userInfo: [
-                NSLocalizedDescriptionKey: "~/.config/muse/settings.json: \"hooks\" has an unexpected type — Coucou has not touched it."
+                NSLocalizedDescriptionKey: "~/.config/muse/settings.json: \"hooks\" has an unexpected type — Lupy has not touched it."
             ])
         }
         if var hooks = settings["hooks"] as? [String: Any] {

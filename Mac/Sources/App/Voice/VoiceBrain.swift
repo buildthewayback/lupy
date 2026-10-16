@@ -414,7 +414,7 @@ struct MusicTool: Tool, @unchecked Sendable {
 @available(macOS 26, *)
 struct MailTool: Tool, @unchecked Sendable {
     let name        = "mail"
-    let description = "Prepare an email (Coucou asks for anything missing; the user clicks Send). Recipient is a contact name or an email address; file is an optional file name to attach (searched in Downloads, Desktop, Documents, Pictures)."
+    let description = "Prepare an email (Lupy asks for anything missing; the user clicks Send). Recipient is a contact name or an email address; file is an optional file name to attach (searched in Downloads, Desktop, Documents, Pictures)."
 
     @Generable
     struct Arguments {
@@ -442,7 +442,7 @@ struct MailTool: Tool, @unchecked Sendable {
 @available(macOS 26, *)
 struct ServiceTool: Tool, @unchecked Sendable {
     let name        = "service"
-    let description = "Real data from Coucou: Stripe sales and balance, GitHub stars/PRs/CI, Vercel deployments, Resend emails, n8n runs, Notion pages, Cal.com bookings, agent sessions (Claude Code…), Claude/Codex plan usage, music now playing, active pills, weather today or tomorrow."
+    let description = "Real data from Lupy: Stripe sales and balance, GitHub stars/PRs/CI, Vercel deployments, Resend emails, n8n runs, Notion pages, Cal.com bookings, agent sessions (Claude Code…), Claude/Codex plan usage, music now playing, active pills, weather today or tomorrow."
 
     @Generable
     struct Arguments {
@@ -461,7 +461,7 @@ struct ServiceTool: Tool, @unchecked Sendable {
 @available(macOS 26, *)
 struct StatusTool: Tool, @unchecked Sendable {
     let name        = "status"
-    let description = "Report Coucou status: active pills, current agent sessions, music now playing"
+    let description = "Report Lupy status: active pills, current agent sessions, music now playing"
 
     @Generable
     struct Arguments {

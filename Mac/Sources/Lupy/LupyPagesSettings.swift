@@ -10,21 +10,19 @@ struct LupyAssistantSettings: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                // Organised around what the founder wants to adjust, not around Lupy's internals.
+                // LUPY 2 — simple front: what the founder actually adjusts, in his order.
+                // AI APIs first (the one setup place), then how he talks to Lupy, then behaviour.
+                LupyAPIsSettings()
                 LupyVoiceActivationSettings()
-                LupyProvidersSettings()
                 LupyPersonalisationSettings()
                 LupyControlSettings()
-                LupyAutonomySettings()
                 LupyIslandWindowSettings()
-                LupyBudgetSettings()
-                LupyGitHubSettings()
-                LupyConnectorsSettings()
-                LupyWorkersSettings()
-                LupyPrivacySettings()
-                LupyBackupSettings()
-                LupyDiagnosticsSettings()
+                LupyAutonomySettings()
+                LupyHousekeepingSettings()
                 LupyAboutSettings()
+                // Hidden for the founder (LUPY 2, D-032): GitHub evidence, connectors, workers —
+                // coding-agent coordination he doesn't use. The engine still runs underneath;
+                // re-add LupyGitHubSettings()/LupyConnectorsSettings()/LupyWorkersSettings() to bring them back.
             }
             .padding(24)
             .frame(maxWidth: 920, alignment: .leading)
@@ -56,7 +54,7 @@ struct LupyVoiceActivationSettings: View {
                 Button("Keyboard shortcuts…") { LupyModel.shared.open(.shortcuts) }.buttonStyle(LupySecondaryButtonStyle())
                 Spacer()
             }
-            Text("“OK Lupy” wakes the voice commands (music, mail, notes — Coucou's engine). The mic button in the conversation dictates into the field for anything longer. ⌃⌥Space (changeable) opens the conversation from anywhere.")
+            Text("“OK Lupy” wakes the voice commands (music, mail, notes). The mic button in the conversation dictates into the field for anything longer. ⌃⌥Space (changeable) opens the conversation from anywhere.")
                 .font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
         }
     }
@@ -95,7 +93,7 @@ struct LupyPersonalisationSettings: View {
 struct LupyIslandWindowSettings: View {
     var body: some View {
         LupySettingsCard(title: "Island, window & sounds",
-                         subtitle: "Lupy runs on Coucou's island: its size, auto-close, sounds, wardrobe and screen are set in one place.") {
+                         subtitle: "The island and the window: size, auto-close, sounds, wardrobe and screen — all in one place.") {
             HStack(spacing: 16) {
                 Button("Island settings…") { LupyModel.shared.open(.general) }.buttonStyle(LupySecondaryButtonStyle())
                 Button("Shortcuts…") { LupyModel.shared.open(.shortcuts) }.buttonStyle(LupySecondaryButtonStyle())
@@ -145,18 +143,206 @@ struct LupyAutonomySettings: View {
                 }), in: 1...20)
             }
             .font(.system(size: 12))
+            LupyBudgetDisclosure()
         }
     }
 }
 
-struct LupyProvidersSettings: View {
+/// Spending limits, folded into the autonomy card (LUPY 2): one line until asked.
+struct LupyBudgetDisclosure: View {
     private var model: LupyModel { LupyModel.shared }
+    @State private var open = false
+    @State private var daily = ""
+    @State private var monthly = ""
+    @State private var perTask = ""
+    @State private var perCall = ""
+
     var body: some View {
-        let providers = model.state.providers.values.sorted { $0.displayName < $1.displayName }
-        LupySettingsCard(title: "Cloud model providers", subtitle: "Optional. Keys are stored only in your Mac's Keychain. Nothing is sent to a provider until you allow it. Lupy never runs models on your Mac.") {
-            ForEach(providers) { p in LupyProviderRow(provider: p) }
+        let b = model.state.budget
+        VStack(alignment: .leading, spacing: 8) {
+            Button {
+                withAnimation(.spring(response: 0.25, dampingFraction: 0.85)) { open.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "dollarsign.circle").font(.system(size: 12))
+                    Text("Spending limits: \(TextUtil.fixed(b.dailyCapCents / 100, 2)) per day, \(TextUtil.fixed(b.monthlyCapCents / 100, 2)) per month")
+                    Image(systemName: open ? "chevron.up" : "chevron.down").font(.system(size: 9))
+                }
+                .font(.system(size: 12)).foregroundColor(LupyTheme.secondary)
+            }
+            .buttonStyle(.plain)
+            if open {
+                Text("Hard limits stop model calls. Above the per-call amount Lupy asks you first. Amounts in US dollars.")
+                    .font(.system(size: 11)).foregroundColor(LupyTheme.muted)
+                HStack(spacing: 12) {
+                    LupyBudgetDisclosure.field("Per day", $daily, b.dailyCapCents)
+                    LupyBudgetDisclosure.field("Per month", $monthly, b.monthlyCapCents)
+                    LupyBudgetDisclosure.field("Per task", $perTask, b.perTaskCapCents)
+                    LupyBudgetDisclosure.field("Ask above (per call)", $perCall, b.approvalAboveCentsPerCall)
+                }
+                Button("Save limits") {
+                    var x = b
+                    if let v = Double(daily) { x.dailyCapCents = v * 100 }
+                    if let v = Double(monthly) { x.monthlyCapCents = v * 100 }
+                    if let v = Double(perTask) { x.perTaskCapCents = v * 100 }
+                    if let v = Double(perCall) { x.approvalAboveCentsPerCall = v * 100 }
+                    model.act { try $0.setBudget(x); return [] }
+                    daily = ""; monthly = ""; perTask = ""; perCall = ""
+                }
+                .buttonStyle(LupyPrimaryButtonStyle())
+            }
         }
     }
+
+    private static func field(_ label: String, _ text: Binding<String>, _ cents: Double) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(label).font(.system(size: 11)).foregroundColor(LupyTheme.secondary)
+            TextField(TextUtil.fixed(cents / 100, 2), text: text).textFieldStyle(.roundedBorder).frame(width: 110)
+        }
+    }
+}
+
+// MARK: - AI APIs — the ONE place for every AI key (D-032)
+
+/// Any key the founder pastes just works: pick a service (or "Another…" with the link they
+/// gave you), paste the key, press Add. Lupy enables it, discovers its models, picks the right
+/// one for each job, and switches automatically when one API stops or hits its limit.
+struct LupyAPIsSettings: View {
+    private var model: LupyModel { LupyModel.shared }
+    @State private var adding = false
+    @State private var picked: String? = nil
+    @State private var key = ""
+    @State private var customName = ""
+    @State private var customURL = ""
+
+    private var providers: [ProviderConfig] {
+        model.state.providers.values.sorted { ($0.hasKey && $0.founderApproved ? 0 : 1, $0.displayName) < ($1.hasKey && $1.founderApproved ? 0 : 1, $1.displayName) }
+    }
+
+    /// Preset chips — the services people actually get keys from. "Another…" covers the rest
+    /// (free-token services are almost always OpenAI-compatible: link + key is all Lupy needs).
+    private let presets: [(id: String, label: String)] = [
+        ("openai", "OpenAI"), ("anthropic", "Anthropic"), ("gemini", "Google Gemini"),
+        ("deepseek", "DeepSeek"), ("openrouter", "OpenRouter"), ("groq", "Groq"),
+        ("mistral", "Mistral"), ("custom", "Another…"),
+    ]
+
+    var body: some View {
+        LupySettingsCard(title: "AI APIs",
+                         subtitle: "One place for every AI key. Paste any key — Lupy figures out the rest, picks the right model for each job, and switches to another API automatically if one stops or hits its limit. Your chat memory stays the same whichever model answers. Keys live only in your Mac's Keychain; Lupy never runs models on your Mac.") {
+            ForEach(providers) { p in LupyAPIRow(provider: p) }
+            if !adding {
+                Button {
+                    withAnimation(.spring(response: 0.25, dampingFraction: 0.85)) { adding = true }
+                } label: {
+                    Label("Add an API", systemImage: "plus.circle.fill")
+                        .font(.system(size: 13, weight: .semibold))
+                }
+                .buttonStyle(LupyPrimaryButtonStyle())
+            } else {
+                addFlow
+            }
+        }
+    }
+
+    private var addFlow: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Which service is the key from?")
+                .font(.system(size: 12, weight: .semibold)).foregroundColor(LupyTheme.text)
+            HStack(spacing: 6) {
+                ForEach(presets, id: \.id) { preset in
+                    Button(preset.label) {
+                        picked = preset.id
+                        if preset.id != "custom" { customName = ""; customURL = "" }
+                    }
+                    .font(.system(size: 11.5))
+                    .buttonStyle(.plain)
+                    .foregroundColor(picked == preset.id ? Color(hex: "#0B0C0E") : LupyTheme.text)
+                    .padding(.horizontal, 9).padding(.vertical, 4)
+                    .background(picked == preset.id ? LupyTheme.accent : Color.white.opacity(0.07))
+                    .clipShape(Capsule())
+                }
+            }
+            if picked == "custom" {
+                HStack(spacing: 8) {
+                    TextField("Name (e.g. CodeCraft)", text: $customName).textFieldStyle(.roundedBorder).frame(width: 160)
+                    TextField("The link they gave you (https://…)", text: $customURL).textFieldStyle(.roundedBorder)
+                }
+            }
+            if picked != nil {
+                HStack(spacing: 8) {
+                    SecureField("Paste the API key", text: $key).textFieldStyle(.roundedBorder)
+                    Button("Add") {
+                        if picked == "custom" {
+                            model.addCustomProvider(name: customName, baseURL: customURL, key: key)
+                        } else if let id = picked {
+                            model.enableProvider(id, key: key)
+                        }
+                        key = ""; picked = nil
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.85)) { adding = false }
+                    }
+                    .buttonStyle(LupyPrimaryButtonStyle())
+                    .disabled(key.isEmpty || (picked == "custom" && (customName.isEmpty || customURL.isEmpty)))
+                    Button("Cancel") {
+                        key = ""; picked = nil; customName = ""; customURL = ""
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.85)) { adding = false }
+                    }.buttonStyle(LupySecondaryButtonStyle())
+                }
+                Text("Adding a key means Lupy may send your task text to that service to get answers — that is what the key is for. Nothing else is ever sent.")
+                    .font(.system(size: 11)).foregroundColor(LupyTheme.secondary)
+            }
+        }
+        .padding(10)
+        .background(Color.white.opacity(0.03)).clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+}
+
+/// One API in the list: a dot, the name, what Lupy uses it for — details hidden unless asked.
+struct LupyAPIRow: View {
+    private var model: LupyModel { LupyModel.shared }
+    let provider: ProviderConfig
+    @State private var details = false
+
+    private var ready: Bool { provider.hasKey && provider.founderApproved && provider.enabled }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Circle().fill(ready ? LupyTheme.green : LupyTheme.muted).frame(width: 8, height: 8)
+                Text(provider.displayName).font(.system(size: 13, weight: .semibold)).foregroundColor(LupyTheme.text)
+                Text(ready ? "ready" : (provider.hasKey ? "not allowed yet" : "no key"))
+                    .font(.system(size: 10.5)).foregroundColor(LupyTheme.secondary)
+                if ready {
+                    Text("\(provider.models.filter(\.enabled).count) model\(provider.models.filter(\.enabled).count == 1 ? "" : "s") in use")
+                        .font(.system(size: 10.5)).foregroundColor(LupyTheme.muted)
+                }
+                Spacer()
+                Button("Test") { model.testProvider(provider.id) }.buttonStyle(LupySecondaryButtonStyle())
+                Button(details ? "Done" : "Details") { details.toggle() }.buttonStyle(LupySecondaryButtonStyle())
+            }
+            if details {
+                Text(provider.dataNotice).font(.system(size: 11)).foregroundColor(LupyTheme.secondary)
+                HStack {
+                    SecureField(provider.hasKey ? "Replace API key" : "Paste API key", text: $keyField).textFieldStyle(.roundedBorder)
+                    Button("Save") { model.saveKey(providerID: provider.id, key: keyField); keyField = "" }.disabled(keyField.isEmpty)
+                    if provider.hasKey { Button("Remove key") { model.removeKey(providerID: provider.id) } }
+                }
+                Toggle("Allow Lupy to send task context to \(provider.displayName)", isOn: Binding(get: { provider.founderApproved }, set: { on in
+                    model.act { try $0.approveProvider(provider.id, approved: on); return [] }
+                }))
+                .font(.system(size: 12))
+                HStack {
+                    Button("Refresh models") { model.refreshModels(provider.id) }.disabled(!provider.hasKey)
+                    Spacer()
+                    Text("Prices: \(provider.priceAsOf)").font(.system(size: 10.5)).foregroundColor(LupyTheme.muted)
+                }
+                ForEach(provider.models) { m in LupyModelRow(provider: provider, model: m) }
+            }
+        }
+        .padding(10)
+        .background(Color.white.opacity(0.03)).clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    @State private var keyField = ""
 }
 
 struct LupyProviderRow: View {
@@ -345,6 +531,62 @@ struct LupyWorkersSettings: View {
     }
 }
 
+// MARK: - Housekeeping (privacy, backups, diagnostics in one card — LUPY 2)
+
+struct LupyHousekeepingSettings: View {
+    private var model: LupyModel { LupyModel.shared }
+    var body: some View {
+        LupySettingsCard(title: "Privacy, backup & diagnostics", subtitle: "What leaves your Mac, how to keep a copy of everything, and a plain status report.") {
+            privacy
+            Divider().overlay(LupyTheme.line)
+            backup
+            Divider().overlay(LupyTheme.line)
+            diagnostics
+        }
+        .font(.system(size: 12))
+    }
+
+    private var privacy: some View {
+        let s = model.state.settings
+        VStack(alignment: .leading, spacing: 8) {
+            Text("What leaves your Mac").font(.system(size: 12.5, weight: .semibold)).foregroundColor(LupyTheme.text)
+            Text("• Your data lives in ~/Library/Application Support/Lupy on this Mac.\n• API keys live only in the macOS Keychain — never in Lupy's files, backups or logs.\n• When a cloud model is allowed and used, Lupy sends only the context listed with each request (secrets are redacted, sensitive memory is withheld, other projects are never included).\n• Dictation uses Apple's speech recognition (on this Mac when supported).")
+                .font(.system(size: 11.5)).foregroundColor(LupyTheme.body)
+            Toggle("Include relevant memory in model requests", isOn: Binding(get: { s.dataSharing.includeMemoryInModelContext }, set: { on in
+                var x = s; x.dataSharing.includeMemoryInModelContext = on; model.act { try $0.updateSettings(x); return [] }
+            }))
+            Toggle("Allow memory marked sensitive to be sent (not recommended)", isOn: Binding(get: { s.dataSharing.includeSensitiveMemory }, set: { on in
+                var x = s; x.dataSharing.includeSensitiveMemory = on; model.act { try $0.updateSettings(x); return [] }
+            }))
+        }
+    }
+
+    private var backup: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Backup, restore and export").font(.system(size: 12.5, weight: .semibold)).foregroundColor(LupyTheme.text)
+            Text("Backups are single files you can keep anywhere. They never include API keys. Restoring moves current data aside instead of deleting it.")
+                .font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
+            HStack(spacing: 8) {
+                Button("Save a backup…") { model.exportBackup() }.buttonStyle(LupyPrimaryButtonStyle())
+                Button("Restore from backup…") { model.restoreBackup() }.buttonStyle(LupySecondaryButtonStyle())
+                Button("Import a project…") { model.importProject() }.buttonStyle(LupySecondaryButtonStyle())
+                Button("Show data folder") { model.revealDataFolder() }.buttonStyle(LupySecondaryButtonStyle())
+            }
+        }
+    }
+
+    private var diagnostics: some View {
+        let report = model.engine?.diagnostics(dataSizeBytes: model.dataSizeBytes)
+        return VStack(alignment: .leading, spacing: 8) {
+            Text("Diagnostics").font(.system(size: 12.5, weight: .semibold)).foregroundColor(LupyTheme.text)
+            Text((report?.lines ?? [model.startupError ?? "Not started"]).joined(separator: "\n") + "\nMemory in use: \(String(format: "%.0f", lupyResidentMemoryMB())) MB")
+                .font(.system(size: 11.5, design: .monospaced)).foregroundColor(report?.healthy == false ? LupyTheme.amber : LupyTheme.body)
+                .textSelection(.enabled)
+            Button("Copy diagnostics") { model.copy((report?.lines ?? []).joined(separator: "\n"), announce: "Diagnostics copied.") }.buttonStyle(LupySecondaryButtonStyle())
+        }
+    }
+}
+
 struct LupyPrivacySettings: View {
     private var model: LupyModel { LupyModel.shared }
     var body: some View {
@@ -394,8 +636,8 @@ struct LupyAboutSettings: View {
     var body: some View {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.2.0"
         LupySettingsCard(title: "About Lupy", subtitle: "") {
-            // Lupy (port): updated — Lupy is now built on Coucou's own app.
-            Text("Lupy \(version) — your executive assistant, built on Coucou's Mac app by Louis Raillé (github.com/Louis-CFM/coucou). Coucou's code is MIT-licensed (notice inside the app). Coucou's character Mochi, its icon and its sounds are © Louis Raillé and are included only in this private build for your own Mac — not for sharing or publishing.")
+            // Lupy: the character is Lupy now; the credit stays because the code and artwork are Louis Raillé's.
+            Text("Lupy \(version) — your assistant. Built on the open-source Coucou app by Louis Raillé (github.com/Louis-CFM/coucou); its code is MIT-licensed (notice inside the app). Lupy's character, icon and sounds are © Louis Raillé and are included only in this private build for your own Mac — not for sharing or publishing.")
                 .font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }

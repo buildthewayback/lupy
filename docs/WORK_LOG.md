@@ -44,3 +44,20 @@ OpenAI-compatible like CodeCraft), auto-failover, current-model status in island
 across model switches; far fewer settings; remove coding/unused features; RAM target well under
 1 GB (F8 already measures 46–93 MB physical); CI minutes scarce → research, ask, then 2–3 builds.
 Asked the 4 open questions before starting.
+
+## 2026-10-16 (LUPY 2) — simple front, monster back
+1. Founder answers: jumps = browser + chat; APIs = "just make any key work"; keep Coucou extras;
+   macOS 15 Sequoia. Plan doc updated (docs/LUPY2_PLAN.md).
+2. Island UX (D-034): click-outside closes (local + global monitors), X removed, hover pop
+   (1.12×), snappier reveal (0.08 s), instant HoverTip labels, quick-jump row (Browser + "+"
+   custom name/link, UserDefaults).
+3. API hub (D-032): LupyAPIsSettings (presets + Another…), LupyModel.enableProvider /
+   addCustomProvider, engine enableDefaultModelIfNeeded, catalog + Groq/Mistral, ProviderConfig
+   public init (caught pre-build — the F6 class of error), auto model discovery keeps going.
+   Island status: "Thinking via <model>…" (updates on route switch).
+4. Settings: 13 → 8 cards (budget folded into autonomy; housekeeping merged; coding cards
+   hidden). Coucou agents/chat/integrations pages out of the sidebar. Rebrand sweep (D-033):
+   menus, settings, voice brains, HookServer errors, recap, ClaudeService prompts → Lupy;
+   wake-spotter contextual strings now bias "Lupy".
+5. Tests: LupyCore 108/108, 668 checks (new: any-key flow; 429 auto-failover). Chat self-test
+   wording check updated ("no AI API is set up"). Fidelity regenerated with the new divergence.

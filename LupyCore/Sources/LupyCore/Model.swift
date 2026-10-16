@@ -862,6 +862,15 @@ public struct ProviderConfig: Codable, Equatable, Sendable, Identifiable {
     public var priceAsOf: String
     public var dataNotice: String
     public var createdAt: Timestamp
+
+    public init(id: String, kind: ProviderKind, displayName: String, baseURL: String, keychainAccount: String,
+                models: [ModelSpec], enabled: Bool, founderApproved: Bool, hasKey: Bool,
+                priceAsOf: String, dataNotice: String, createdAt: Timestamp) {
+        self.id = id; self.kind = kind; self.displayName = displayName; self.baseURL = baseURL
+        self.keychainAccount = keychainAccount; self.models = models; self.enabled = enabled
+        self.founderApproved = founderApproved; self.hasKey = hasKey; self.priceAsOf = priceAsOf
+        self.dataNotice = dataNotice; self.createdAt = createdAt
+    }
 }
 
 public struct ModelRef: Codable, Hashable, Sendable {

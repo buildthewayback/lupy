@@ -29,6 +29,8 @@ struct IslandContainer: View {
     // topRadius > 0 → convex expanded corners; < 0 → concave ear cutouts
     @State private var islandTopRadius: CGFloat = 0
     @State private var greetNotif: Bool = false
+    // Lupy: the compact island pops when the pointer arrives, so it feels ready to click.
+    @State private var hoverPop: Bool = false
 
     private let openSpring = Animation.spring(response: 0.5, dampingFraction: 0.72)
     private let closeEase  = Animation.timingCurve(0.45, 0, 0.2, 1, duration: 0.34)
@@ -134,6 +136,12 @@ struct IslandContainer: View {
             .animation(.easeInOut(duration: 0.25), value: state.mode == .compact)
         }
         .frame(width: islandWidth, height: islandHeight, alignment: .topLeading)
+        // Lupy: compact island greets the pointer with a small pop — "ready when you are".
+        .scaleEffect(state.mode == .compact && hoverPop ? 1.12 : 1.0, anchor: .top)
+        .onHover { h in
+            guard state.mode == .compact else { return }
+            withAnimation(.spring(response: 0.22, dampingFraction: 0.75)) { hoverPop = h }
+        }
         .onChange(of: state.mode) { oldMode, newMode in
             let shrinking = modeOrder(newMode) < modeOrder(oldMode)
             let anim = shrinking ? closeEase : openSpring
@@ -498,7 +506,7 @@ struct IslandContentView: View {
                     // Lupy: the conversation surface fills like Coucou's chat.
                     let isTall = v == .prompt || v == .lupyChat || (v == .mail && active)
                     let anim: Animation = active
-                        ? .spring(response: 0.4, dampingFraction: 0.8).delay(0.16)
+                        ? .spring(response: 0.4, dampingFraction: 0.8).delay(0.08)   // Lupy: snappier content reveal
                         : .easeIn(duration: 0.16)
                     IslandViewContent(view: v, state: state)
                         // Views behind the active one stay mounted (for the cross-fade)
@@ -528,10 +536,8 @@ struct IslandHeader: View {
     @ObservedObject var state: AppState
     @State private var gearHovered  = false
     @State private var soundHovered = false
-    @State private var closeHovered = false
 
-    /// Pending approval or mail draft: the island refuses to fold (fsm.isHeldOpen), so the
-    /// close cross is not shown.
+    /// Pending approval or mail draft: the island refuses to fold (fsm.isHeldOpen).
     private var heldOpen: Bool { state.pendingApproval != nil || state.voiceMailDraft != nil }
 
     var body: some View {
@@ -584,19 +590,8 @@ struct IslandHeader: View {
                     .buttonStyle(.plain)
                     .onHover { soundHovered = $0 }
 
-                    // Fold back to the compact island now, without waiting for the timer.
-                    if !heldOpen {
-                        Button(action: {
-                            NotificationCenter.default.post(name: .islandCollapse, object: nil)
-                        }) {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 14))
-                                .foregroundColor(closeHovered ? Color(hex: "#F5F6F8") : Color(hex: "#8E939C"))
-                        }
-                        .buttonStyle(.plain)
-                        .help(String(localized: "Close"))
-                        .onHover { closeHovered = $0 }
-                    }
+                    // Lupy: no X button — clicking anywhere outside the island closes it
+                    // (IslandWindowController), and the auto-close timer still folds it.
                 }
             }
             .padding(.trailing, 16)

@@ -400,6 +400,16 @@ extension LupyEngine {
         try commit([ev(by, "Found \(added) model(s) for \(p.displayName)", .providerUpserted(p))])
     }
 
+    /// Lupy ("any key just works"): after discovery, a provider with no enabled model gets its
+    /// cheapest model enabled, so a freshly added key is usable without any manual setup.
+    public func enableDefaultModelIfNeeded(_ providerID: String, by: Principal = .founder) throws {
+        guard var p = state.providers[providerID] else { throw EngineError.notFound("provider") }
+        guard !p.models.contains(where: { $0.enabled }) else { return }
+        guard let idx = p.models.enumerated().min(by: { $0.element.outputCentsPerMTok < $1.element.outputCentsPerMTok })?.offset else { return }
+        p.models[idx].enabled = true
+        try commit([ev(by, "Enabled \(p.models[idx].displayName) for \(p.displayName)", .providerUpserted(p))])
+    }
+
     public func setRouting(_ r: RoutingPolicy, by: Principal = .founder) throws {
         try requireFounder(by, "change model routing")
         try commit([ev(by, "Model routing updated", .routingUpdated(r))])
