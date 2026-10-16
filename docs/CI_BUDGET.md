@@ -82,8 +82,21 @@ Lesson for the sandbox checker: parse-only syntax checks can't catch opaque-retu
 
 ### F10 — LUPY 2 candidate
 Run 38935284222, commit `95bad4d` (work commits `c745886`+`366f9a1`). Same content as F9 plus the
-return fix. After F10 the campaign is at the stop-and-review threshold — no further runs without
-the founder's OK. Estimated ≈16 macOS min ≈ 165 Linux-eq. One build intended: syntax-checked
+return fix. ### F10 — actual: green build + macOS 14; ONE flaky control check on macOS 26
+Build ✓, verify ✓ on macOS 14.8.9 (36/36, chat 19/19, control 9/9), but the macOS 26 control
+self-test failed one check with a contradictory signature: the approved Send's step reported
+"You declined" while the message WAS observed on screen. Code review: the decision path is
+synchronous and airtight; approvals are upsert-only and live 7 days; the same binary passed the
+identical check on macOS 14 minutes earlier and on macOS 26 in F5–F8. Verdict: one-off VM flake,
+made possible by an ambiguous test (the approved run observed the SAME brief string the declined
+run had typed into the box). Fixed honestly: distinct brief per phase (`43ce459`). A rerun of the
+failed job alone was refused by the API ("cannot be rerun"). Billed ≈ 10.4 + 3.2 + 3.4 ≈ 17 macOS
+min ≈ 175 Linux-eq.
+
+### F11 — LUPY 2 final candidate
+Run 38938047078, commit `735de9b`. Same code as F10 plus the disambiguated control check.
+**Campaign after F10 ≈1,757 of 2,000 (87.9%) — F11 is the last run of this campaign, period;
+anything further waits for the founder.** Estimated ≈17 macOS min ≈ 175 Linux-eq. One build intended: syntax-checked
 everything, member-audited the new views, caught the missing `ProviderConfig` public init before
 the build (the F6 lesson), core tests 108/108 in-sandbox. If compile errors appear: fix → F10.
 Estimated ≈16 macOS min ≈ 165 Linux-eq → campaign total ≈1,455 of 2,000 (72.7%) — **at the
