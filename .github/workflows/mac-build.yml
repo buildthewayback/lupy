@@ -243,8 +243,8 @@ jobs:
             const ctl = ['```', read('verify-out/control-grant.txt', 3000), '```', '```', read('verify-out/control-report.txt', 20000), '```', 'App output (tail)', '```', read('verify-out/control-stdout.txt', 6000), '```'].join('\n');
             const ctlTitle = `Lupy computer control · ${label}`;
             await github.rest.checks.create({ ...base, name: ctlTitle, output: { title: ctlTitle, summary: ctl.slice(0, 65000) } });
-            for (const [file, what] of [['first-launch', 'first launch'], ['screenshot', 'demo data'], ['island', 'island'], ['rest', 'at rest'],
-                                        ['appicon', 'app icon'], ['gatekeeper', 'security prompt'], ['control-overlay', 'cursor overlay'],
+            for (const [file, what] of [['first-launch', 'first launch'], ['screenshot', 'demo data'], ['island', 'island'], ['island-chat', 'island conversation'],
+                                        ['rest', 'at rest'], ['appicon', 'app icon'], ['gatekeeper', 'security prompt'], ['control-overlay', 'cursor overlay'],
                                         ['control-executing-2', 'cursor typing'], ['control-awaiting', 'cursor waiting for approval'],
                                         ['control-sent', 'after approved send']]) {
               let b = '';

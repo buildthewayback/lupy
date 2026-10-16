@@ -92,18 +92,25 @@ enum LupyChatSelfTest {
         check("the stop answer reports what was actually stopped",
               stopAnswer.localizedCaseInsensitiveContains("rejected"), String(stopAnswer.prefix(90)))
         chat.send("stop")
-        check("“stop” with nothing running says so honestly",
-              chat.messages.last?.text.localizedCaseInsensitiveContains("nothing is executing") == true,
-              String(chat.messages.last?.text.prefix(60) ?? ""))
+        let idleStop = chat.messages.last?.text ?? ""
+        // With active tasks follow-ups get paused (and the engine really is paused);
+        // with nothing at all, Lupy says so. Both are the honest answer for the real state.
+        let idleStopHonest = idleStop.localizedCaseInsensitiveContains("nothing is executing")
+            || (idleStop.localizedCaseInsensitiveContains("paused my follow-ups") && model.state.settings.globalPause)
+        check("“stop” with nothing running on screen says so honestly (or pauses follow-ups, for real)",
+              idleStopHonest, String(idleStop.prefix(90)))
 
         // 8. Follow-up turns carry the conversation's history (through the engine, no network).
         do {
+            // “stop” above paused follow-ups; a founder saying “resume” lifts it for real.
+            chat.send("resume")
             try engine.setProviderKeyPresent("openai", present: true)
             try engine.approveProvider("openai", approved: true)
             let history = chat.conversationHistory()
             check("the conversation history is non-empty for follow-ups", !history.isEmpty, "\(history.count) turns")
             let prepared = try engine.prepareConversationTurn(question: "and what about the fee?", history: history, projectID: nil)
-            if case .job(let job) = prepared {
+            switch prepared {
+            case .job(let job):
                 let contents = job.request.messages.map(\.content)
                 let carried = history.contains { h in contents.contains { $0.contains(h.content) } }
                 check("a follow-up turn includes the conversation's history", carried,
@@ -111,9 +118,10 @@ enum LupyChatSelfTest {
                 check("the turn stays within the history cap", job.request.messages.count <= 20,
                       "\(job.request.messages.count) messages")
                 // The job is never performed here — no network call happens in this self-test.
-                _ = engine.pendingJob(job.id) != nil ? () : ()
-            } else {
-                check("a follow-up turn prepares a real job", false, "unavailable instead")
+            case .unavailable(let why):
+                check("a follow-up turn prepares a real job", false, why)
+            case .needsApproval:
+                check("a follow-up turn prepares a real job", false, "needs approval instead")
             }
         } catch {
             check("a follow-up turn prepares a real job", false, "\(error)")

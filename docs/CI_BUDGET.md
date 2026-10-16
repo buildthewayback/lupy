@@ -54,9 +54,13 @@ cancelled through the workflow's `concurrency: cancel-in-progress` by pushing an
 Fix: the trigger no longer depends on commit-message text; a build is requested only by changing
 `ci/mac-build-request.txt` (or by clicking "Run workflow").
 
+### F6 — actual
+Failed in the build job after ~6.6 min (9 compile errors: `captureInConversation` and
+`statusColor` did not exist, 6 Substring→String conversions in the self-test) — verify jobs
+skipped. Cost ≈6.6 macOS min ≈ 135 Linux-equivalent. **Campaign total ≈1,023 of 2,000 (51.1%).**
+
 ### F6 campaign (island conversation) — planned
 F6 = first compile of the `.lupyChat` surface (+1 new view file, +3 hooked upstream files:
 IslandTypes, IslandRootView, IslandWindowController; IslandViewContent +2 lines). Core tests
 already green in-sandbox (106/106). If F6 compiles: F7 = delivery candidate. Estimated ≈13 + ≈13
-macOS minutes ≈ 268 Linux-equivalent; campaign total would reach ≈1,160 of 2,000 (58%) — still
-above the 30 % reserve.
+macOS minutes ≈ 268 Linux-equivalent (build F7, run 38913748036, fixes `ad08278`).
