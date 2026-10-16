@@ -1,2 +1,2 @@
-Build requested: 2026-10-15T22:30Z
-Reason: build #5 — first-launch welcome card no longer blocks Quit (it was a sheet; AppKit refuses to quit while a sheet is attached; found by build #4's download check) + accurate Gatekeeper-preview wording in the download check
+Build requested: 2026-10-16T01:31Z
+Reason: build F1 — Lupy on Coucou (real Coucou app, original Mochi/icon/sounds, macOS 14 port, Lupy pages + island bridge, computer control with the Lupy cursor); first compile of the fork
