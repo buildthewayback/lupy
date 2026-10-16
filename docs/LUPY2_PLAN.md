@@ -38,12 +38,13 @@ where they conflict (fidelity now means *character and animation*, not Coucou's 
 | W7 | Trim & RAM | remove unused code paths where cheap; verify footprint; no fake numbers |
 | W8 | Research pass | check how other assistants do provider hubs/failover before coding; then one build |
 
-## Open questions asked (2026-10-16)
+## Answers (2026-10-16)
 
-1. His daily quick-jump list (or re-send hand-over files).
-2. Which API providers he has (paste what they give him).
-3. Which Coucou extras he actually uses (music/mail/notes/clipboard) so the rest can be removed.
-4. His macOS version (test instructions + CI matrix: macos-14 runners retire 2 Nov 2026).
+1. Quick-jumps: **browser + chat for now** (simple start; a "+" can let him add more later).
+2. APIs: **"not sure — just make any key work"** → universal hub: presets + custom
+   OpenAI-compatible (name + URL + key), auto-discover models, auto-failover chain.
+3. Coucou extras (music, mail, notes, clipboard): **keep them all for now.**
+4. His Mac: **macOS 15 (Sequoia)**, MacBook Air M1 2020, 8 GB RAM.
 
 ## Constraints carried over
 
