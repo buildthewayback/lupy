@@ -12,8 +12,8 @@ privately), so several checks are about recognising the Coucou you know.
 | 1 | Install & first open | Follow INSTALL_GUIDE §1–2 | Lupy opens after “Open Anyway”; no “damaged” message |
 | 2 | Island at the top centre | Look at the top of the screen (the M1 Air has no notch) | Coucou's small black bar with Mochi inside, at the top centre; clicks pass through it except on Mochi; it must not cover menus you use |
 | 3 | Island interaction | Click it; move the pointer away | Opens with greeting + items; closes ~1.5 s after you leave |
-| 4 | Memory footprint | Activity Monitor → Lupy → Memory | Roughly 60–150 MB at idle (Lupy runs no local AI) |
-| 5 | Idle CPU | Activity Monitor → % CPU after 1 minute idle | Near 0–2 % |
+| 4 | Memory footprint | Activity Monitor → Lupy → Memory | Roughly 50–150 MB (Lupy runs no local AI) |
+| 5 | CPU | Activity Monitor → % CPU: window frontmost; then another app in front (window still open); then island hidden (General settings) | Frontmost: noticeable while Mochi walks (that is the real animation; CI VM measured ~30–60 %, a real M1 should be lower). Background: much lower (window pauses; CI VM ~17–32 %). Island hidden: near zero |
 | 6 | Offline plan | Today → “Renew passport then pay fee by Friday” → Plan it | Plan with 2 steps appears; nothing starts until Approve |
 | 7 | Approve + do | Approve, open first task, Mark done | Second task becomes Ready |
 | 8 | Restart survives | Quit Lupy (menu-bar moon → Quit) and reopen | Everything is still there |

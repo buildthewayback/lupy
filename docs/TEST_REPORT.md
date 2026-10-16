@@ -54,8 +54,8 @@ Lupy is now Coucou's macOS app extended (D-020). What is tested, and how:
 | LupyCore incl. computer-control rules | 96 cases / 606 checks (sandbox WASM + native) | 96/96 |
 | The app builds from macOS 14.0 | Xcode 26.6, arm64; the two 14.2+ APIs guarded | BUILD SUCCEEDED (F2) |
 | Mochi is animated, not a static image | CI compares two screen captures 0.8 s apart (below the menu bar) | differ on macOS 14 and 26 — PASS |
-| The Lupy cursor never takes clicks, sits above apps | computer-control self-test checks its windows | see the control check run of the delivered build |
-| Typing with read-back; Stop cancels queued steps; missing targets fail honestly; declined Send not sent; approved Send sent and observed; password field refused | `--control-self-test` on the CI Macs (Accessibility granted there only) | see the control check run of the delivered build |
+| The Lupy cursor never takes clicks, sits above apps | computer-control self-test checks its windows | PASS on both Macs |
+| Typing with read-back; Stop cancels queued steps; missing targets fail honestly; declined Send not sent; approved Send sent and observed; password field refused | `--control-self-test` on the CI Macs (Accessibility granted there only) | **9/9 PASSED on macOS 14.8.9 and 26.6.2** (run 38838652274) |
 | Fidelity to upstream Coucou | byte-comparison, `docs/COUCOU_FIDELITY.md` | 169/187 files byte-identical; 18 changed at commented `Lupy:` hooks |
 | Screenshots | first launch, at rest, island, app icon, security prompt, cursor moments — published as check runs per build | captured on both CI Macs |
 

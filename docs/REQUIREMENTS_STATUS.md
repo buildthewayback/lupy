@@ -61,12 +61,12 @@ design/decision. This record supersedes `docs/FUNCTIONAL_MATRIX.md` (D-027).
 | Requirement | State | Implementation | Verification / evidence | Remaining |
 |---|---|---|---|---|
 | Rules: target matching, safety classification, session state machine, strict model-step parsing, delivery observation | COMPLETE AND VERIFIED | `LupyCore/ComputerControl.swift` | [T] 13 cases (96/96 total) | — |
-| Distinct visible cursor; user's pointer never moved; overlay click-through | COMPLETE AND VERIFIED | `LupyCursorOverlay` (transparent, `ignoresMouseEvents`, above apps) | [CS] click-through + level checks; cursor screenshots in CI | Founder watches it on his Mac |
+| Distinct visible cursor; user's pointer never moved; overlay click-through | COMPLETE AND VERIFIED | `LupyCursorOverlay` (transparent, `ignoresMouseEvents`, above apps) | [CS] 9/9 PASSED on macOS 14.8.9 and 26.6.2 (run 38838652274): click-through, above apps, typing with read-back, ledger entries, Stop cancels queued steps, missing-target honesty, declined Send not sent, approved Send observed on screen, password field refused; cursor screenshots captured at overlay/typing/waiting/sent | Founder watches it on his Mac |
 | Truthful phases (locating / executing / succeeded / failed / waiting for your OK) tied to real actions | COMPLETE AND VERIFIED | `LupyControlCenter` (locate → classify → gate → execute → read back → record) | [CS] read-backs, failure honesty, ledger entries | — |
 | Policy gate: consequential actions need the founder; passwords/CAPTCHA/2FA refused | COMPLETE AND VERIFIED | `ControlSafety` + engine action ledger (outside model text) | [T] policy suite; [CS] declined/approved Send, password refusal | — |
 | Stop/pause safety (Esc, Stop button, menu bar, Pause Lupy; queued steps cancelled; user typing pauses) | COMPLETE AND VERIFIED | `ControlRun.stop`, key monitors, global pause hook | [T] state machine; [CS] Stop cancels queued step | — |
-| Handoff delivery ("Deliver with Lupy") | IMPLEMENTED, NOT FULLY VERIFIED | `LupyDelivery` + per-agent targets; `recordControlDelivery` (seen → sent; unseen → delivery unconfirmed) | [T] delivery rules + engine honesty; [CS] sends on a local chat page | Real Arena/Muse/ChatGPT on the founder's Mac |
-| Model-driven steps ("Do something on screen") | IMPLEMENTED, NOT FULLY VERIFIED | `prepareControlStep` (consent, budget, ledger; screen fenced as untrusted) + `ControlAgent` strict parsing | [T] parsing/fencing; [CS] end-to-end without a model key is declined honestly | Needs founder's model key for a live run |
+| Handoff delivery ("Deliver with Lupy") | COMPLETE AND VERIFIED (local page) / NOT FULLY VERIFIED (real agents) | `LupyDelivery` + per-agent targets; `recordControlDelivery` (seen → sent; unseen → delivery unconfirmed) | [T] delivery rules + engine honesty; [CS] on both CI Macs: approved Send clicked and the message then seen on screen (box text excluded as evidence after run 38837448095's lesson) | Real Arena/Muse/ChatGPT on the founder's Mac |
+| Model-driven steps ("Do something on screen") | IMPLEMENTED, NOT FULLY VERIFIED | `prepareControlStep` (consent, budget, ledger; screen fenced as untrusted) + `ControlAgent` strict parsing | [T] parsing/fencing (strict JSON, only on-screen elements, https only); without a model key the UI says so and offers the routines | Needs the founder's model key for a live run (no key exists in this campaign, by design) |
 | Off by default; explicit enable + Accessibility permission | COMPLETE AND VERIFIED | `LupyControlCenter.enabled`, settings page | Code + UI; CI grants Accessibility only on its own machines | — |
 
 ## 5. Product-quality work beyond the explicit list
@@ -80,13 +80,14 @@ design/decision. This record supersedes `docs/FUNCTIONAL_MATRIX.md` (D-027).
 | `docs/COUCOU_FIDELITY.md` generated from a byte-comparison | Fidelity claims need evidence, not adjectives | COMPLETE AND VERIFIED (regenerable: `scripts/coucou-fidelity.sh`) |
 | Coucou's unit tests run in Lupy's CI | Lupy's hooks must not break Coucou behaviour | COMPLETE AND VERIFIED (13 suites, F1/F2) |
 | Keyboard: Return sends the capture box; ⌘Return primary action | Founder flows | COMPLETE AND VERIFIED (ported UI) |
+| Window animations pause while another app is frontmost | A permanently open main window must not burn CPU/battery (F4 measured 29–53 % incl. background) | COMPLETE AND VERIFIED (F5: background 17 % / 32 % on the CI VMs; the rest is Coucou's island, alive by design and hideable) |
 
 ## 6. Build and delivery
 
 | Item | State |
 |---|---|
-| Build | GitHub Actions, manual trigger only; build F-series on `arena/48b1c2c3-lupy` |
-| Artifact | One zip containing only Lupy.app, ad-hoc signed, SHA-256 published (see `LUPY_STATUS.md` for the current link) |
+| Build | GitHub Actions, manual trigger only; **delivered: run 38839867821, commit c8bad17, whole run green** |
+| Artifact | `Lupy-0.2.0-c8bad17274-macOS-arm64.zip` (19,370,871 B, SHA-256 be51da82a3c1bb6abf505a80a6746baa84714f62686a71f6c6c1728a82f67fd5), one zip containing only Lupy.app, ad-hoc signed, until 2027-01-14; direct link in `LUPY_STATUS.md` / `docs/INSTALL_GUIDE.md` |
 | Notarization | BLOCKED BY A SPECIFIC DEPENDENCY — paid Apple Developer membership (founder decision) |
 | Install/usage instructions | `docs/INSTALL_GUIDE.md` (updated for this build) |
 
