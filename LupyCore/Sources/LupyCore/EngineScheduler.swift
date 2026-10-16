@@ -23,6 +23,12 @@ public struct AttentionSummary: Equatable, Sendable {
     public var budget: BudgetStatus
     public var paused: Bool
     public var nextUp: [LupyID]
+
+    public init(items: [AttentionItem], activeCount: Int, waitingOnOthers: Int, unverifiedCount: Int,
+                budget: BudgetStatus, paused: Bool, nextUp: [LupyID]) {
+        self.items = items; self.activeCount = activeCount; self.waitingOnOthers = waitingOnOthers
+        self.unverifiedCount = unverifiedCount; self.budget = budget; self.paused = paused; self.nextUp = nextUp
+    }
 }
 
 public struct DiagnosticsReport: Equatable, Sendable {

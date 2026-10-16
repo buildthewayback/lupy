@@ -4,7 +4,8 @@ import Security
 // MARK: - Keychain helpers
 
 enum Keychain {
-    static let service = "fr.louisraille.NotchBuddy"
+    // Lupy: its own Keychain service (shared with Lupy's assistant, see LupySecrets).
+    static let service = "app.lupy.Lupy"
 
     static func save(key: String, value: String) {
         guard let data = value.data(using: .utf8) else { return }

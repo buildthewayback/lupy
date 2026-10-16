@@ -1,7 +1,8 @@
 import SwiftUI
 import AppKit
 
-@main
+// Lupy: the entry point is LupyMain (Sources/Lupy/LupyMain.swift), which runs the headless
+// self-test when asked and otherwise starts this app unchanged.
 struct NotchBuddyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 

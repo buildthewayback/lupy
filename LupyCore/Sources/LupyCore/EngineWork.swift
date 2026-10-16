@@ -208,6 +208,28 @@ extension LupyEngine {
     }
 
     /// You confirm you pasted the brief. Lupy still cannot observe delivery: state = delivery unconfirmed.
+    /// Lupy typed the brief into the agent's chat and sent it with the founder's approval (computer
+    /// control). `observed` = the message was seen on screen afterwards: UI evidence of delivery
+    /// (state `sent`), never of the work. Not observed = delivery unconfirmed, as for a manual paste.
+    public func recordControlDelivery(_ handoffID: LupyID, observed: Bool, app: String, by: Principal = .founder) throws {
+        try requireFounder(by, "record a delivery made with computer control")
+        guard var h = state.handoffs[handoffID] else { throw EngineError.notFound("handoff") }
+        guard [.drafted, .awaitingRelay, .reworkRequested, .deliveryUnconfirmed].contains(h.state) else { return }
+        h.state = observed ? .sent : .deliveryUnconfirmed
+        h.sentAt = h.sentAt ?? now
+        h.followUps = 0
+        h.nextFollowUpAt = Scheduler.nextFollowUp(after: 0, from: now, policy: state.settings.followUp)
+        h.notes.append(HandoffNote(at: now, by: .lupy, text: observed
+            ? "Lupy typed the brief into \(app) and sent it with your approval; the message was seen on screen afterwards (delivery observed, work not yet verified)."
+            : "Lupy typed and sent the brief in \(app) with your approval, but could not see it on screen afterwards: delivery unconfirmed."))
+        try commit([ev(by, observed ? "Brief delivered in \(app) (seen on screen)" : "Brief sent in \(app) (delivery unconfirmed)", .handoffUpserted(h))])
+        let t = try task(h.taskID)
+        if Lifecycle.canTransition(t.status, .dispatched) { try transition(t.id, to: .dispatched, by: by) }
+        if !observed, let cur = state.tasks[t.id], cur.status != .deliveryUnconfirmed, Lifecycle.canTransition(cur.status, .deliveryUnconfirmed) {
+            try transition(t.id, to: .deliveryUnconfirmed, by: .lupy, note: "Sent with computer control but not observed on screen")
+        }
+    }
+
     public func confirmRelayed(_ handoffID: LupyID, by: Principal = .founder) throws {
         try requireFounder(by, "confirm a manual relay")
         guard var h = state.handoffs[handoffID] else { throw EngineError.notFound("handoff") }

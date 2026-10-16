@@ -217,6 +217,8 @@ struct OverviewView: View {
     private func openAgentTarget(_ task: AgentTask?) {
         guard let task else { return }
         switch task.id {
+        case "agent_lupy":   // Lupy: its pill opens the Lupy window where the answer is
+            LupyIslandBridge.shared.openFromIsland()
         case "integration_claude":
             if ClaudeHost.activate(task.hostApp) { return }
             let vscodeBundleId = "com.microsoft.VSCode"
@@ -377,6 +379,7 @@ struct ApprovalView: View {
                     let hideAlways = approval?.pillId == "agent_codex"
                         || approval?.pillId == "agent_copilot"
                         || approval?.pillId == "agent_muse"
+                        || approval?.pillId == "agent_lupy"   // Lupy: standing approvals are set in Lupy → Needs you
                     if !hideAlways {
                         SecondaryButton("Always") {
                             HookServer.shared.sendApprovalDecision("always", for: shownId)

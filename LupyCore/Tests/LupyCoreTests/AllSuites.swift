@@ -15,6 +15,7 @@ func allSuites() -> [TestSuite] {
         workSuite(),
         providerSuite(),
         engineSuite(),
+        controlSuite(),
     ]
 }
 

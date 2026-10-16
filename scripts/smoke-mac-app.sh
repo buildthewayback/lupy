@@ -2,7 +2,9 @@
 # Native evidence for a Lupy.app (macOS only):
 #  1. code-signing and Gatekeeper status (honest: ad-hoc apps are not notarized)
 #  2. --self-test inside the real app binary (LupyCore + real disk adapter + Keychain)
-#  3. GUI launch with demo data in a throwaway folder: alive?, memory, CPU, screenshots
+#  3. GUI launch with demo data in a throwaway folder: alive?, the Lupy window (Today), the island
+#     (expanded once), memory, CPU, and an animation check: two captures 0.8 s apart below the
+#     menu bar must differ (Coucou's Mochi animates — a static cat would fail this check)
 # Usage: scripts/smoke-mac-app.sh [path/to/Lupy.app] [output-dir]
 #   Defaults: the freshly built app (build/…/Release/Lupy.app) and dist/.
 #   CI runs it on the copy installed from the DOWNLOADED zip (scripts/verify-mac-download.sh).
@@ -29,28 +31,6 @@ st=$?
 echo "self-test exit code: $st" >> "$REPORT"
 [ $st -eq 0 ] || fail=1
 
-echo "== GUI launch (demo data, temporary folder)" >> "$REPORT"
-SMOKE_DIR="$(mktemp -d)/lupy-smoke-data"
-open -n "$APP" --args --data-dir "$SMOKE_DIR" --demo
-sleep 12
-PID=$(pgrep -x Lupy | head -1 || true)
-if [ -n "${PID}" ]; then
-  echo "running: yes (pid $PID)" >> "$REPORT"
-  ps -o rss= -p "$PID" | awk '{printf "resident memory (RSS, includes shared system frameworks): %.1f MB\n", $1/1024}' >> "$REPORT"
-  vmmap --summary "$PID" 2>/dev/null | grep -E "^Physical footprint" | sed 's/^/Activity Monitor "Memory" (physical footprint): /' >> "$REPORT" || true
-  # Instantaneous CPU: last of several top samples, 3 s apart (ps %cpu is a lifetime average).
-  top -l 4 -s 3 -pid "$PID" -stats pid,cpu | awk '$1 ~ /^[0-9]+$/ {c=$2} END {print "CPU while frontmost (3 s sample): " c "%"}' >> "$REPORT"
-  osascript -e 'tell application "Finder" to activate' >/dev/null 2>&1 || true
-  sleep 3
-  top -l 4 -s 3 -pid "$PID" -stats pid,cpu | awk '$1 ~ /^[0-9]+$/ {c=$2} END {print "CPU in background (3 s sample): " c "%"}' >> "$REPORT"
-  ls "$SMOKE_DIR" >> "$REPORT" 2>&1 && echo "data folder created: yes" >> "$REPORT"
-else
-  echo "running: NO — the app exited or failed to launch" >> "$REPORT"
-  log show --last 2m --style compact --predicate 'process == "Lupy"' 2>/dev/null | tail -40 >> "$REPORT" || true
-  fail=1
-fi
-
-# Screenshots (may be blank if the CI machine denies screen capture — reported, not fatal).
 shrink() { # $1 png, $2 output base64 file
   for w in 1100 900 720 560; do
     sips -Z "$w" -s format jpeg -s formatOptions 45 "$1" --out "$OUT/tmp.jpg" >/dev/null 2>&1 || return 0
@@ -59,13 +39,57 @@ shrink() { # $1 png, $2 output base64 file
   done
   rm -f "$OUT/tmp.jpg"
 }
-if screencapture -x "$OUT/screen.png" 2>>"$REPORT"; then
-  shrink "$OUT/screen.png" "$OUT/screenshot.b64"
-  W=$(sips -g pixelWidth "$OUT/screen.png" | awk '/pixelWidth/ {print $2}')
-  echo "screenshot: captured (${W}px wide)" >> "$REPORT"
-  if screencapture -x -R "0,0,${W:-1920},220" "$OUT/island.png" 2>/dev/null; then shrink "$OUT/island.png" "$OUT/island.b64"; fi
+
+echo "== GUI launch (demo data, temporary folder; Lupy window on Today; island expanded once)" >> "$REPORT"
+SMOKE_DIR="$(mktemp -d)/lupy-smoke-data"
+open -n "$APP" --args --data-dir "$SMOKE_DIR" --demo --open-window lupyToday --show-island
+sleep 11
+PID=$(pgrep -x Lupy | head -1 || true)
+if [ -n "${PID}" ]; then
+  echo "running: yes (pid $PID)" >> "$REPORT"
+  if screencapture -x "$OUT/screen.png" 2>>"$REPORT"; then
+    W=$(sips -g pixelWidth "$OUT/screen.png" | awk '/pixelWidth/ {print $2}')
+    H=$(sips -g pixelHeight "$OUT/screen.png" | awk '/pixelHeight/ {print $2}')
+    shrink "$OUT/screen.png" "$OUT/screenshot.b64"
+    echo "screenshot (window + island): captured (${W}x${H}px)" >> "$REPORT"
+    # The island area, top centre, at full resolution.
+    IW=$(( W < 900 ? W : 900 ))
+    screencapture -x -R "$(( (W - IW) / 2 )),0,${IW},300" "$OUT/island.png" 2>/dev/null && shrink "$OUT/island.png" "$OUT/island.b64"
+  else
+    echo "screenshot: not available on this machine" >> "$REPORT"
+  fi
+  sleep 6   # the island folds back; Mochi keeps living in the window's band and the resting island
+  # Animation check: two captures below the menu bar, 0.8 s apart.
+  if screencapture -x "$OUT/frameA.png" 2>/dev/null; then
+    sleep 0.8
+    screencapture -x "$OUT/frameB.png" 2>/dev/null
+    FH=$(sips -g pixelHeight "$OUT/frameA.png" | awk '/pixelHeight/ {print $2}')
+    FW=$(sips -g pixelWidth "$OUT/frameA.png" | awk '/pixelWidth/ {print $2}')
+    for f in frameA frameB; do
+      sips --cropToHeightWidth $(( FH - 60 )) "$FW" --cropOffset 60 0 "$OUT/$f.png" --out "$OUT/$f-crop.png" >/dev/null 2>&1 || cp "$OUT/$f.png" "$OUT/$f-crop.png"
+    done
+    HA=$(shasum -a 256 "$OUT/frameA-crop.png" | cut -c1-16)
+    HB=$(shasum -a 256 "$OUT/frameB-crop.png" | cut -c1-16)
+    if [ "$HA" != "$HB" ]; then
+      echo "animation: frames 0.8 s apart differ ($HA vs $HB) — Mochi is animated, not static" >> "$REPORT"
+    else
+      echo "animation: frames 0.8 s apart are IDENTICAL ($HA) — nothing moved on screen" >> "$REPORT"
+      fail=1
+    fi
+    shrink "$OUT/frameB.png" "$OUT/rest.b64"
+  fi
+  ps -o rss= -p "$PID" | awk '{printf "resident memory (RSS, includes shared system frameworks): %.1f MB\n", $1/1024}' >> "$REPORT"
+  vmmap --summary "$PID" 2>/dev/null | grep -E "^Physical footprint" | sed 's/^/Activity Monitor "Memory" (physical footprint): /' >> "$REPORT" || true
+  # Instantaneous CPU: last of several top samples, 3 s apart (ps %cpu is a lifetime average).
+  top -l 4 -s 3 -pid "$PID" -stats pid,cpu | awk '$1 ~ /^[0-9]+$/ {c=$2} END {print "CPU with the window in front (3 s sample): " c "%"}' >> "$REPORT"
+  osascript -e 'tell application "Finder" to activate' >/dev/null 2>&1 || true
+  sleep 3
+  top -l 4 -s 3 -pid "$PID" -stats pid,cpu | awk '$1 ~ /^[0-9]+$/ {c=$2} END {print "CPU in background (3 s sample): " c "%"}' >> "$REPORT"
+  ls "$SMOKE_DIR" >> "$REPORT" 2>&1 && echo "data folder created: yes" >> "$REPORT"
 else
-  echo "screenshot: not available on this machine" >> "$REPORT"
+  echo "running: NO — the app exited or failed to launch" >> "$REPORT"
+  log show --last 2m --style compact --predicate 'process == "Lupy"' 2>/dev/null | tail -40 >> "$REPORT" || true
+  fail=1
 fi
 
 if [ -n "${PID:-}" ]; then

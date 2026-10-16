@@ -612,8 +612,8 @@ enum VoiceAnswer {
     static func text(_ topic: VoiceTopic, _ s: VoiceSnapshot, french fr: Bool) -> String {
         func t(_ f: String, _ e: String) -> String { fr ? f : e }
         if !s.configured {
-            return t("\(serviceName(topic)) n'est pas connecté dans les réglages de Coucou.",
-                     "\(serviceName(topic)) isn't connected in Coucou's settings.")
+            return t("\(serviceName(topic)) n'est pas connecté dans les réglages de Lupy.",
+                     "\(serviceName(topic)) isn't connected in Lupy's settings.")
         }
         switch topic {
         case .stripe:

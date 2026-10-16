@@ -41,6 +41,10 @@ enum WakePhrase {
             ["ok",  "cou", "cou"],
             ["hey", "coucou"],
             ["hey", "cou", "cou"],
+            // Lupy: its own name wakes it too ("loopy", "lupi": common transcriptions of "Lupy").
+            ["ok",  "lupy"], ["hey", "lupy"],
+            ["ok",  "loopy"], ["hey", "loopy"],
+            ["ok",  "lupi"], ["hey", "lupi"],
         ]
 
         // Find LAST occurrence of any pattern

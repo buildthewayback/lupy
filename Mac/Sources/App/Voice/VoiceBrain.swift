@@ -1,6 +1,6 @@
 #if !APPSTORE
 import Foundation
-#if canImport(FoundationModels)
+#if canImport(FoundationModels) && !LUPY_NO_LOCAL_LLM  // Lupy: no local LLM inference (founder rule)
 import FoundationModels
 #endif
 
@@ -88,7 +88,7 @@ final class VoiceBrain {
     // MARK: - Static impl helpers
 
     static func _checkStatus() -> LocalModelStatus {
-        #if canImport(FoundationModels)
+        #if canImport(FoundationModels) && !LUPY_NO_LOCAL_LLM  // Lupy: no local LLM inference (founder rule)
         if #available(macOS 26, *) {
             switch SystemLanguageModel.default.availability {
             case .available:
@@ -135,7 +135,7 @@ final class VoiceBrain {
     /// A short email body written by the on-device model from an instruction
     /// ("thanking her for yesterday"). nil when the model is unavailable.
     static func draftMail(to recipient: String, about instruction: String) async -> String? {
-        #if canImport(FoundationModels)
+        #if canImport(FoundationModels) && !LUPY_NO_LOCAL_LLM  // Lupy: no local LLM inference (founder rule)
         if #available(macOS 26, *) {
             guard SystemLanguageModel.default.availability == .available else { return nil }
             // The mail is written in the language I used for it, whatever Coucou speaks.
@@ -161,7 +161,7 @@ final class VoiceBrain {
     }
 
     static func _makeSession() -> AnyObject? {
-        #if canImport(FoundationModels)
+        #if canImport(FoundationModels) && !LUPY_NO_LOCAL_LLM  // Lupy: no local LLM inference (founder rule)
         if #available(macOS 26, *) {
             guard SystemLanguageModel.default.availability == .available else { return nil }
             let collector = IntentCollector()
@@ -187,7 +187,7 @@ final class VoiceBrain {
     static func _resolve(_ transcript: String,
                          pills: [PillDefinition],
                          sessionBox: AnyObject?) async -> BrainResult? {
-        #if canImport(FoundationModels)
+        #if canImport(FoundationModels) && !LUPY_NO_LOCAL_LLM  // Lupy: no local LLM inference (founder rule)
         if #available(macOS 26, *) {
             guard SystemLanguageModel.default.availability == .available else { return nil }
             guard let container = sessionBox as? SessionContainer else { return nil }
@@ -224,7 +224,7 @@ final class VoiceBrain {
         sessionBox: AnyObject?,
         onSentence: @escaping @MainActor (_ sentence: String, _ hasActions: Bool) -> Void
     ) async -> BrainResult? {
-        #if canImport(FoundationModels)
+        #if canImport(FoundationModels) && !LUPY_NO_LOCAL_LLM  // Lupy: no local LLM inference (founder rule)
         if #available(macOS 26, *) {
             guard SystemLanguageModel.default.availability == .available else { return nil }
             guard let container = sessionBox as? SessionContainer else { return nil }
@@ -306,7 +306,7 @@ private func withBrainTimeout<T: Sendable>(
 
 // MARK: - FoundationModels types (macOS 26 only)
 
-#if canImport(FoundationModels)
+#if canImport(FoundationModels) && !LUPY_NO_LOCAL_LLM  // Lupy: no local LLM inference (founder rule)
 
 // MARK: IntentCollector
 

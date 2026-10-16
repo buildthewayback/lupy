@@ -19,9 +19,9 @@ enum ClaudeSettingsFile {
         var errorDescription: String? {
             switch self {
             case .unreadable(let name):
-                return "\(name) cannot be read — Coucou has not touched it."
+                return "\(name) cannot be read — Lupy has not touched it."
             case .invalid(let name):
-                return "\(name) is not valid JSON — Coucou has not touched it."
+                return "\(name) is not valid JSON — Lupy has not touched it."
             case .changed(let name):
                 return "\(name) changed since the preview. Nothing was written — review it again."
             case .backupFailed(let name):
@@ -29,7 +29,7 @@ enum ClaudeSettingsFile {
             case .writeFailed(let name):
                 return "Could not write \(name). The original is untouched."
             case .unexpectedHooks(let name):
-                return "\(name): \"hooks\" has an unexpected type — Coucou has not touched it."
+                return "\(name): \"hooks\" has an unexpected type — Lupy has not touched it."
             }
         }
     }

@@ -5,6 +5,8 @@ import SwiftUI
 
 /// The pages of the Coucou window: Flow (the dictation, the Notetaker) and the notch's settings.
 enum HubPage: String, CaseIterable, Identifiable {
+    // Lupy: the assistant's pages (Sources/Lupy/LupyHub.swift), first in the window.
+    case lupyToday, lupyNeedsYou, lupyTasks, lupyProjects, lupyHandoffs, lupyMemory, lupyActivity, lupyUsage, lupyControl, lupyAssistant
     case dictation, notes, insights, dictionary, snippets, styles, settings
     case general, pills, agents, chat, integrations, voice, shortcuts
 
@@ -34,6 +36,7 @@ enum HubPage: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
+        case .lupyToday, .lupyNeedsYou, .lupyTasks, .lupyProjects, .lupyHandoffs, .lupyMemory, .lupyActivity, .lupyUsage, .lupyControl, .lupyAssistant: return lupyTitle
         case .general:      return String(localized: "General")
         case .pills:        return String(localized: "Active pills")
         case .agents:       return String(localized: "Agents")
@@ -53,6 +56,7 @@ enum HubPage: String, CaseIterable, Identifiable {
 
     var symbol: String {
         switch self {
+        case .lupyToday, .lupyNeedsYou, .lupyTasks, .lupyProjects, .lupyHandoffs, .lupyMemory, .lupyActivity, .lupyUsage, .lupyControl, .lupyAssistant: return lupySymbol
         case .dictation:  return "mic"
         case .notes:      return "record.circle"
         case .insights:   return "chart.bar"
@@ -125,7 +129,8 @@ extension HubPage {
 
 @MainActor
 final class HubRouter: ObservableObject {
-    @Published var page: HubPage = .dictation
+    // Lupy: the window opens on Lupy's Today.
+    @Published var page: HubPage = .lupyToday
 }
 
 /// Opens the Coucou Flow window: the history of the dictations, the Notetaker, the numbers, the
@@ -177,7 +182,7 @@ final class FlowHubController {
         let win = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1100, height: 720),
                            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
                            backing: .buffered, defer: false)
-        win.title = "Coucou"
+        win.title = "Lupy"
         win.titlebarAppearsTransparent = true
         win.titleVisibility = .hidden
         win.appearance = NSAppearance(named: .darkAqua)
@@ -231,6 +236,7 @@ struct FlowHubView: View {
         case .snippets:   HubSnippetsPage()
         case .styles:     HubStylesPage(router: router)
         case .settings:   HubSettingsPage()
+        case .lupyToday, .lupyNeedsYou, .lupyTasks, .lupyProjects, .lupyHandoffs, .lupyMemory, .lupyActivity, .lupyUsage, .lupyControl, .lupyAssistant: LupyHubPage(page: router.page)
         default:
             if let section = router.page.settingsSection {
                 VStack(alignment: .leading, spacing: 0) {
@@ -258,7 +264,7 @@ private struct HubSidebar: View {
                 // hops and hats): lifted so his body lines up with the name.
                 HubLiveMochi(size: 28)
                     .offset(y: -4)
-                Text(verbatim: "Coucou")
+                Text(verbatim: "Lupy")
                     .font(.system(size: 18, weight: .bold))
             }
             .padding(.horizontal, 8)
@@ -268,7 +274,13 @@ private struct HubSidebar: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 2) {
+                    // Lupy: the assistant's pages come first.
+                    HubSidebarHeader(text: "Lupy")
+                    ForEach(HubPage.lupyPages) { page in
+                        HubSidebarItem(page: page, selected: router.page == page) { router.page = page }
+                    }
                     HubSidebarHeader(text: "Flow")
+                        .padding(.top, 14)
                     ForEach(HubPage.flowPages) { page in
                         HubSidebarItem(page: page, selected: router.page == page) { router.page = page }
                     }

@@ -34,7 +34,7 @@ private enum AppLogWriter {
     nonisolated(unsafe) static var formatters: [String: DateFormatter] = [:]
 
     static let logsDir = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("Logs/NotchBuddy")
+        .appendingPathComponent("Logs/Lupy")
 
     static func write(_ fileName: String, _ message: String, date: Date, format: String) {
         let fm = FileManager.default

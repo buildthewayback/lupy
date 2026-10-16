@@ -1,0 +1,133 @@
+# Lupy for Mac — Coucou's macOS app (Louis-CFM/coucou, see UPSTREAM.txt) extended with Lupy's
+# assistant (LupyCore) and visible computer control. Generate with:  cd Mac && xcodegen
+#
+# Differences from upstream NotchBuddy/project.yml, all deliberate:
+# - product Lupy, bundle id app.lupy.Lupy (keeps the founder's Lupy data, Keychain items and
+#   permissions; never impersonates Coucou's fr.louisraille.* ids);
+# - macOS 14.0 deployment target (upstream: 15.0) so it runs on every macOS the founder's
+#   MacBook Air may have;
+# - Apple-silicon only, ad-hoc signed by scripts/build-mac-app.sh (no Developer ID, not
+#   notarized), so no hardened runtime (it would block the embedded frameworks under ad-hoc
+#   signing and is only required for notarization);
+# - one target (no App Store, iPhone, widgets or CloudKit phone link: PHONE_LINK stays off);
+# - LUPY_NO_LOCAL_LLM: Apple Intelligence (FoundationModels) code paths are compiled out —
+#   founder rule: no local LLM inference;
+# - reserved Coucou artwork comes from CoucouAssets/ (private personal build only).
+name: Lupy
+options:
+  bundleIdPrefix: app.lupy
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+packages:
+  # FluidAudio (Apache-2.0): Coucou Flow's optional Parakeet dictation and the Notetaker's speakers.
+  # Its models download only when the user clicks Download in Lupy → Flow → Settings.
+  FluidAudio:
+    url: https://github.com/FluidInference/FluidAudio
+    exactVersion: 0.17.7
+  # Lupy's assistant core (stdlib only; Swift 6 strict concurrency; tested in the sandbox and natively).
+  LupyCore:
+    path: ../LupyCore
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    OTHER_SWIFT_FLAGS: "-strict-concurrency=complete"
+    SWIFT_EMIT_LOC_STRINGS: NO
+    ENABLE_HARDENED_RUNTIME: NO
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGNING_ALLOWED: NO
+    ARCHS: arm64
+    ONLY_ACTIVE_ARCH: NO
+    DEAD_CODE_STRIPPING: YES
+  configs:
+    Debug:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: "DEBUG LUPY LUPY_NO_LOCAL_LLM"
+    Release:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: "LUPY LUPY_NO_LOCAL_LLM"
+
+schemes:
+  Lupy:
+    build:
+      targets:
+        Lupy: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+
+targets:
+  Lupy:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources
+        type: group
+      - path: CoucouAssets/Assets.xcassets
+        buildPhase: resources
+      - path: CoucouAssets/sounds
+        buildPhase: resources
+        type: folder
+      - path: Resources/Localizable.xcstrings
+        buildPhase: resources
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName: Lupy
+        CFBundleDisplayName: Lupy
+        CFBundleIdentifier: app.lupy.Lupy
+        CFBundleVersion: "2"
+        CFBundleShortVersionString: "0.2.0"
+        CFBundlePackageType: APPL
+        LSMinimumSystemVersion: "14.0"
+        LSUIElement: YES
+        LSApplicationCategoryType: public.app-category.productivity
+        NSHighResolutionCapable: YES
+        NSSupportsAutomaticGraphicsSwitching: YES
+        NSAppleEventsUsageDescription: "Lupy uses this to jump to your terminal, send an email you approved, and control Music and Spotify."
+        NSMicrophoneUsageDescription: "Lupy uses the microphone when you dictate, and to take notes of a call when you ask it to."
+        NSAudioCaptureUsageDescription: "Lupy records what your Mac plays only while you take notes of a call, to write down what the other people say."
+        NSSpeechRecognitionUsageDescription: "Lupy turns your voice into text that you can review before it is used."
+        NSAccessibilityUsageDescription: "Lupy reads the title of the active window for context and, only when you turn on computer control, operates apps for you while you watch its cursor."
+        NSContactsUsageDescription: "Lupy looks up an email address when you ask it to prepare an email."
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        CFBundleLocalizations:
+          - en
+          - ar
+          - bn
+          - es
+          - fr
+          - hi
+          - id
+          - pt-BR
+          - ru
+          - zh-Hans
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.lupy.Lupy
+        PRODUCT_NAME: Lupy
+        INFOPLIST_FILE: Resources/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        ENABLE_SANDBOX: NO
+      configs:
+        Release:
+          SWIFT_OPTIMIZATION_LEVEL: "-O"
+          SWIFT_COMPILATION_MODE: wholemodule
+    dependencies:
+      - package: FluidAudio
+      - package: LupyCore
+    postBuildScripts:
+      - name: "Write Git Hash to Info.plist"
+        script: |
+          HASH=$(git -C "${SRCROOT}/.." rev-parse --short HEAD 2>/dev/null || echo "unknown")
+          /usr/libexec/PlistBuddy -c "Set :CoucouGitHash ${HASH}" "${TARGET_BUILD_DIR}/${INFOPLIST_PATH}" 2>/dev/null \
+            || /usr/libexec/PlistBuddy -c "Add :CoucouGitHash string ${HASH}" "${TARGET_BUILD_DIR}/${INFOPLIST_PATH}"
+        showEnvVars: false

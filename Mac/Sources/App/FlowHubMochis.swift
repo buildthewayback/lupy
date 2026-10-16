@@ -233,6 +233,8 @@ struct HubHeroTheme {
             HubMochiSpec(color: color, size: size, outfit: outfit, state: state, roams: roams, start: start)
         }
         switch page {
+        case .lupyToday, .lupyNeedsYou, .lupyTasks, .lupyProjects, .lupyHandoffs, .lupyMemory, .lupyActivity, .lupyUsage, .lupyControl, .lupyAssistant:
+            return LupyHubThemes.theme(for: page)   // Lupy: its pages' bands (Sources/Lupy/LupyHub.swift)
         case .dictation:
             return .init(color: Color(hex: "#FB923C"), cast: [m("#F5F6F8", 66, 0.2), m("#FB923C", 52, 0.65), m("#F472B6", 44, 0.95, outfit: .bow)])
         case .notes:

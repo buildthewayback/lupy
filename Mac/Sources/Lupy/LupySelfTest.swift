@@ -1,12 +1,14 @@
-// Lupy macOS shell — native self-test, run with:  Lupy.app/Contents/MacOS/Lupy --self-test [--report path]
+// Lupy — native self-test of the assistant core inside the built app, run with:  Lupy.app/Contents/MacOS/Lupy --self-test [--report path]
 // Exercises LupyCore with the REAL disk adapter (fsync, atomic rename, recovery), backup,
 // Keychain round trip and a performance/memory sample. Used by CI and for support.
 
 import Foundation
+import LupyCore
 
-enum SelfTest {
+@MainActor
+enum LupySelfTest {
     static func run(arguments: [String]) -> Int32 {
-        Notifier.enabled = false
+        LupyNotifier.enabled = false
         var lines: [String] = []
         var failures = 0
         func check(_ name: String, _ ok: Bool, _ detail: String = "") {
@@ -17,15 +19,15 @@ enum SelfTest {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent("lupy-selftest-\(UUID().uuidString)", isDirectory: true)
         lines.append("INFO Lupy self-test · macOS \(ProcessInfo.processInfo.operatingSystemVersionString) · \(ProcessInfo.processInfo.processorCount) CPUs")
         do {
-            let clock = SystemClock()
+            let clock = LupySystemClock()
             let ids = RandomIDGenerator(clock: clock)
-            let fs = try DiskFileSystem(root: dir)
+            let fs = try LupyDiskFileSystem(root: dir)
             let store = EventStore(fileSystem: fs, clock: clock, ids: ids)
             check("fresh store loads clean", try store.load().isClean)
             let engine = LupyEngine(store: store, clock: clock, ids: ids)
             try engine.bootstrap(founderName: "Self Test", utcOffsetMinutes: TimeZone.current.secondsFromGMT() / 60)
             check("bootstrap creates the 10 founder projects", engine.state.projects.count == 10, "\(engine.state.projects.count)")
-            guard let admin = engine.state.projects.values.first(where: { $0.name == "Personal admin" }) else { throw DiskError.io("no admin project") }
+            guard let admin = engine.state.projects.values.first(where: { $0.name == "Personal admin" }) else { throw LupyDiskError.io("no admin project") }
             let goal = try engine.captureGoal("Renew passport then pay the fee by Friday", projectID: admin.id)
             let plan = try engine.planHeuristically(goalID: goal.id)
             let tasks = try engine.approvePlan(plan.id)
@@ -36,7 +38,7 @@ enum SelfTest {
 
             // Agent-claim scenario on real disk: claim alone must not verify.
             guard let arena = engine.state.workers.values.first(where: { $0.name == "Arena" }),
-                  let muse = engine.state.projects.values.first(where: { $0.name == "Muse / Arena" }) else { throw DiskError.io("defaults missing") }
+                  let muse = engine.state.projects.values.first(where: { $0.name == "Muse / Arena" }) else { throw LupyDiskError.io("defaults missing") }
             let coding = try engine.addTask(projectID: muse.id, title: "Self-test coding task", kind: .coding, acceptance: ["PR with passing CI"])
             let handoff = try engine.delegate(coding.id, to: arena.id)
             _ = try engine.dispatch(handoff.id)
@@ -54,7 +56,7 @@ enum SelfTest {
             _ = try h.seekToEnd()
             try h.write(contentsOf: Data("{\"c\":\"0000\",\"b\":[{\"torn".utf8))
             try h.close()
-            let store2 = EventStore(fileSystem: try DiskFileSystem(root: dir), clock: clock, ids: ids)
+            let store2 = EventStore(fileSystem: try LupyDiskFileSystem(root: dir), clock: clock, ids: ids)
             let report = try store2.load()
             check("restart after torn write recovers all committed work",
                   report.truncatedBytes > 0 && store2.state.tasks.count == store.state.tasks.count && store2.state.tasks.values.contains { $0.title == "Persisted before crash" },
@@ -77,7 +79,7 @@ enum SelfTest {
             check("400 durable task writes", ranked.count >= 400, "\(Int(addMs)) ms total (\(String(format: "%.1f", addMs / 400)) ms/write incl. fsync)")
             check("ranking + attention over 400+ tasks under 1.5 s", rankMs < 1500, "\(Int(rankMs)) ms")
             let t2 = Date()
-            let store3 = EventStore(fileSystem: try DiskFileSystem(root: dir), clock: clock, ids: ids)
+            let store3 = EventStore(fileSystem: try LupyDiskFileSystem(root: dir), clock: clock, ids: ids)
             _ = try store3.load()
             check("cold reload of all data under 3 s", Date().timeIntervalSince(t2) < 3, "\(Int(Date().timeIntervalSince(t2) * 1000)) ms")
         } catch {
@@ -86,12 +88,12 @@ enum SelfTest {
 
         // Keychain (may be unavailable on headless CI machines — reported, not fatal).
         let account = "selftest.\(UUID().uuidString)"
-        let saved = Keychain.save(account, "FAKE-self-test-value")
-        let loaded = Keychain.load(account)
-        Keychain.delete(account)
+        let saved = LupySecrets.save(account, "FAKE-self-test-value")
+        let loaded = LupySecrets.load(account)
+        LupySecrets.delete(account)
         lines.append(saved && loaded == "FAKE-self-test-value" ? "PASS Keychain save/load/delete round trip" : "WARN Keychain not usable in this environment (saved=\(saved))")
 
-        lines.append("INFO resident memory after self-test: \(String(format: "%.1f", residentMemoryMB())) MB")
+        lines.append("INFO resident memory after self-test: \(String(format: "%.1f", lupyResidentMemoryMB())) MB")
         lines.append("INFO duration \(Int(Date().timeIntervalSince(started) * 1000)) ms")
         try? FileManager.default.removeItem(at: dir)
         lines.append("SELFTEST \(failures == 0 ? "PASSED" : "FAILED") (\(failures) failure(s))")

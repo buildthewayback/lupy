@@ -39,6 +39,8 @@ public struct LLMResponse: Equatable, Sendable {
 public struct AuthPlacement: Codable, Equatable, Sendable {
     public var header: String
     public var prefix: String
+
+    public init(header: String, prefix: String) { self.header = header; self.prefix = prefix }
 }
 
 public struct HTTPRequestSpec: Codable, Equatable, Sendable {
@@ -50,6 +52,12 @@ public struct HTTPRequestSpec: Codable, Equatable, Sendable {
     public var keychainAccount: String?
     public var timeoutSeconds: Double
     public var bodyText: String { String(decoding: body, as: UTF8.self) }
+
+    public init(method: String, url: String, headers: [String: String], body: [UInt8], auth: AuthPlacement?,
+                keychainAccount: String?, timeoutSeconds: Double) {
+        self.method = method; self.url = url; self.headers = headers; self.body = body
+        self.auth = auth; self.keychainAccount = keychainAccount; self.timeoutSeconds = timeoutSeconds
+    }
 }
 
 public enum ProviderAPI {

@@ -6,8 +6,11 @@
 # Other pushes do not start this workflow at all. Commit-message text never triggers it.
 # macOS minutes cost ~10x Linux minutes; see docs/CI_BUDGET.md.
 #
+# Lupy for Mac is Coucou's macOS app (Mac/, Louis-CFM/coucou f09ac0b) extended with Lupy's assistant.
+#
 # Jobs
-#   build  — native core tests, Release build, ONE zip whose only item is Lupy.app, uploaded as a
+#   build  — LupyCore tests, Coucou's unit tests for the areas Lupy touches, Release build of Mac/,
+#            ONE zip whose only item is Lupy.app, uploaded as a
 #            single unwrapped file (archive: false): the artifact link downloads that zip itself,
 #            not a zip-inside-a-zip. Kept 90 days.
 #   verify — on fresh Macs (oldest supported macOS + newest), download that exact file back from
@@ -38,7 +41,7 @@ concurrency:
 jobs:
   build:
     runs-on: macos-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     outputs:
       artifact_id: ${{ steps.upload.outputs.artifact-id }}
       artifact_url: ${{ steps.upload.outputs.artifact-url }}
@@ -58,6 +61,17 @@ jobs:
         run: |
           set -o pipefail
           bash scripts/test-core.sh 2>&1 | tee core-tests.log
+
+      - name: Coucou unit tests (areas Lupy touches) + Lupy wake-phrase test
+        id: unittests
+        run: |
+          # Results are recorded here and enforced by the last step, so a test failure never hides
+          # the build's own diagnostics in the same run (and never turns the run green).
+          TESTS="test-screen-geometry test-island-hover test-auto-close test-display-choice test-desktop-mochi test-wardrobe test-pill-colors test-approval-queue test-safe-links test-voice-wake test-claude-hooks test-claude-settings"
+          printf '%s\n' $TESTS | xargs -P 3 -I{} bash -c 'if bash Mac/Tests/coucou/{}.sh > "/tmp/{}.log" 2>&1; then echo "PASS {}"; else echo "FAIL {}"; tail -15 "/tmp/{}.log" | sed "s/^/    /"; fi' > coucou-tests.log
+          if bash Mac/Tests/lupy/test-wake-lupy.sh > /tmp/wake-lupy.log 2>&1; then echo "PASS test-wake-lupy" >> coucou-tests.log; else echo "FAIL test-wake-lupy" >> coucou-tests.log; tail -10 /tmp/wake-lupy.log | sed "s/^/    /" >> coucou-tests.log; fi
+          cat coucou-tests.log
+          echo "failed=$(grep -c '^FAIL' coucou-tests.log || true)" >> "$GITHUB_OUTPUT"
 
       - name: Build and package Lupy.app
         run: |
@@ -128,13 +142,19 @@ jobs:
               `artifact url: ${process.env.ARTIFACT_URL || '(none)'}`,
               `artifact digest: ${process.env.ARTIFACT_DIGEST || '(none)'}`,
               '## Build', '```', read('build.log', 30000), '```',
-              '## Core tests (tail)', '```', read('core-tests.log', 8000), '```',
+              '## Core tests (tail)', '```', read('core-tests.log', 6000), '```',
+              '## Coucou unit tests + Lupy wake test', '```', read('coucou-tests.log', 6000), '```',
             ].join('\n').slice(0, 65000);
             await github.rest.checks.create({
               owner: context.repo.owner, repo: context.repo.repo, head_sha: context.sha,
               status: 'completed', conclusion: 'neutral', name: 'Lupy build report',
               output: { title: 'Lupy mac build report', summary },
             });
+
+      - name: Unit tests must pass
+        if: always()
+        run: |
+          test "${{ steps.unittests.outputs.failed }}" = "0" || { echo "Coucou/Lupy unit tests failed:"; grep '^FAIL' coucou-tests.log; exit 1; }
 
   verify:
     name: verify download (${{ matrix.os }})
@@ -146,7 +166,7 @@ jobs:
         # it during brownouts (actions/runner-images#13518) — switch it to macos-15 after that date.
         os: [macos-14, macos-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 12
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v5
 
@@ -178,6 +198,13 @@ jobs:
           echo "downloaded files: $(wc -l < files.txt | tr -d ' ')"
           test "$(wc -l < files.txt | tr -d ' ')" = 1
           bash scripts/verify-mac-download.sh "$(cat files.txt)" "$EXPECTED_SHA" verify-out "$EXPECTED_NAME"
+
+      - name: Computer control self-test (real Accessibility; the Lupy cursor on screen)
+        if: always()
+        run: |
+          mkdir -p verify-out
+          bash scripts/ci-grant-accessibility.sh /Applications/Lupy.app 2>&1 | tee verify-out/control-grant.txt
+          bash scripts/ci-control-selftest.sh /Applications/Lupy.app verify-out
 
       - name: Results on the run page
         if: always()
@@ -211,7 +238,13 @@ jobs:
             ].join('\n').slice(0, 65000);
             const title = `Lupy download check · ${label}`;
             await github.rest.checks.create({ ...base, name: title, output: { title, summary } });
-            for (const [file, what] of [['first-launch', 'first launch'], ['screenshot', 'demo data'], ['island', 'island'], ['gatekeeper', 'security prompt']]) {
+            const ctl = ['```', read('verify-out/control-grant.txt', 3000), '```', '```', read('verify-out/control-report.txt', 20000), '```'].join('\n');
+            const ctlTitle = `Lupy computer control · ${label}`;
+            await github.rest.checks.create({ ...base, name: ctlTitle, output: { title: ctlTitle, summary: ctl.slice(0, 65000) } });
+            for (const [file, what] of [['first-launch', 'first launch'], ['screenshot', 'demo data'], ['island', 'island'], ['rest', 'at rest'],
+                                        ['appicon', 'app icon'], ['gatekeeper', 'security prompt'], ['control-overlay', 'cursor overlay'],
+                                        ['control-executing-2', 'cursor typing'], ['control-awaiting', 'cursor waiting for approval'],
+                                        ['control-sent', 'after approved send']]) {
               let b = '';
               try { b = fs.readFileSync(`verify-out/${file}.b64`, 'utf8'); } catch {}
               if (b.length > 100) {

@@ -115,11 +115,18 @@ else bad "Info.plist is missing"; fi
 if grep -qiE '\.(zip|swift|yml|md)$|__MACOSX|/\._' "$OUT/zip-listing.txt"; then
   bad "unexpected content (nested zip, source code, docs or Finder metadata): $(grep -iE '\.(zip|swift|yml|md)$|__MACOSX|/\._' "$OUT/zip-listing.txt" | head -5 | tr '\n' ' ')"
 else pass "no nested zip, no source code, no stray metadata"; fi
-if grep -qx 'Lupy.app/Contents/Resources/THIRD_PARTY_NOTICES.txt' "$OUT/zip-listing.txt"; then pass "third-party licence notices included (Coucou MIT text)"
-else bad "THIRD_PARTY_NOTICES.txt (Coucou MIT notice) is missing from the app"; fi
-if grep -qiE 'coucou|mochi|\.(aiff|wav|mp3|caf|m4a)$' "$OUT/zip-listing.txt"; then
-  bad "reserved Coucou names or sound files found: $(grep -iE 'coucou|mochi|\.(aiff|wav|mp3|caf|m4a)$' "$OUT/zip-listing.txt" | head -5 | tr '\n' ' ')"
-else pass "no Coucou/Mochi-named files and no sound files inside (reserved assets not shipped)"; fi
+if grep -qx 'Lupy.app/Contents/Resources/THIRD_PARTY_NOTICES.txt' "$OUT/zip-listing.txt" \
+   && grep -qx 'Lupy.app/Contents/Resources/LICENSE-COUCOU-MIT.txt' "$OUT/zip-listing.txt"; then
+  pass "licence notices included (Coucou MIT licence, third-party notices)"
+else bad "licence notices missing (THIRD_PARTY_NOTICES.txt / LICENSE-COUCOU-MIT.txt)"; fi
+# Lupy is Coucou's app: its original sounds ship in this private build (founder decision 2026-10-16),
+# together with the notice that keeps that build personal.
+NSOUNDS=$(grep -cE '^Lupy.app/Contents/Resources/sounds/[a-z]+\.wav$' "$OUT/zip-listing.txt" || true)
+if [ "${NSOUNDS:-0}" -ge 25 ]; then pass "Coucou's original sounds included ($NSOUNDS .wav files)"
+else bad "Coucou's sounds missing or incomplete ($NSOUNDS .wav files)"; fi
+if grep -qx 'Lupy.app/Contents/Resources/COUCOU_ARTWORK_PERSONAL_USE.txt' "$OUT/zip-listing.txt"; then
+  pass "the personal-use notice for Coucou's artwork travels with the app"
+else bad "COUCOU_ARTWORK_PERSONAL_USE.txt is missing"; fi
 
 # ---------------------------------------------------------------------------------------------
 say ""
@@ -169,6 +176,11 @@ ICONFILE=$(plist CFBundleIconFile); ICONNAME=$(plist CFBundleIconName)
 if [ -n "$ICONFILE" ] && [ -f "$APP/Contents/Resources/${ICONFILE%.icns}.icns" ]; then pass "app icon present (${ICONFILE%.icns}.icns)"
 elif [ -n "$ICONNAME" ] && [ -f "$APP/Contents/Resources/Assets.car" ]; then pass "app icon present (asset catalog: $ICONNAME)"
 else bad "app icon missing (CFBundleIconFile='$ICONFILE', CFBundleIconName='$ICONNAME')"; fi
+# The icon as macOS will show it (rendered from the downloaded bundle) for the report.
+if [ -f "$APP/Contents/Resources/AppIcon.icns" ]; then
+  sips -s format png -Z 256 "$APP/Contents/Resources/AppIcon.icns" --out "$OUT/appicon.png" >/dev/null 2>&1 \
+    && base64 -i "$OUT/appicon.png" | tr -d '\n' > "$OUT/appicon.b64" && say "      app icon rendered for the report"
+fi
 [ -f "$APP/Contents/_CodeSignature/CodeResources" ] && pass "code-signature seal present (_CodeSignature/CodeResources)" || bad "code-signature seal missing"
 
 if codesign --verify --deep --strict --verbose=2 "$APP" > "$OUT/codesign.txt" 2>&1; then
@@ -226,7 +238,7 @@ say "-- native self-test and demo-data launch (scripts/smoke-mac-app.sh on the i
 if bash scripts/smoke-mac-app.sh "$DEST" "$OUT" > /dev/null 2>&1; then
   pass "self-test $(grep -c '^PASS' "$OUT/selftest.txt" 2>/dev/null)/$(grep -cE '^(PASS|FAIL)' "$OUT/selftest.txt" 2>/dev/null) and demo-data launch passed"
 else bad "smoke test failed (see smoke report below)"; fi
-grep -E '^(running|resident|Activity|CPU|quit|screenshot)' "$OUT/smoke-report.txt" 2>/dev/null | sed 's/^/      /' >> "$REPORT"
+grep -E '^(running|resident|Activity|CPU|quit|screenshot|animation)' "$OUT/smoke-report.txt" 2>/dev/null | sed 's/^/      /' >> "$REPORT"
 
 # ---------------------------------------------------------------------------------------------
 say ""

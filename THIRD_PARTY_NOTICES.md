@@ -1,11 +1,12 @@
 # Third-party notices
 
-## Coucou (source code only)
+## Coucou — the app Lupy is built on
 
-Parts of Lupy's macOS shell are adapted from **Coucou** (https://github.com/Louis-CFM/coucou),
-inspected at commit `f09ac0b451128781b88b0f8a77f69bab622b9f24` (2026-10-15). Adapted code is
-marked in file headers with `Adapted from Coucou (MIT)`. Coucou's source code is licensed under
-the MIT License, reproduced here as its terms require:
+Lupy for Mac **is Coucou's macOS app** (https://github.com/Louis-CFM/coucou, commit
+`f09ac0b451128781b88b0f8a77f69bab622b9f24`, imported unmodified into `Mac/` and extended; see
+`Mac/UPSTREAM.txt` and `docs/COUCOU_REUSE_MAP.md`), by Louis Raillé. Coucou's source code is
+licensed under the MIT License, reproduced here as its terms require (also in the app as
+`LICENSE-COUCOU-MIT.txt`):
 
 ```
 MIT License
@@ -31,11 +32,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-**Not used:** Coucou's `LICENSE-ASSETS.md` reserves the names "Coucou" and "Mochi", the Mochi
-character (design, look, expressions and animations as a character), the app and menu-bar icons,
-the sounds, and the media in `docs/media/` and `design/`. Lupy ships **none** of these. Lupy's
-character, name, icon are original; Lupy ships no sound files (it may play built-in macOS system
-sounds by name, which are not redistributed).
+## Coucou's name, character and artwork (not MIT)
+
+Coucou's `LICENSE-ASSETS.md` (© 2026 Louis Raillé, all rights reserved except as stated there)
+covers the names “Coucou” and “Mochi”, the Mochi character (design, look, expressions and
+animations as a character), the app and menu-bar icons and the sounds. At the founder's explicit
+decision (2026-10-16), this **private, personal build** for the founder's own Mac includes the
+original Mochi character (drawn by Coucou's code), app icon, menu-bar icon and sounds. They are kept
+in `Mac/CoucouAssets/` with their licence and notice. This build must not be published, shared,
+sold or distributed; to distribute Lupy, replace them or obtain written permission from the author
+(raillelouis@gmail.com). The product's own name is Lupy, and it does not claim to be Coucou or to be
+endorsed by its author.
+
+## FluidAudio (Apache-2.0)
+
+FluidAudio 0.17.7 (https://github.com/FluidInference/FluidAudio), Apache License 2.0, used by
+Coucou Flow's optional on-device Parakeet dictation and the Notetaker's speaker separation. Its
+speech models are downloaded only when the user clicks Download; none ship in the app. The Apache
+License 2.0 text is at https://www.apache.org/licenses/LICENSE-2.0.
 
 ## Development-only tools (not shipped in the app)
 
@@ -46,4 +60,4 @@ sounds by name, which are not redistributed).
 - `@bjorn3/browser_wasi_shim` 0.4.2 (MIT OR Apache-2.0) — WASI implementation used by the dev tool.
 - XcodeGen (MIT) — used on the macOS build machine to generate the Xcode project. Not shipped.
 
-The shipped app has **no third-party runtime dependencies**: it uses only Apple system frameworks.
+Runtime dependencies shipped in the app: Coucou's code (MIT, above), FluidAudio (Apache-2.0, below) and Apple system frameworks.

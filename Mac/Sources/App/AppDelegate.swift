@@ -6,8 +6,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     private(set) var islandController: IslandWindowController?
     private var demoMenuItem: NSMenuItem?
+    private var lupyStopControlItem: NSMenuItem?
+
+    @objc func openLupyToday() {
+        if AppState.shared.mode == .expanded { islandController?.collapse() }
+        FlowHubController.shared.show(.lupyToday)
+    }
+
+    @objc private func stopLupyControl() {
+        LupyControlCenter.shared.stop(reason: "Stopped from the menu bar")
+    }
 
     func applicationWillTerminate(_ notification: Notification) {
+        LupyRuntime.shutdown()   // Lupy: stop computer control, snapshot the assistant's journal
         #if !APPSTORE
         NoteTaker.shared.shutdown()
         #endif
@@ -28,6 +39,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         #endif
         setupMenuBarItem()
         setupIsland()
+        LupyRuntime.start()   // Lupy: the assistant (engine, island pill, approvals, computer control)
         MachineVitals.shared.start()
         #if !APPSTORE
         // Opened by hand (Finder, Dock, Spotlight): the Coucou window shows. Not at login.
@@ -69,6 +81,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             item.target = self
             menu.addItem(item)
         }
+        add("Lupy — Today", #selector(openLupyToday))   // Lupy
         add(String(localized: "hub.page.dictation"), #selector(openFlowHub))
         add(String(localized: "hub.page.notes"), #selector(openNotes))
         add(NoteTaker.shared.isRecording ? String(localized: "notes.stop") : String(localized: "hub.record-call"),
@@ -99,13 +112,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupMenuBarItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem?.button else { return }
-        button.image = NSImage(named: "MenuBarIcon") ?? NSImage(systemSymbolName: "circle.fill", accessibilityDescription: "Coucou")
+        button.image = NSImage(named: "MenuBarIcon") ?? NSImage(systemSymbolName: "circle.fill", accessibilityDescription: "Lupy")
         button.image?.size = NSSize(width: 24, height: 18)
-        button.image?.accessibilityDescription = "Coucou"
+        button.image?.accessibilityDescription = "Lupy"
         button.image?.isTemplate = true
 
         let menu = NSMenu()
         menu.delegate = self
+        // Lupy: the assistant first.
+        let today = NSMenuItem(title: "Lupy — Today", action: #selector(openLupyToday), keyEquivalent: "")
+        today.target = self
+        menu.addItem(today)
+        let stopControl = NSMenuItem(title: "Stop computer control", action: #selector(stopLupyControl), keyEquivalent: "")
+        stopControl.target = self
+        lupyStopControlItem = stopControl
+        menu.addItem(stopControl)
+        menu.addItem(.separator())
         let demoItem = NSMenuItem(title: NSLocalizedString("Demo mode", comment: ""), action: #selector(toggleDemoMode), keyEquivalent: "")
         demoMenuItem = demoItem
         menu.addItem(demoItem)
@@ -302,6 +324,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension AppDelegate: NSMenuDelegate {
     func menuWillOpen(_ menu: NSMenu) {
+        lupyStopControlItem?.isHidden = !LupyControlCenter.shared.isActive   // Lupy
         demoMenuItem?.title = DemoEngine.shared.isActive
             ? NSLocalizedString("demo.stop", comment: "")
             : NSLocalizedString("Demo mode", comment: "")

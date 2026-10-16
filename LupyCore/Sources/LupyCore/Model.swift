@@ -649,13 +649,13 @@ public enum ActionKind: String, Codable, CaseIterable, Sendable {
     case readInformation, updateLupyState, draftContent, modelCall, localFileWrite, openURL,
          dispatchToWorker, sendExternalMessage, publishContent, spendMoney, deleteData,
          changeAccountSecurity, grantAccess, mergeProtectedBranch, deployProduction, computerControl,
-         bypassSecurityControl
+         uiInput, uiNavigate, bypassSecurityControl
 
     public var risk: RiskLevel {
         switch self {
         case .readInformation, .updateLupyState: return .none
-        case .draftContent: return .low
-        case .modelCall, .localFileWrite, .openURL: return .medium
+        case .draftContent, .uiInput: return .low
+        case .modelCall, .localFileWrite, .openURL, .uiNavigate: return .medium
         case .dispatchToWorker: return .medium
         case .sendExternalMessage, .publishContent, .mergeProtectedBranch, .deployProduction, .computerControl, .deleteData: return .high
         case .spendMoney, .changeAccountSecurity, .grantAccess: return .critical
@@ -686,6 +686,8 @@ public enum ActionKind: String, Codable, CaseIterable, Sendable {
         case .mergeProtectedBranch: return "Merge into a protected branch"
         case .deployProduction: return "Deploy to production"
         case .computerControl: return "Control apps on this Mac"
+        case .uiInput: return "Type into an app (nothing sent yet)"
+        case .uiNavigate: return "Open or move around an app"
         case .bypassSecurityControl: return "Bypass a security control"
         }
     }

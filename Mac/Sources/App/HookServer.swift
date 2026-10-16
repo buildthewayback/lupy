@@ -13,8 +13,9 @@ final class HookServer: @unchecked Sendable {
 
     // Support directory paths
     static var supportDir: URL {
+        // Lupy: its own folder, so the socket never clashes with an installed Coucou.
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("NotchBuddy")
+            .appendingPathComponent("Lupy")
     }
     static var socketPath: String {
         #if APPSTORE
@@ -889,6 +890,11 @@ final class HookServer: @unchecked Sendable {
     /// card moved on to another request is ignored, so it can never answer the wrong one.
     @MainActor
     func sendApprovalDecision(_ decision: String, for id: UUID? = nil) {
+        // Lupy: a card showing one of Lupy's own approvals is answered by Lupy's policy engine.
+        if AppState.shared.pendingApproval?.pillId == LupyIslandBridge.pillId {
+            LupyIslandBridge.shared.decide(decision, cardID: id)
+            return
+        }
         // Only intercept a demo card — a real card has a queued request behind it.
         if DemoEngine.shared.isActive,
            AppState.shared.pendingApproval?.sessionId == "demo_session",
@@ -3256,7 +3262,7 @@ def main():
             return
 
     socket_path = os.path.expanduser(
-        '~/Library/Application Support/NotchBuddy/nb.sock'
+        '~/Library/Application Support/Lupy/nb.sock'
     )
 
     # --statusline mode: relay rate_limits to Coucou, then delegate to saved previous

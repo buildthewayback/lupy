@@ -7,6 +7,8 @@ public enum ModelJobKind: Codable, Equatable, Sendable {
     case analyzeReply(handoffID: LupyID)
     case ask(question: String, projectID: LupyID?)
     case testConnection(providerID: String)
+    /// Computer control: the next step a cloud model proposes (see ControlAgent). Not stored as a draft.
+    case controlStep(runID: String, step: Int)
 }
 
 public struct ModelJob: Codable, Equatable, Sendable, Identifiable {
@@ -118,6 +120,19 @@ extension LupyEngine {
                                sections: [("Delegated task", t.title), ("Acceptance criteria", h.brief.acceptance.joined(separator: "\n"))],
                                untrusted: [("reply from \(state.workers[h.workerID]?.name ?? "worker")", text)], query: t.title,
                                maxOutput: 500, jsonMode: true, taskID: t.id)
+    }
+
+    /// Computer control: asks a model for the next step towards `goal`, given the current screen.
+    /// The screen comes from other apps, so it is passed as untrusted content; consent, budget and the
+    /// usage ledger apply as for every call. The reply is parsed by ControlAgent.parse and every step
+    /// still goes through the policy gate before it runs.
+    public func prepareControlStep(runID: String, step: Int, goal: String, observation: String, history: [String],
+                                   projectID: LupyID?) throws -> PreparedCall {
+        var sections: [(title: String, body: String)] = [("Goal", TextUtil.truncate(goal, 1500))]
+        if !history.isEmpty { sections.append(("Steps so far", history.suffix(12).joined(separator: "\n"))) }
+        return try prepareCall(kind: .controlStep(runID: runID, step: step), purpose: .classifying, system: ControlAgent.systemPrompt,
+                               projectID: projectID, sections: sections, untrusted: [(source: "screen", text: observation)],
+                               query: goal, maxOutput: 300, jsonMode: true, taskID: nil)
     }
 
     public func prepareQuestion(_ question: String, projectID: LupyID?) throws -> PreparedCall {
@@ -313,6 +328,9 @@ extension LupyEngine {
 
         case .testConnection(let pid):
             return ModelJobResult(ok: true, message: "\(state.providers[pid]?.displayName ?? pid) works (model \(resp.modelID)).", effects: [], planID: nil, draftID: nil)
+
+        case .controlStep:
+            return ModelJobResult(ok: true, message: resp.text, effects: [], planID: nil, draftID: nil)
         }
     }
 

@@ -1,40 +1,46 @@
 #!/usr/bin/env bash
-# Build Lupy.app (Release, Apple Silicon) and package it for download.
+# Build Lupy.app (Coucou's macOS app extended with Lupy — Mac/project.yml), Release, Apple Silicon,
+# and package it for download.
 #   Output: dist/Lupy-<version>-<commit>-macOS-arm64.zip, .sha256, BUILD_INFO.txt
 # Requires macOS with Xcode and XcodeGen (brew install xcodegen). Used by CI; also runnable on a Mac.
 # Signing: ad-hoc only (no Apple Developer ID, no notarization) — see docs/INSTALL_GUIDE.md.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-VERSION=$(grep -m1 'MARKETING_VERSION' App/project.yml | sed -E 's/.*"([^"]+)".*/\1/')
+VERSION=$(grep -m1 'CFBundleShortVersionString' Mac/project.yml | sed -E 's/.*"([^"]+)".*/\1/')
 COMMIT=$(git rev-parse --short=10 HEAD 2>/dev/null || echo "local")
 NAME="Lupy-${VERSION}-${COMMIT}-macOS-arm64"
 APP="build/DerivedData/Build/Products/Release/Lupy.app"
 
-rm -rf build dist
+rm -rf build/DerivedData/Build dist
 mkdir -p build dist
 
 echo "== Generating Xcode project (XcodeGen $(xcodegen --version 2>/dev/null | tail -1))"
-(cd App && xcodegen generate --quiet)
+(cd Mac && xcodegen generate --quiet)
 
-echo "== Building Release (arm64)"
+echo "== Building Release (arm64, macOS 14.0+)"
 set +e
-xcodebuild -project App/Lupy.xcodeproj -scheme Lupy -configuration Release \
-  -derivedDataPath build/DerivedData -destination 'generic/platform=macOS' \
+xcodebuild -project Mac/Lupy.xcodeproj -scheme Lupy -configuration Release \
+  -derivedDataPath build/DerivedData -clonedSourcePackagesDirPath build/SourcePackages \
+  -destination 'generic/platform=macOS' \
   ARCHS=arm64 ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
   build > build/xcodebuild.log 2>&1
 status=$?
 set -e
-grep -E "error:|BUILD (SUCCEEDED|FAILED)" build/xcodebuild.log | sort -u | head -120 || true
+# Every distinct compiler error with its file and line (the CI report shows this list).
+grep -E "error:|BUILD (SUCCEEDED|FAILED)" build/xcodebuild.log | sed -E 's#^/Users/[^ ]*/(Mac|LupyCore)/#\1/#' | sort -u | head -250 || true
 grep -cE "warning:" build/xcodebuild.log | sed 's/^/warnings: /' || true
 if [ $status -ne 0 ]; then
   echo "xcodebuild failed with status $status"
-  tail -40 build/xcodebuild.log
+  grep -B2 -A6 -m5 -E "error:" build/xcodebuild.log | sed -E 's#^/Users/[^ ]*/(Mac|LupyCore)/#\1/#' | head -80 || true
+  tail -25 build/xcodebuild.log
   exit $status
 fi
 
-echo "== Adding third-party licence notices (Coucou MIT text must travel with every copy)"
+echo "== Adding licence notices (Coucou MIT text, FluidAudio Apache-2.0, Coucou artwork terms)"
 cp THIRD_PARTY_NOTICES.md "$APP/Contents/Resources/THIRD_PARTY_NOTICES.txt"
+cp Mac/LICENSE-COUCOU-MIT.txt "$APP/Contents/Resources/LICENSE-COUCOU-MIT.txt"
+cp Mac/CoucouAssets/NOTICE.md "$APP/Contents/Resources/COUCOU_ARTWORK_PERSONAL_USE.txt"
 
 echo "== Ad-hoc signing"
 xattr -cr "$APP"   # no stray extended attributes: they would end up as __MACOSX entries in the zip
@@ -58,10 +64,11 @@ if [ "$TOP" != "Lupy.app" ]; then
 fi
 test -x "$CHECK/Lupy.app/Contents/MacOS/Lupy" || { echo "program file missing or not executable in the package"; exit 1; }
 codesign --verify --deep --strict "$CHECK/Lupy.app" || { echo "code signature broken inside the package"; exit 1; }
+SOUNDS=$(find "$CHECK/Lupy.app/Contents/Resources/sounds" -name '*.wav' 2>/dev/null | wc -l | tr -d ' ')
 rm -rf "$CHECK"
-echo "package OK: contains only Lupy.app, executable present, signature intact"
+echo "package OK: contains only Lupy.app, executable present, signature intact, ${SOUNDS} Coucou sounds"
 {
-  echo "Lupy ${VERSION}"
+  echo "Lupy ${VERSION} (Coucou $(head -1 Mac/UPSTREAM.txt | cut -d' ' -f2 | cut -c1-7) + Lupy assistant)"
   echo "commit: $(git rev-parse HEAD 2>/dev/null || echo unknown)"
   echo "built: $(date -u +%Y-%m-%dT%H:%M:%SZ) on $(sw_vers -productName) $(sw_vers -productVersion) ($(uname -m))"
   echo "xcode: $(xcodebuild -version | tr '\n' ' ')"
@@ -70,6 +77,7 @@ echo "package OK: contains only Lupy.app, executable present, signature intact"
   echo "bundle id: $(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP/Contents/Info.plist")"
   echo "app size: ${SIZE}"
   echo "signing: ad-hoc (not Developer ID, not notarized)"
+  echo "contains Coucou artwork (icon, sounds, Mochi) for the founder's private personal build only"
   echo "package: ${NAME}.zip — contains only Lupy.app ($(stat -f %z "dist/${NAME}.zip") bytes)"
   echo "sha256: $(cut -d' ' -f1 "dist/${NAME}.zip.sha256")  ${NAME}.zip"
 } > dist/BUILD_INFO.txt

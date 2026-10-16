@@ -1,96 +1,55 @@
-// Lupy macOS shell — the app model: owns the engine, executes effects, drives the scheduler.
+// Lupy — the assistant's app-side model: owns the LupyCore engine (durable journal on the real
+// disk), executes its effects (island/notification notices, clipboard, cloud model calls, GitHub
+// checks), and exposes state to the Lupy pages of the window and to the island bridge.
+// Ported from the previous Lupy shell's AppModel; navigation now goes through Coucou's window.
 
 import AppKit
+import Foundation
+import LupyCore
 import Observation
-import SwiftUI
-
-enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
-    case today, projects, tasks, approvals, handoffs, memory, activity, usage, settings
-    var id: String { rawValue }
-    var title: String {
-        switch self {
-        case .today: return "Today"
-        case .projects: return "Projects"
-        case .tasks: return "All tasks"
-        case .approvals: return "Needs you"
-        case .handoffs: return "Handoffs"
-        case .memory: return "Memory"
-        case .activity: return "Activity"
-        case .usage: return "Usage & budget"
-        case .settings: return "Settings"
-        }
-    }
-    var symbol: String {
-        switch self {
-        case .today: return "sun.max"
-        case .projects: return "square.grid.2x2"
-        case .tasks: return "checklist"
-        case .approvals: return "hand.raised"
-        case .handoffs: return "arrow.left.arrow.right"
-        case .memory: return "brain.head.profile"
-        case .activity: return "clock.arrow.circlepath"
-        case .usage: return "gauge.with.dots.needle.50percent"
-        case .settings: return "gearshape"
-        }
-    }
-}
 
 @MainActor
 @Observable
-final class AppModel {
-    static let shared = AppModel()
+final class LupyModel {
+    static let shared = LupyModel()
 
     let engine: LupyEngine?
-    let disk: DiskFileSystem?
+    let disk: LupyDiskFileSystem?
     let dataURL: URL
     var startupError: String?
     var recovery: RecoveryReport?
     var revision = 0
     var toast: String?
     var busyJobs: Set<String> = []
-    var section: SidebarItem = .today
     var selectedProjectID: LupyID?
     var selectedTaskID: LupyID?
     var selectedPlanID: LupyID?
-    var islandExpanded = false
-    var islandPinned = false
-    var islandGeometry: IslandGeometry?
-    var showIsland: Bool = UserDefaults.standard.object(forKey: "showIsland") as? Bool ?? true
-    /// Animations run only while Lupy is the active app (saves CPU/battery); the island keeps a slow pulse when something needs you.
-    var appActive = true
     @ObservationIgnored private var attentionCache: (Int, AttentionSummary)?
-
-    func setShowIsland(_ on: Bool) {
-        showIsland = on
-        UserDefaults.standard.set(on, forKey: "showIsland")
-        IslandController.shared?.setVisible(on)
-    }
-    let dictation = DictationController()
-    @ObservationIgnored var openWindowAction: OpenWindowAction?
     @ObservationIgnored private var timer: Timer?
+    @ObservationIgnored private var started = false
 
     private init() {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Lupy", isDirectory: true)
         let args = CommandLine.arguments
         var storeURL = support.appendingPathComponent("store", isDirectory: true)
-        // --data-dir <path>: use a separate data folder (CI smoke tests, trying the demo safely).
+        // --data-dir <path>: a separate data folder (CI smoke tests, trying the demo safely).
         if let i = args.firstIndex(of: "--data-dir"), i + 1 < args.count {
             storeURL = URL(fileURLWithPath: args[i + 1], isDirectory: true)
         }
         dataURL = storeURL
         var engine: LupyEngine?
-        var disk: DiskFileSystem?
+        var disk: LupyDiskFileSystem?
         var report: RecoveryReport?
         var failure: String?
         do {
-            let fs = try DiskFileSystem(root: storeURL)
-            let clock = SystemClock()
+            let fs = try LupyDiskFileSystem(root: storeURL)
+            let clock = LupySystemClock()
             let ids = RandomIDGenerator(clock: clock)
             let store = EventStore(fileSystem: fs, clock: clock, ids: ids)
             report = try store.load()
             let e = LupyEngine(store: store, clock: clock, ids: ids)
-            e.appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0"
+            e.appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.2.0"
             let offset = TimeZone.current.secondsFromGMT() / 60
             let first = NSFullUserName().split(separator: " ").first.map(String.init) ?? ""
             try e.bootstrap(founderName: first, utcOffsetMinutes: offset)
@@ -121,34 +80,15 @@ final class AppModel {
         let r = revision
         if let cached = attentionCache, cached.0 == r { return cached.1 }
         let a = engine?.attention() ?? AttentionSummary(items: [], activeCount: 0, waitingOnOthers: 0, unverifiedCount: 0,
-                                                        budget: BudgetGuard.status(LupyState(), now: SystemClock().now()), paused: false, nextUp: [])
+                                                        budget: BudgetGuard.status(LupyState(), now: LupySystemClock().now()),
+                                                        paused: false, nextUp: [])
         attentionCache = (r, a)
         return a
     }
 
-    /// Whether Lupy's character animates in a given place (saves CPU when Lupy is in the background).
-    func animates(_ place: AnimationPlace) -> Bool {
-        switch place {
-        case .island: return appActive || mood == .needsYou || mood == .worried
-        case .window: return appActive
-        }
-    }
-
-    enum AnimationPlace { case island, window }
-
     var isBusy: Bool { !busyJobs.isEmpty }
 
     var hasUsableModel: Bool { _ = revision; return !(engine.map { ModelRouter.usable($0.state) }?.isEmpty ?? true) }
-
-    var mood: LupyMood {
-        let a = attention
-        if a.paused { return .sleeping }
-        if a.items.contains(where: { $0.kind == .contradiction || $0.kind == .escalation }) { return .worried }
-        if isBusy { return .thinking }
-        if !a.items.isEmpty { return .needsYou }
-        if a.activeCount > 0 || a.waitingOnOthers > 0 { return .working }
-        return .idle
-    }
 
     var greeting: String {
         let name = state.settings.founderName
@@ -157,13 +97,15 @@ final class AppModel {
         return name.isEmpty ? part : "\(part), \(name)"
     }
 
-    var islandHeadline: String {
+    var statusLine: String {
         let a = attention
-        if a.paused { return "Paused" }
-        if !a.items.isEmpty { return "\(a.items.count) need\(a.items.count == 1 ? "s" : "") you" }
-        if isBusy { return "Working…" }
-        if a.waitingOnOthers > 0 { return "\(a.waitingOnOthers) delegated · \(a.activeCount) active" }
-        return a.activeCount > 0 ? "\(a.activeCount) active" : "All clear"
+        var parts: [String] = []
+        parts.append(a.items.isEmpty ? "Nothing needs you right now" : "\(a.items.count) thing\(a.items.count == 1 ? "" : "s") need you")
+        if a.activeCount > 0 { parts.append("\(a.activeCount) active") }
+        if a.waitingOnOthers > 0 { parts.append("\(a.waitingOnOthers) delegated") }
+        if a.unverifiedCount > 0 { parts.append("\(a.unverifiedCount) awaiting verification") }
+        if a.paused { parts.insert("Paused", at: 0) }
+        return parts.joined(separator: " · ")
     }
 
     var defaultCaptureProject: LupyID {
@@ -173,7 +115,10 @@ final class AppModel {
 
     // MARK: Plumbing
 
-    func changed() { revision &+= 1 }
+    func changed() {
+        revision &+= 1
+        LupyIslandBridge.shared.scheduleSync()
+    }
 
     func say(_ message: String) {
         toast = message
@@ -193,8 +138,10 @@ final class AppModel {
     func run(_ effects: [Effect]) {
         for effect in effects {
             switch effect {
-            case .notify(let n): Notifier.post(n)
-            case .copyToClipboard(let text): copy(text, announce: "Copied to the clipboard — paste it into the agent.")
+            case .notify(let n):
+                LupyIslandBridge.shared.present(n)
+                if n.severity == .urgent { LupyNotifier.post(n) }
+            case .copyToClipboard(let text): copy(text, announce: "Copied to the clipboard — paste it into the agent, or let Lupy deliver it.")
             case .callModel(let job): Task { await self.perform(job) }
             case .checkGitHub(let job): Task { await self.performGitHub(job) }
             }
@@ -210,11 +157,12 @@ final class AppModel {
 
     func perform(_ job: ModelJob) async {
         if let nb = job.notBefore {
-            let delay = Double(nb.millis - SystemClock().now().millis) / 1000
+            let delay = Double(nb.millis - LupySystemClock().now().millis) / 1000
             if delay > 0 { try? await Task.sleep(nanoseconds: UInt64(min(delay, 900) * 1_000_000_000)) }
         }
         busyJobs.insert(job.id.raw)
-        let result = await HTTPExecutor.perform(job.http)
+        changed()
+        let result = await LupyHTTP.perform(job.http)
         busyJobs.remove(job.id.raw)
         guard let engine else { return }
         do {
@@ -230,7 +178,8 @@ final class AppModel {
 
     func performGitHub(_ job: GitHubJob) async {
         busyJobs.insert(job.id.raw)
-        let result = await HTTPExecutor.perform(job.http)
+        changed()
+        let result = await LupyHTTP.perform(job.http)
         busyJobs.remove(job.id.raw)
         guard let engine else { return }
         do { run(try engine.completeGitHubJob(job.id, status: result.status, body: result.body)) } catch { say("\(error)") }
@@ -240,7 +189,9 @@ final class AppModel {
     // MARK: Lifecycle
 
     func start() {
-        Notifier.requestPermission()
+        guard !started else { return }
+        started = true
+        LupyNotifier.requestPermission()
         tick()
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.tick() }
@@ -248,18 +199,16 @@ final class AppModel {
         NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor in self?.tick() }
         }
-        NotificationCenter.default.addObserver(forName: NSApplication.willTerminateNotification, object: nil, queue: .main) { [weak self] _ in
-            Task { @MainActor in try? self?.engine?.store.snapshot() }
-        }
-        NotificationCenter.default.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
-            Task { @MainActor in self?.appActive = true }
-        }
-        NotificationCenter.default.addObserver(forName: NSApplication.didResignActiveNotification, object: nil, queue: .main) { [weak self] _ in
-            Task { @MainActor in self?.appActive = false }
-        }
         if let r = recovery, !r.isClean {
-            say("Lupy recovered from an interrupted session. Details in Settings → Diagnostics.")
+            say("Lupy recovered from an interrupted session. Details in Lupy → Assistant → Diagnostics.")
         }
+        changed()
+    }
+
+    /// Called when the app quits: a snapshot makes the next launch fast (the journal is already durable).
+    func shutdown() {
+        timer?.invalidate()
+        try? engine?.store.snapshot()
     }
 
     func tick() {
@@ -267,36 +216,23 @@ final class AppModel {
         do { run(try engine.tick()) } catch { say("\(error)") }
     }
 
-    // MARK: Navigation and island
+    // MARK: Navigation (Lupy's pages live in the Lupy window inherited from Coucou)
 
-    func setIsland(expanded: Bool) {
-        islandExpanded = expanded
-        if !expanded { islandPinned = false }
-        IslandController.shared?.apply(expanded: expanded)
-    }
-
-    func openMainWindow() {
-        NSApp.activate()
-        if let w = NSApp.windows.first(where: { $0.identifier?.rawValue.contains("main") == true && $0.isVisible }) {
-            w.makeKeyAndOrderFront(nil)
-        } else if let open = openWindowAction {
-            open(id: "main")
-        } else {
-            NSApp.windows.first { $0.canBecomeMain }?.makeKeyAndOrderFront(nil)
-        }
+    func open(_ page: HubPage) {
+        FlowHubController.shared.show(page)
     }
 
     func focus(_ item: AttentionItem) {
         switch item.kind {
-        case .approval: section = .approvals
-        case .planReview: section = .today; selectedPlanID = item.relatedID
-        case .relay: section = .handoffs
-        case .memoryConflict: section = .memory
-        case .budget: section = .usage
-        case .recovery: section = .settings
+        case .approval: open(.lupyNeedsYou)
+        case .planReview: selectedPlanID = item.relatedID; open(.lupyToday)
+        case .relay: open(.lupyHandoffs)
+        case .memoryConflict: open(.lupyMemory)
+        case .budget: open(.lupyUsage)
+        case .recovery: open(.lupyAssistant)
         default:
-            section = .tasks
             selectedTaskID = item.relatedID
+            open(.lupyTasks)
         }
     }
 
@@ -323,7 +259,6 @@ final class AppModel {
                 selectedPlanID = plan.id
                 say("Offline plan ready for review.")
             }
-            section = .today
         } catch {
             say("\(error)")
         }
@@ -360,10 +295,10 @@ final class AppModel {
     func syncSecretsPresence() {
         guard let engine else { return }
         for p in engine.state.providers.values {
-            let present = Keychain.exists(p.keychainAccount)
+            let present = LupySecrets.exists(p.keychainAccount)
             if present != p.hasKey { try? engine.setProviderKeyPresent(p.id, present: present) }
         }
-        let gh = Keychain.exists(GitHubAPI.keychainAccount)
+        let gh = LupySecrets.exists(GitHubAPI.keychainAccount)
         if !gh, engine.githubConnected { try? engine.setGitHubConnected(false) }
         changed()
     }
@@ -372,7 +307,7 @@ final class AppModel {
         guard let engine, let p = engine.state.providers[providerID] else { return }
         let k = key.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !k.isEmpty else { return }
-        if Keychain.save(p.keychainAccount, k) {
+        if LupySecrets.save(p.keychainAccount, k) {
             try? engine.setProviderKeyPresent(providerID, present: true)
             say("Key stored in your Mac's Keychain (not in Lupy's files).")
         } else {
@@ -383,9 +318,9 @@ final class AppModel {
 
     func removeKey(providerID: String) {
         guard let engine, let p = engine.state.providers[providerID] else { return }
-        Keychain.delete(p.keychainAccount)
-        try? engine.setProviderKeyPresent(providerID, present: false)
-        say("Key removed from the Keychain.")
+        LupySecrets.delete(p.keychainAccount)
+        try? engine.setProviderKeyPresent(providerID, present: LupySecrets.exists(p.keychainAccount))
+        say(LupySecrets.exists(p.keychainAccount) ? "Removed Lupy's copy; a key from the chat settings is still used." : "Key removed from the Keychain.")
         changed()
     }
 
@@ -401,17 +336,20 @@ final class AppModel {
     }
 
     func refreshModels(_ providerID: String) {
-        guard let engine, let p = engine.state.providers[providerID] else { return }
-        Task {
+        guard let p = engine?.state.providers[providerID] else { return }
+        let spec = ProviderAPI.buildListModels(p)
+        let kind = p.kind
+        let name = p.displayName
+        Task { @MainActor in
             self.busyJobs.insert("models-\(providerID)")
-            let r = await HTTPExecutor.perform(ProviderAPI.buildListModels(p))
+            let r = await LupyHTTP.perform(spec)
             self.busyJobs.remove("models-\(providerID)")
-            switch ProviderAPI.parseListModels(p.kind, status: r.status, body: r.body, now: SystemClock().now()) {
+            switch ProviderAPI.parseListModels(kind, status: r.status, body: r.body, now: LupySystemClock().now()) {
             case .success(let ids):
-                try? engine.addDiscoveredModels(providerID, modelIDs: ids)
-                self.say("\(p.displayName) offers \(ids.count) model(s). New ones were added (off, priced conservatively — edit prices).")
+                try? self.engine?.addDiscoveredModels(providerID, modelIDs: ids)
+                self.say("\(name) offers \(ids.count) model(s). New ones were added (off, priced conservatively — edit prices).")
             case .failure(let e):
-                self.say("\(p.displayName): \(e.category.label). \(e.message)")
+                self.say("\(name): \(e.category.label). \(e.message)")
             }
             self.changed()
         }
@@ -420,21 +358,23 @@ final class AppModel {
     func saveGitHubToken(_ token: String) {
         let t = token.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !t.isEmpty else { return }
-        guard Keychain.save(GitHubAPI.keychainAccount, t) else { say("Could not store the token."); return }
+        guard LupySecrets.save(GitHubAPI.keychainAccount, t) else { say("Could not store the token."); return }
         testGitHub()
     }
 
     func testGitHub() {
-        guard let engine else { return }
-        let spec = HTTPRequestSpec(method: "GET", url: "https://api.github.com/user", headers: ["Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"],
-                                   body: [], auth: AuthPlacement(header: "Authorization", prefix: "Bearer "), keychainAccount: GitHubAPI.keychainAccount, timeoutSeconds: 20)
-        Task {
-            let r = await HTTPExecutor.perform(spec)
+        guard engine != nil else { return }
+        let spec = HTTPRequestSpec(method: "GET", url: "https://api.github.com/user",
+                                   headers: ["Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"],
+                                   body: [], auth: AuthPlacement(header: "Authorization", prefix: "Bearer "),
+                                   keychainAccount: GitHubAPI.keychainAccount, timeoutSeconds: 20)
+        Task { @MainActor in
+            let r = await LupyHTTP.perform(spec)
             if r.status == 200 {
-                try? engine.setGitHubConnected(true)
+                try? self.engine?.setGitHubConnected(true)
                 self.say("GitHub connected (read-only checks).")
             } else {
-                try? engine.setGitHubConnected(false, error: "GitHub answered HTTP \(r.status).")
+                try? self.engine?.setGitHubConnected(false, error: "GitHub answered HTTP \(r.status).")
                 self.say("GitHub check failed (HTTP \(r.status)). Check the token's permissions.")
             }
             self.changed()
@@ -442,7 +382,7 @@ final class AppModel {
     }
 
     func removeGitHubToken() {
-        Keychain.delete(GitHubAPI.keychainAccount)
+        LupySecrets.delete(GitHubAPI.keychainAccount)
         try? engine?.setGitHubConnected(false)
         changed()
     }
@@ -452,13 +392,13 @@ final class AppModel {
     func exportBackup() {
         guard let engine else { return }
         let panel = NSSavePanel()
-        panel.nameFieldStringValue = "Lupy-Backup-\(SystemClock().now().dateOnly).lupybackup"
+        panel.nameFieldStringValue = "Lupy-Backup-\(LupySystemClock().now().dateOnly).lupybackup"
         panel.title = "Save a full backup of Lupy"
         panel.message = "The backup contains your projects, tasks, memory and history — but never API keys."
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             try engine.store.snapshot()
-            let bytes = try Backup.makeFullBackup(store: engine.store, includeHistory: true, appVersion: engine.appVersion, now: SystemClock().now())
+            let bytes = try Backup.makeFullBackup(store: engine.store, includeHistory: true, appVersion: engine.appVersion, now: LupySystemClock().now())
             try Data(bytes).write(to: url, options: .atomic)
             say("Backup saved (\(bytes.count / 1024) KB).")
         } catch { say("Backup failed: \(error)") }
@@ -482,7 +422,7 @@ final class AppModel {
             guard alert.runModal() == .alertFirstButtonReturn else { return }
             _ = try Backup.restore(bytes, into: engine.store)
             syncSecretsPresence()
-            say("Restored. Re-enter API keys in Settings → Providers if needed.")
+            say("Restored. Re-enter API keys in Lupy → Assistant if needed.")
         } catch { say("\(error)") }
         changed()
     }
@@ -494,7 +434,7 @@ final class AppModel {
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             let data: Data = markdown ? Data(Backup.markdown(project: id, state: engine.state).utf8)
-                                      : Data(try Backup.exportProject(id, state: engine.state, now: SystemClock().now()))
+                                      : Data(try Backup.exportProject(id, state: engine.state, now: LupySystemClock().now()))
             try data.write(to: url, options: .atomic)
             say("Exported \(p.name).")
         } catch { say("Export failed: \(error)") }
@@ -507,7 +447,7 @@ final class AppModel {
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             let bytes = [UInt8](try Data(contentsOf: url))
-            let (drafts, report) = try Backup.importProject(bytes, into: engine.state, ids: engine.ids, now: SystemClock().now())
+            let (drafts, report) = try Backup.importProject(bytes, into: engine.state, ids: engine.ids, now: LupySystemClock().now())
             try engine.store.append(drafts)
             say("Imported \(report.counts["tasks"] ?? 0) task(s)\(report.remapped ? " as a copy" : "")\(report.skipped.isEmpty ? "" : "; skipped \(report.skipped.count)").")
         } catch { say("\(error)") }

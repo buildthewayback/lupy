@@ -1,14 +1,16 @@
-// Lupy macOS shell — platform services: disk storage, Keychain, HTTP, notifications, clock.
-// Keychain helper adapted from Coucou (MIT, (c) 2026 Louis Raillé), App/ClaudeService.swift.
+// Lupy — platform adapters for LupyCore: clock, real-disk file system (fsync + atomic rename),
+// Keychain secrets, HTTPS execution (keys inserted at send time, never seen by the engine),
+// system notifications and memory measurement. Ported from the previous Lupy shell.
 
-import Foundation
-import Security
-import UserNotifications
+import AppKit
 import Darwin
+import Foundation
+import LupyCore
+import UserNotifications
 
 // MARK: - Clock
 
-final class SystemClock: LupyClock {
+final class LupySystemClock: LupyClock {
     func now() -> Timestamp { Timestamp(millis: Int64((Date().timeIntervalSince1970 * 1000).rounded())) }
 }
 
@@ -16,14 +18,17 @@ extension Timestamp {
     var date: Date { Date(timeIntervalSince1970: Double(millis) / 1000) }
 }
 
-// MARK: - Disk storage (Application Support/Lupy/store)
+func lupyRelativeTime(_ t: Timestamp) -> String { t.date.formatted(.relative(presentation: .named)) }
+func lupyShortDate(_ t: Timestamp) -> String { t.date.formatted(date: .abbreviated, time: .shortened) }
 
-enum DiskError: Error, CustomStringConvertible {
+// MARK: - Disk storage (Application Support/Lupy/store) — verbatim port of the tested adapter
+
+enum LupyDiskError: Error, CustomStringConvertible {
     case io(String)
     var description: String { switch self { case .io(let m): return m } }
 }
 
-final class DiskFileSystem: LupyFileSystem {
+final class LupyDiskFileSystem: LupyFileSystem {
     let root: URL
     private let fm = FileManager.default
 
@@ -51,20 +56,20 @@ final class DiskFileSystem: LupyFileSystem {
         let u = try url(path)
         try ensureParent(u)
         let tmp = u.appendingPathExtension("tmp")
-        guard fm.createFile(atPath: tmp.path, contents: nil) else { throw DiskError.io("cannot create \(tmp.lastPathComponent)") }
+        guard fm.createFile(atPath: tmp.path, contents: nil) else { throw LupyDiskError.io("cannot create \(tmp.lastPathComponent)") }
         let h = try FileHandle(forWritingTo: tmp)
         try h.write(contentsOf: Data(bytes))
         if fcntl(h.fileDescriptor, F_FULLFSYNC) != 0 { try h.synchronize() }
         try h.close()
         // rename(2) atomically replaces the destination on APFS/HFS+.
-        if rename(tmp.path, u.path) != 0 { throw DiskError.io("rename failed (\(errno)) for \(path)") }
+        if rename(tmp.path, u.path) != 0 { throw LupyDiskError.io("rename failed (\(errno)) for \(path)") }
     }
 
     func append(_ path: String, _ bytes: [UInt8]) throws {
         let u = try url(path)
         try ensureParent(u)
         if !fm.fileExists(atPath: u.path) {
-            guard fm.createFile(atPath: u.path, contents: nil) else { throw DiskError.io("cannot create \(path)") }
+            guard fm.createFile(atPath: u.path, contents: nil) else { throw LupyDiskError.io("cannot create \(path)") }
         }
         let h = try FileHandle(forWritingTo: u)
         defer { try? h.close() }
@@ -122,8 +127,23 @@ final class DiskFileSystem: LupyFileSystem {
 
 // MARK: - Keychain (secrets never leave it; never logged)
 
-enum Keychain {
+/// Lupy's secrets live in the Keychain under service "app.lupy.Lupy" (the same service Coucou's
+/// chat keys now use). A provider key entered once — in Lupy → Assistant or in the chat settings
+/// inherited from Coucou — works for both: lookups fall back to Coucou's account names.
+enum LupySecrets {
     static let service = "app.lupy.Lupy"
+
+    /// Lupy account → the account Coucou's chat/integration settings store the same secret under.
+    static let coucouEquivalent: [String: String] = [
+        "provider.openai": "openai-api-key",
+        "provider.anthropic": "anthropic-api-key",
+        "provider.gemini": "google-api-key",
+        "provider.google": "google-api-key",
+        "provider.deepseek": "deepseek-api-key",
+        "provider.qwen": "qwen-api-key",
+        "provider.moonshot": "moonshot-api-key",
+        "connector.github": "github-token",
+    ]
 
     @discardableResult
     static func save(_ account: String, _ value: String) -> Bool {
@@ -142,7 +162,27 @@ enum Keychain {
         return SecItemAdd(item as CFDictionary, nil) == errSecSuccess
     }
 
+    /// Lupy's own item first, then the equivalent Coucou chat/integration key.
     static func load(_ account: String) -> String? {
+        if let own = loadExact(account), !own.isEmpty { return own }
+        if let alt = coucouEquivalent[account], let v = KeychainStore.shared.get(alt), !v.isEmpty { return v }
+        return nil
+    }
+
+    static func exists(_ account: String) -> Bool {
+        if existsExact(account) { return true }
+        if let alt = coucouEquivalent[account], let v = KeychainStore.shared.get(alt), !v.isEmpty { return true }
+        return false
+    }
+
+    /// Where a key was found, for honest display in Settings.
+    static func source(_ account: String) -> String? {
+        if existsExact(account) { return "Lupy" }
+        if let alt = coucouEquivalent[account], let v = KeychainStore.shared.get(alt), !v.isEmpty { return "chat settings" }
+        return nil
+    }
+
+    static func loadExact(_ account: String) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -156,7 +196,7 @@ enum Keychain {
     }
 
     /// Presence check without reading the secret (avoids unlock prompts).
-    static func exists(_ account: String) -> Bool {
+    static func existsExact(_ account: String) -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -182,14 +222,14 @@ enum Keychain {
 
 // MARK: - HTTP (keys are inserted here, at send time)
 
-struct HTTPResult {
+struct LupyHTTPResult: Sendable {
     var status: Int
     var headers: [String: String]
     var body: [UInt8]
     var latencyMillis: Int64
 }
 
-enum HTTPExecutor {
+enum LupyHTTP {
     static let session: URLSession = {
         let c = URLSessionConfiguration.ephemeral
         c.timeoutIntervalForRequest = 90
@@ -200,19 +240,19 @@ enum HTTPExecutor {
         return URLSession(configuration: c)
     }()
 
-    static func perform(_ spec: HTTPRequestSpec) async -> HTTPResult {
+    static func perform(_ spec: HTTPRequestSpec) async -> LupyHTTPResult {
         guard let url = URL(string: spec.url), url.scheme == "https" else {
-            return HTTPResult(status: 0, headers: [:], body: Array("Refusing non-HTTPS or invalid URL".utf8), latencyMillis: 0)
+            return LupyHTTPResult(status: 0, headers: [:], body: Array("Refusing non-HTTPS or invalid URL".utf8), latencyMillis: 0)
         }
         var req = URLRequest(url: url)
         req.httpMethod = spec.method
         req.timeoutInterval = spec.timeoutSeconds
-        req.setValue("Lupy/0.1 (macOS)", forHTTPHeaderField: "User-Agent")
+        req.setValue("Lupy/0.2 (macOS)", forHTTPHeaderField: "User-Agent")
         for (k, v) in spec.headers { req.setValue(v, forHTTPHeaderField: k) }
         if let auth = spec.auth, let account = spec.keychainAccount {
-            guard let key = Keychain.load(account), !key.isEmpty else {
+            guard let key = LupySecrets.load(account), !key.isEmpty else {
                 let msg = #"{"error":{"message":"No API key is stored in the Keychain for this service.","code":"invalid_api_key"}}"#
-                return HTTPResult(status: 401, headers: [:], body: Array(msg.utf8), latencyMillis: 0)
+                return LupyHTTPResult(status: 401, headers: [:], body: Array(msg.utf8), latencyMillis: 0)
             }
             req.setValue(auth.prefix + key, forHTTPHeaderField: auth.header)
         }
@@ -225,18 +265,19 @@ enum HTTPExecutor {
             if let fields = http?.allHeaderFields {
                 for (k, v) in fields { headers[String(describing: k)] = String(describing: v) }
             }
-            return HTTPResult(status: http?.statusCode ?? 0, headers: headers, body: [UInt8](data),
-                              latencyMillis: Int64(Date().timeIntervalSince(start) * 1000))
+            return LupyHTTPResult(status: http?.statusCode ?? 0, headers: headers, body: [UInt8](data),
+                                  latencyMillis: Int64(Date().timeIntervalSince(start) * 1000))
         } catch {
-            return HTTPResult(status: 0, headers: [:], body: Array(error.localizedDescription.utf8),
-                              latencyMillis: Int64(Date().timeIntervalSince(start) * 1000))
+            return LupyHTTPResult(status: 0, headers: [:], body: Array(error.localizedDescription.utf8),
+                                  latencyMillis: Int64(Date().timeIntervalSince(start) * 1000))
         }
     }
 }
 
-// MARK: - Notifications
+// MARK: - System notifications (used in addition to the island, for urgent items)
 
-enum Notifier {
+@MainActor
+enum LupyNotifier {
     static var enabled = true
 
     static func requestPermission() {
@@ -257,7 +298,7 @@ enum Notifier {
 
 // MARK: - Memory measurement (diagnostics / self-test)
 
-func residentMemoryMB() -> Double {
+func lupyResidentMemoryMB() -> Double {
     var info = mach_task_basic_info()
     var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size / MemoryLayout<natural_t>.size)
     let kr: kern_return_t = withUnsafeMutablePointer(to: &info) { ptr in

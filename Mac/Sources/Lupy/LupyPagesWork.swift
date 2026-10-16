@@ -1,11 +1,13 @@
-// Lupy macOS shell — projects, tasks, task detail, handoffs, approvals.
+// Ported from the previous Lupy window (App/Sources/WorkViews.swift, git 09c8c75) by scripts/port-lupy-views.py.
+// Coucou's hub colours and components via LupyStyle.swift; logic and engine calls unchanged.
 
+import LupyCore
 import SwiftUI
 
 // MARK: - Projects
 
-struct ProjectsView: View {
-    @Environment(AppModel.self) private var model
+struct LupyProjectsContent: View {
+    private var model: LupyModel { LupyModel.shared }
     @State private var newName = ""
 
     var body: some View {
@@ -50,16 +52,16 @@ struct ProjectsView: View {
             .background(LupyTheme.window.opacity(0.4))
             Divider()
             if let pid = model.selectedProjectID ?? s.activeProjects.first?.id, let p = s.projects[pid] {
-                ProjectDetail(project: p)
+                LupyProjectDetail(project: p)
             } else {
-                EmptyHint(symbol: "square.grid.2x2", title: "No project selected", detail: "Choose a project on the left.")
+                LupyEmptyHint(symbol: "square.grid.2x2", title: "No project selected", detail: "Choose a project on the left.")
             }
         }
     }
 }
 
-struct ProjectDetail: View {
-    @Environment(AppModel.self) private var model
+struct LupyProjectDetail: View {
+    private var model: LupyModel { LupyModel.shared }
     let project: Project
     @State private var rule = ""
     @State private var repo = ""
@@ -88,7 +90,7 @@ struct ProjectDetail: View {
                         .onSubmit(addTask)
                     Button("Add task", action: addTask).buttonStyle(LupySecondaryButtonStyle()).disabled(taskTitle.isEmpty)
                 }
-                SectionTitle(text: "Project rules (Lupy and every handoff must respect them)")
+                LupySectionTitle(text: "Project rules (Lupy and every handoff must respect them)")
                 ForEach(project.rules) { r in
                     Label(r.text, systemImage: "checkmark.shield").font(.system(size: 12)).foregroundColor(LupyTheme.body)
                 }
@@ -115,8 +117,8 @@ struct ProjectDetail: View {
                     }
                 }
                 ForEach(groups(tasks)) { group in
-                    SectionTitle(text: "\(group.id) (\(group.tasks.count))")
-                    ForEach(group.tasks) { t in TaskRow(task: t) }
+                    LupySectionTitle(text: "\(group.id) (\(group.tasks.count))")
+                    ForEach(group.tasks) { t in LupyTaskRow(task: t) }
                 }
             }
             .padding(24)
@@ -148,23 +150,23 @@ struct ProjectDetail: View {
     }
 }
 
-struct TaskRow: View {
-    @Environment(AppModel.self) private var model
+struct LupyTaskRow: View {
+    private var model: LupyModel { LupyModel.shared }
     let task: LupyTask
     var body: some View {
         Button {
             model.selectedTaskID = task.id
-            model.section = .tasks
+            model.open(.lupyTasks)
         } label: {
             HStack(spacing: 10) {
                 Circle().fill(LupyTheme.statusColor(task.status)).frame(width: 7, height: 7)
                 Text(task.title).font(.system(size: 12.5)).foregroundColor(LupyTheme.text).lineLimit(1)
                 Spacer()
-                if let d = task.deadline { Text(shortDate(d)).font(.system(size: 10.5)).foregroundColor(LupyTheme.muted) }
-                StatusChip(text: task.status.label, color: LupyTheme.statusColor(task.status))
+                if let d = task.deadline { Text(lupyShortDate(d)).font(.system(size: 10.5)).foregroundColor(LupyTheme.muted) }
+                LupyStatusChip(text: task.status.label, color: LupyTheme.statusColor(task.status))
             }
             .padding(.horizontal, 10).padding(.vertical, 7)
-            .background(CardBackground(radius: 10))
+            .background(LupyCardBackground(radius: 10))
         }
         .buttonStyle(.plain)
     }
@@ -172,25 +174,25 @@ struct TaskRow: View {
 
 // MARK: - Tasks
 
-struct RankedItem: Identifiable {
+struct LupyRankedItem: Identifiable {
     let task: LupyTask
     let assessment: PriorityAssessment
     var id: LupyID { task.id }
 }
 
-struct TasksView: View {
-    @Environment(AppModel.self) private var model
+struct LupyTasksContent: View {
+    private var model: LupyModel { LupyModel.shared }
     @State private var showDone = false
 
     var body: some View {
         let s = model.state
-        let ranked = (model.engine?.rankedTasks() ?? []).map { RankedItem(task: $0.0, assessment: $0.1) }
+        let ranked = (model.engine?.rankedTasks() ?? []).map { LupyRankedItem(task: $0.0, assessment: $0.1) }
         let done = s.tasks.values.filter { $0.status.isTerminal }.sorted { ($0.completedAt ?? $0.updatedAt) > ($1.completedAt ?? $1.updatedAt) }
         HStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 6) {
-                    SectionTitle(text: "Open tasks, most important first")
-                    if ranked.isEmpty { EmptyHint(symbol: "checklist", title: "No open tasks", detail: "Approve a plan or add tasks in a project.") }
+                    LupySectionTitle(text: "Open tasks, most important first")
+                    if ranked.isEmpty { LupyEmptyHint(symbol: "checklist", title: "No open tasks", detail: "Approve a plan or add tasks in a project.") }
                     ForEach(ranked) { pair in
                         let t = pair.task
                         Button {
@@ -227,23 +229,23 @@ struct TasksView: View {
             .frame(width: 330)
             Divider()
             if let id = model.selectedTaskID, let t = s.tasks[id] {
-                TaskDetailView(task: t)
+                LupyTaskDetailView(task: t)
             } else {
-                EmptyHint(symbol: "hand.point.left", title: "Choose a task", detail: "You'll see why it matters, its evidence and what Lupy can do next.")
+                LupyEmptyHint(symbol: "hand.point.left", title: "Choose a task", detail: "You'll see why it matters, its evidence and what Lupy can do next.")
             }
         }
     }
 }
 
-struct TaskDetailView: View {
-    @Environment(AppModel.self) private var model
+struct LupyTaskDetailView: View {
+    private var model: LupyModel { LupyModel.shared }
     let task: LupyTask
     @State private var note = ""
     @State private var link = ""
 
     var body: some View {
         let s = model.state
-        let now = SystemClock().now()
+        let now = LupySystemClock().now()
         let pa = PriorityEngine.assess(task, state: s, now: now)
         let evidence = s.evidence(for: task.id).reversed()
         let verification = s.verifications[task.id]
@@ -255,12 +257,12 @@ struct TaskDetailView: View {
                         Text("\(s.projects[task.projectID]?.name ?? "") · \(task.kind.label) · owner: \(ownerName(task.owner, s))").font(.system(size: 12)).foregroundColor(LupyTheme.secondary)
                     }
                     Spacer()
-                    StatusChip(text: task.status.label, color: LupyTheme.statusColor(task.status))
+                    LupyStatusChip(text: task.status.label, color: LupyTheme.statusColor(task.status))
                 }
                 if !task.statusNote.isEmpty { Text(task.statusNote).font(.system(size: 12)).foregroundColor(LupyTheme.amber) }
                 if !task.details.isEmpty { Text(task.details).font(.system(size: 12.5)).foregroundColor(LupyTheme.body) }
                 actions
-                SectionTitle(text: "Done means")
+                LupySectionTitle(text: "Done means")
                 ForEach(VerificationEngine.criteria(for: task)) { c in
                     let r = verification?.criteria.first { $0.criterionID == c.id }
                     HStack(alignment: .top, spacing: 8) {
@@ -274,14 +276,14 @@ struct TaskDetailView: View {
                 if let v = verification {
                     Text(v.summary).font(.system(size: 11.5)).foregroundColor(color(v.outcome))
                 }
-                SectionTitle(text: "Why this priority (\(Int(pa.score))/100)")
+                LupySectionTitle(text: "Why this priority (\(Int(pa.score))/100)")
                 Text(pa.factors.filter { abs($0.points) >= 0.5 }.map { "\($0.name) \($0.points >= 0 ? "+" : "")\(Int($0.points.rounded())) — \($0.note)" }.joined(separator: "\n"))
                     .font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
                 if let hid = task.handoffID, let h = s.handoffs[hid] {
-                    SectionTitle(text: "Handoff to \(s.workers[h.workerID]?.name ?? "worker")")
-                    HandoffPanel(handoff: h)
+                    LupySectionTitle(text: "Handoff to \(s.workers[h.workerID]?.name ?? "worker")")
+                    LupyHandoffPanel(handoff: h)
                 }
-                SectionTitle(text: "Evidence (\(evidence.count))")
+                LupySectionTitle(text: "Evidence (\(evidence.count))")
                 HStack {
                     TextField("Add a note or link as evidence", text: $note).textFieldStyle(.roundedBorder)
                     Button("Add") {
@@ -298,10 +300,10 @@ struct TaskDetailView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(e.summary).font(.system(size: 12)).foregroundColor(LupyTheme.body)
                             HStack(spacing: 6) {
-                                StatusChip(text: e.kind.label, color: LupyTheme.secondary)
-                                StatusChip(text: e.independence == .selfReported ? "self-reported" : (e.independence == .founder ? "you" : "independent"),
+                                LupyStatusChip(text: e.kind.label, color: LupyTheme.secondary)
+                                LupyStatusChip(text: e.independence == .selfReported ? "self-reported" : (e.independence == .founder ? "you" : "independent"),
                                            color: e.independence == .selfReported ? LupyTheme.amber : LupyTheme.green)
-                                Text(relativeTime(e.observedAt)).font(.system(size: 10.5)).foregroundColor(LupyTheme.muted)
+                                Text(lupyRelativeTime(e.observedAt)).font(.system(size: 10.5)).foregroundColor(LupyTheme.muted)
                                 if let ref = e.reference, let url = URL(string: ref), ref.hasPrefix("https://") {
                                     Link("open", destination: url).font(.system(size: 10.5))
                                 }
@@ -311,9 +313,9 @@ struct TaskDetailView: View {
                 }
                 let drafts = s.drafts.values.filter { $0.taskID == task.id }.sorted { $0.createdAt > $1.createdAt }
                 if let d = drafts.first {
-                    SectionTitle(text: "Latest draft")
+                    LupySectionTitle(text: "Latest draft")
                     Text(d.body).font(.system(size: 12.5)).foregroundColor(LupyTheme.body).textSelection(.enabled)
-                        .padding(12).background(CardBackground(wash: .soft, radius: 12))
+                        .padding(12).background(LupyCardBackground(wash: .soft, radius: 12))
                     HStack(spacing: 8) {
                         Button("Copy draft") { model.copy(d.body, announce: "Draft copied.") }.buttonStyle(LupySecondaryButtonStyle())
                         Button("Save to Documents/Lupy") { model.saveDraftToFile(d) }.buttonStyle(LupySecondaryButtonStyle())
@@ -357,7 +359,7 @@ struct TaskDetailView: View {
                         ForEach(workers) { w in
                             Button("\(w.name) — \(w.channel.label)") {
                                 model.act { _ = try $0.delegate(task.id, to: w.id); return [] }
-                                model.section = .handoffs
+                                model.open(.lupyHandoffs)
                             }
                         }
                     }
@@ -418,8 +420,8 @@ struct TaskDetailView: View {
 
 // MARK: - Handoffs
 
-struct HandoffsView: View {
-    @Environment(AppModel.self) private var model
+struct LupyHandoffsContent: View {
+    private var model: LupyModel { LupyModel.shared }
     var body: some View {
         let s = model.state
         let list = s.handoffs.values.sorted { a, b in a.state.isOpen != b.state.isOpen ? a.state.isOpen : a.createdAt > b.createdAt }
@@ -428,19 +430,19 @@ struct HandoffsView: View {
                 Text("Handoffs").font(.system(size: 20, weight: .semibold)).foregroundColor(LupyTheme.text)
                 Text("Arena, Muse and Orin have no connection Lupy can use, so you paste briefs and replies. Lupy never claims a message was delivered unless it can see evidence.")
                     .font(.system(size: 12)).foregroundColor(LupyTheme.secondary)
-                if list.isEmpty { EmptyHint(symbol: "arrow.left.arrow.right", title: "No handoffs yet", detail: "Open a task and choose “Delegate to…”.") }
+                if list.isEmpty { LupyEmptyHint(symbol: "arrow.left.arrow.right", title: "No handoffs yet", detail: "Open a task and choose “Delegate to…”.") }
                 ForEach(list) { h in
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text(s.tasks[h.taskID]?.title ?? "Task").font(.system(size: 13.5, weight: .semibold)).foregroundColor(LupyTheme.text)
                             Spacer()
-                            StatusChip(text: h.state.label, color: h.state.isOpen ? LupyTheme.indigo : LupyTheme.muted)
+                            LupyStatusChip(text: h.state.label, color: h.state.isOpen ? LupyTheme.indigo : LupyTheme.muted)
                         }
                         Text("To \(s.workers[h.workerID]?.name ?? "worker") · \(h.channel.label) · ref \(h.brief.reference)").font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
-                        if h.state.isOpen { HandoffPanel(handoff: h) }
+                        if h.state.isOpen { LupyHandoffPanel(handoff: h) }
                     }
                     .padding(14)
-                    .background(CardBackground(wash: h.state == .awaitingRelay ? .amber : .soft))
+                    .background(LupyCardBackground(wash: h.state == .awaitingRelay ? .amber : .soft))
                 }
             }
             .padding(24)
@@ -449,8 +451,8 @@ struct HandoffsView: View {
     }
 }
 
-struct HandoffPanel: View {
-    @Environment(AppModel.self) private var model
+struct LupyHandoffPanel: View {
+    private var model: LupyModel { LupyModel.shared }
     let handoff: Handoff
     @State private var reply = ""
 
@@ -483,6 +485,19 @@ struct HandoffPanel: View {
                 default:
                     EmptyView()
                 }
+                // Lupy (port): computer control can deliver the brief itself while you watch its cursor.
+                if [.drafted, .awaitingRelay, .reworkRequested].contains(handoff.state), let w = worker {
+                    Button {
+                        LupyDelivery.deliver(handoff.id)
+                    } label: {
+                        Label("Deliver with Lupy", systemImage: "cursorarrow.motionlines")
+                    }
+                    .buttonStyle(LupySecondaryButtonStyle())
+                    .disabled(LupyControlCenter.shared.isActive)
+                    .help(LupyDelivery.target(for: w) == nil
+                          ? "Tell Lupy where you talk to \(w.name) first (Lupy → Computer control)."
+                          : "Lupy opens \(LupyDelivery.describe(LupyDelivery.target(for: w))), types the brief and asks you before clicking Send.")
+                }
             }
             if [.deliveryUnconfirmed, .sent, .acknowledged, .progressEvidenced, .submitted, .verifying, .stalled].contains(handoff.state) {
                 Text("Paste \(worker?.name ?? "the worker")'s reply (Lupy records it as a claim and checks evidence):").font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
@@ -499,7 +514,7 @@ struct HandoffPanel: View {
                         reply = ""
                     }
                     .buttonStyle(LupyPrimaryButtonStyle()).disabled(reply.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    if let nf = handoff.nextFollowUpAt { Text("Next check-in \(relativeTime(nf))").font(.system(size: 11)).foregroundColor(LupyTheme.muted) }
+                    if let nf = handoff.nextFollowUpAt { Text("Next check-in \(lupyRelativeTime(nf))").font(.system(size: 11)).foregroundColor(LupyTheme.muted) }
                     Spacer()
                     if model.hasUsableModel, let last = handoff.notes.last(where: { if case .worker = $0.by { return true } else { return false } }) {
                         Button("Have the model read the last reply") { model.analyzeReply(handoffID: handoff.id, text: last.text) }
@@ -509,7 +524,7 @@ struct HandoffPanel: View {
                 }
             }
             ForEach(Array(handoff.notes.suffix(6).enumerated()), id: \.offset) { _, n in
-                Text("\(relativeTime(n.at)) · \(n.by.label): \(n.text)").font(.system(size: 11)).foregroundColor(LupyTheme.secondary).lineLimit(3)
+                Text("\(lupyRelativeTime(n.at)) · \(n.by.label): \(n.text)").font(.system(size: 11)).foregroundColor(LupyTheme.secondary).lineLimit(3)
             }
         }
     }
@@ -517,8 +532,8 @@ struct HandoffPanel: View {
 
 // MARK: - Approvals
 
-struct ApprovalsView: View {
-    @Environment(AppModel.self) private var model
+struct LupyApprovalsContent: View {
+    private var model: LupyModel { LupyModel.shared }
 
     var body: some View {
         let s = model.state
@@ -528,10 +543,10 @@ struct ApprovalsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 Text("Needs you").font(.system(size: 20, weight: .semibold)).foregroundColor(LupyTheme.text)
-                ForEach(model.attention.items.filter { $0.kind != .approval }) { item in AttentionRow(item: item) }
+                ForEach(model.attention.items.filter { $0.kind != .approval }) { item in LupyAttentionRow(item: item) }
                 let interrupted = model.interruptedActions
                 if !interrupted.isEmpty {
-                    SectionTitle(text: "Interrupted actions — did they happen?")
+                    LupySectionTitle(text: "Interrupted actions — did they happen?")
                     ForEach(interrupted) { rec in
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
@@ -544,30 +559,30 @@ struct ApprovalsView: View {
                             Button("It happened") { model.act { try $0.resolveUnknownAction(rec.id, happened: true, note: "checked by you"); return [] } }
                                 .buttonStyle(LupySecondaryButtonStyle())
                         }
-                        .padding(10).background(CardBackground(wash: .amber, radius: 12))
+                        .padding(10).background(LupyCardBackground(wash: .amber, radius: 12))
                     }
                 }
-                SectionTitle(text: "Approvals (\(pending.count))")
+                LupySectionTitle(text: "Approvals (\(pending.count))")
                 if pending.isEmpty { Text("Nothing is waiting for approval.").font(.system(size: 12)).foregroundColor(LupyTheme.secondary) }
-                ForEach(pending) { a in ApprovalCard(request: a) }
-                SectionTitle(text: "Standing approvals (\(standing.count))")
+                ForEach(pending) { a in LupyApprovalCard(request: a) }
+                LupySectionTitle(text: "Standing approvals (\(standing.count))")
                 Text("Narrow, expiring permissions you granted. Some actions (deleting data, security, access) can never be pre-approved.")
                     .font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
                 ForEach(standing) { sa in
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(sa.kind.label) → \(sa.targetPattern)").font(.system(size: 12.5, weight: .medium)).foregroundColor(LupyTheme.text)
-                            Text("\(sa.projectID.flatMap { s.projects[$0]?.name } ?? "any project") · used \(sa.uses)\(sa.maxUses.map { "/\($0)" } ?? "") · expires \(shortDate(sa.expiresAt))")
+                            Text("\(sa.projectID.flatMap { s.projects[$0]?.name } ?? "any project") · used \(sa.uses)\(sa.maxUses.map { "/\($0)" } ?? "") · expires \(lupyShortDate(sa.expiresAt))")
                                 .font(.system(size: 11)).foregroundColor(LupyTheme.secondary)
                         }
                         Spacer()
                         Button("Revoke") { model.act { try $0.revokeStandingApproval(sa.id); return [] } }.buttonStyle(LupyDangerButtonStyle())
                     }
-                    .padding(10).background(CardBackground(radius: 12))
+                    .padding(10).background(LupyCardBackground(radius: 12))
                 }
-                SectionTitle(text: "History")
+                LupySectionTitle(text: "History")
                 ForEach(decided.prefix(30)) { a in
-                    Text("\(a.status.rawValue.capitalized): \(a.action.title) — \(shortDate(a.decidedAt ?? a.requestedAt))").font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
+                    Text("\(a.status.rawValue.capitalized): \(a.action.title) — \(lupyShortDate(a.decidedAt ?? a.requestedAt))").font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
                 }
             }
             .padding(24)
@@ -576,8 +591,8 @@ struct ApprovalsView: View {
     }
 }
 
-struct ApprovalCard: View {
-    @Environment(AppModel.self) private var model
+struct LupyApprovalCard: View {
+    private var model: LupyModel { LupyModel.shared }
     let request: ApprovalRequest
 
     var body: some View {
@@ -585,12 +600,12 @@ struct ApprovalCard: View {
             HStack {
                 Text(request.action.title).font(.system(size: 13.5, weight: .semibold)).foregroundColor(LupyTheme.text)
                 Spacer()
-                StatusChip(text: "\(request.risk.label) risk", color: request.risk >= .high ? LupyTheme.red : LupyTheme.amber)
+                LupyStatusChip(text: "\(request.risk.label) risk", color: request.risk >= .high ? LupyTheme.red : LupyTheme.amber)
             }
             Text(request.reasons.joined(separator: " ")).font(.system(size: 12)).foregroundColor(LupyTheme.body)
             if !request.action.detail.isEmpty { Text(request.action.detail).font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary).lineLimit(4) }
             Text(request.consequence).font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
-            Text("Requested by \(request.action.originator.label) · \(relativeTime(request.requestedAt))").font(.system(size: 10.5)).foregroundColor(LupyTheme.muted)
+            Text("Requested by \(request.action.originator.label) · \(lupyRelativeTime(request.requestedAt))").font(.system(size: 10.5)).foregroundColor(LupyTheme.muted)
             HStack(spacing: 8) {
                 Button("Deny") { model.act { try $0.decideApproval(request.id, approve: false) } }.buttonStyle(LupySecondaryButtonStyle())
                 Button("Allow once") { model.act { try $0.decideApproval(request.id, approve: true) } }.buttonStyle(LupyPrimaryButtonStyle())
@@ -601,6 +616,6 @@ struct ApprovalCard: View {
             }
         }
         .padding(14)
-        .background(CardBackground(wash: .amber))
+        .background(LupyCardBackground(wash: .amber))
     }
 }

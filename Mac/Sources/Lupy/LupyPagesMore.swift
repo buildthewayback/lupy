@@ -1,9 +1,11 @@
-// Lupy macOS shell — memory, decisions, activity (audit trail), usage & budget.
+// Ported from the previous Lupy window (App/Sources/MoreViews.swift, git 09c8c75) by scripts/port-lupy-views.py.
+// Coucou's hub colours and components via LupyStyle.swift; logic and engine calls unchanged.
 
+import LupyCore
 import SwiftUI
 
-struct MemoryView: View {
-    @Environment(AppModel.self) private var model
+struct LupyMemoryContent: View {
+    private var model: LupyModel { LupyModel.shared }
     @State private var title = ""
     @State private var detail = ""
     @State private var key = ""
@@ -23,12 +25,12 @@ struct MemoryView: View {
                 Text("Preferences, rules, facts and lessons Lupy uses. Project memory never leaves its project. Sensitive items are never sent to cloud models.")
                     .font(.system(size: 12)).foregroundColor(LupyTheme.secondary)
                 if !contested.isEmpty {
-                    SectionTitle(text: "Conflicts to resolve")
+                    LupySectionTitle(text: "Conflicts to resolve")
                     ForEach(contested) { m in
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(m.title).font(.system(size: 12.5, weight: .medium)).foregroundColor(LupyTheme.text)
-                                Text("\(m.body) · from \(m.source.label) · \(relativeTime(m.createdAt))").font(.system(size: 11)).foregroundColor(LupyTheme.secondary)
+                                Text("\(m.body) · from \(m.source.label) · \(lupyRelativeTime(m.createdAt))").font(.system(size: 11)).foregroundColor(LupyTheme.secondary)
                             }
                             Spacer()
                             Button("This one is right") {
@@ -37,10 +39,10 @@ struct MemoryView: View {
                             }
                             .buttonStyle(LupyPrimaryButtonStyle())
                         }
-                        .padding(10).background(CardBackground(wash: .amber, radius: 12))
+                        .padding(10).background(LupyCardBackground(wash: .amber, radius: 12))
                     }
                 }
-                SectionTitle(text: "Teach Lupy something")
+                LupySectionTitle(text: "Teach Lupy something")
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Picker("Kind", selection: $kind) { ForEach(MemoryKind.allCases, id: \.self) { k in Text(k.label).tag(k) } }.frame(maxWidth: 220)
@@ -64,8 +66,8 @@ struct MemoryView: View {
                         .buttonStyle(LupyPrimaryButtonStyle()).disabled(title.isEmpty)
                     }
                 }
-                .padding(14).background(CardBackground(wash: .soft))
-                SectionTitle(text: "What Lupy knows (\(active.count))")
+                .padding(14).background(LupyCardBackground(wash: .soft))
+                LupySectionTitle(text: "What Lupy knows (\(active.count))")
                 ForEach(active) { m in
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 2) {
@@ -75,11 +77,11 @@ struct MemoryView: View {
                                 .font(.system(size: 10.5)).foregroundColor(LupyTheme.muted)
                         }
                         Spacer()
-                        if m.sensitive { StatusChip(text: "sensitive", color: LupyTheme.pink) }
+                        if m.sensitive { LupyStatusChip(text: "sensitive", color: LupyTheme.pink) }
                     }
-                    .padding(10).background(CardBackground(radius: 12))
+                    .padding(10).background(LupyCardBackground(radius: 12))
                 }
-                SectionTitle(text: "Decisions")
+                LupySectionTitle(text: "Decisions")
                 HStack {
                     TextField("Decision title", text: $decisionTitle).textFieldStyle(.roundedBorder)
                     TextField("What was decided", text: $decisionText).textFieldStyle(.roundedBorder)
@@ -100,8 +102,8 @@ struct MemoryView: View {
     }
 }
 
-struct ActivityView: View {
-    @Environment(AppModel.self) private var model
+struct LupyActivityContent: View {
+    private var model: LupyModel { LupyModel.shared }
     @State private var projectID: LupyID? = nil
 
     var body: some View {
@@ -143,8 +145,8 @@ struct ActivityView: View {
     }
 }
 
-struct UsageView: View {
-    @Environment(AppModel.self) private var model
+struct LupyUsageContent: View {
+    private var model: LupyModel { LupyModel.shared }
 
     var body: some View {
         let s = model.state
@@ -161,18 +163,18 @@ struct UsageView: View {
                     meter("This month", b.spentMonthCents, b.monthlyCapCents)
                 }
                 if b.hardStopped { Text("Limit reached: cloud model calls are stopped until it resets or you raise it.").font(.system(size: 12)).foregroundColor(LupyTheme.red) }
-                SectionTitle(text: "By provider (all time)")
+                LupySectionTitle(text: "By provider (all time)")
                 ForEach(byProvider.keys.sorted(), id: \.self) { pid in
                     Text("\(s.providers[pid]?.displayName ?? pid): \(TextUtil.formatCents(byProvider[pid] ?? 0))").font(.system(size: 12)).foregroundColor(LupyTheme.body)
                 }
-                ForEach(FailurePatterns.detect(s.usage, now: SystemClock().now()), id: \.signature) { p in
+                ForEach(FailurePatterns.detect(s.usage, now: LupySystemClock().now()), id: \.signature) { p in
                     Label(p.advice, systemImage: "exclamationmark.triangle").font(.system(size: 12)).foregroundColor(LupyTheme.amber)
                 }
-                SectionTitle(text: "Recent model calls")
+                LupySectionTitle(text: "Recent model calls")
                 if recent.isEmpty { Text("No model calls yet.").font(.system(size: 12)).foregroundColor(LupyTheme.secondary) }
                 ForEach(Array(recent)) { u in
                     HStack {
-                        Text(shortDate(u.at)).font(.system(size: 11)).foregroundColor(LupyTheme.muted).frame(width: 150, alignment: .leading)
+                        Text(lupyShortDate(u.at)).font(.system(size: 11)).foregroundColor(LupyTheme.muted).frame(width: 150, alignment: .leading)
                         Text("\(u.providerID)/\(u.modelID)").font(.system(size: 11.5)).foregroundColor(LupyTheme.body).frame(width: 220, alignment: .leading).lineLimit(1)
                         Text(u.purpose.label).font(.system(size: 11)).foregroundColor(LupyTheme.secondary).frame(width: 130, alignment: .leading)
                         Text(u.ok ? "\(u.inputTokens)+\(u.outputTokens) tok" : (u.errorCategory?.label ?? "failed")).font(.system(size: 11)).foregroundColor(u.ok ? LupyTheme.secondary : LupyTheme.red)
@@ -194,6 +196,6 @@ struct UsageView: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(CardBackground(wash: .soft))
+        .background(LupyCardBackground(wash: .soft))
     }
 }

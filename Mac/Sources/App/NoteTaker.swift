@@ -3,7 +3,7 @@ import AppKit
 import AVFoundation
 @preconcurrency import FluidAudio
 import UniformTypeIdentifiers
-#if canImport(FoundationModels)
+#if canImport(FoundationModels) && !LUPY_NO_LOCAL_LLM  // Lupy: no local LLM inference (founder rule)
 import FoundationModels
 #endif
 
@@ -326,7 +326,7 @@ final class NoteTaker: ObservableObject {
     // MARK: - Summary
 
     static var appleModelAvailable: Bool {
-        #if canImport(FoundationModels)
+        #if canImport(FoundationModels) && !LUPY_NO_LOCAL_LLM  // Lupy: no local LLM inference (founder rule)
         if #available(macOS 26, *) { return SystemLanguageModel.default.availability == .available }
         #endif
         return false
@@ -399,7 +399,7 @@ final class NoteTaker: ObservableObject {
     /// Apple's on-device model has a small context: a long call is first noted in parts, then the
     /// notes of the parts are summarized.
     nonisolated private static func appleSummary(_ transcript: String) async -> String? {
-        #if canImport(FoundationModels)
+        #if canImport(FoundationModels) && !LUPY_NO_LOCAL_LLM  // Lupy: no local LLM inference (founder rule)
         if #available(macOS 26, *) {
             guard SystemLanguageModel.default.availability == .available else { return nil }
             let words = transcript.split(separator: " ")

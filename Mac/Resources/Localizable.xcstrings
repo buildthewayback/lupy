@@ -592,61 +592,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اسمح لـ Coucou في إعدادات النظام ← الخصوصية والأمن ← تسجيل الشاشة، ثم التقط مرة أخرى."
+            "value" : "اسمح لـ Lupy في إعدادات النظام ← الخصوصية والأمن ← تسجيل الشاشة، ثم التقط مرة أخرى."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "System Settings → Privacy & Security → Screen Recording-এ Coucou-কে অনুমতি দিন, তারপর আবার ক্যাপচার করুন।"
+            "value" : "System Settings → Privacy & Security → Screen Recording-এ Lupy-কে অনুমতি দিন, তারপর আবার ক্যাপচার করুন।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Allow Coucou in System Settings → Privacy & Security → Screen Recording, then capture again."
+            "value" : "Allow Lupy in System Settings → Privacy & Security → Screen Recording, then capture again."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permite Coucou en Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla y vuelve a capturar."
+            "value" : "Permite Lupy en Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla y vuelve a capturar."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autorise Coucou dans Réglages Système → Confidentialité et sécurité → Enregistrement de l'écran, puis capture à nouveau."
+            "value" : "Autorise Lupy dans Réglages Système → Confidentialité et sécurité → Enregistrement de l'écran, puis capture à nouveau."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "System Settings → Privacy & Security → Screen Recording में Coucou को अनुमति दें, फिर दोबारा कैप्चर करें।"
+            "value" : "System Settings → Privacy & Security → Screen Recording में Lupy को अनुमति दें, फिर दोबारा कैप्चर करें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Izinkan Coucou di Pengaturan Sistem → Privasi & Keamanan → Rekaman Layar, lalu tangkap lagi."
+            "value" : "Izinkan Lupy di Pengaturan Sistem → Privasi & Keamanan → Rekaman Layar, lalu tangkap lagi."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permita o Coucou em Ajustes do Sistema → Privacidade e Segurança → Gravação da Tela e capture de novo."
+            "value" : "Permita o Lupy em Ajustes do Sistema → Privacidade e Segurança → Gravação da Tela e capture de novo."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Разрешите Coucou в Системных настройках → Конфиденциальность и безопасность → Запись экрана и сделайте снимок снова."
+            "value" : "Разрешите Lupy в Системных настройках → Конфиденциальность и безопасность → Запись экрана и сделайте снимок снова."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请在“系统设置 → 隐私与安全性 → 录屏”中允许 Coucou，然后再截一次。"
+            "value" : "请在“系统设置 → 隐私与安全性 → 录屏”中允许 Lupy，然后再截一次。"
           }
         }
       }
@@ -1381,61 +1381,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "لا يستطيع Coucou اللصق بعد ولا رؤية Esc: يحتاج إلى إذن تسهيلات الاستخدام. فعّل Coucou في إعدادات النظام ← الخصوصية والأمن ← تسهيلات الاستخدام. إذا كان مفعّلًا، احذفه بزر − ثم أضفه من جديد: كل إصدار جديد من Coucou يحتاج الإذن مرة أخرى."
+            "value" : "لا يستطيع Lupy اللصق بعد ولا رؤية Esc: يحتاج إلى إذن تسهيلات الاستخدام. فعّل Lupy في إعدادات النظام ← الخصوصية والأمن ← تسهيلات الاستخدام. إذا كان مفعّلًا، احذفه بزر − ثم أضفه من جديد: كل إصدار جديد من Lupy يحتاج الإذن مرة أخرى."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou এখনও পেস্ট করতে বা Esc দেখতে পারে না: এর অ্যাক্সেসিবিলিটি অনুমতি দরকার। সিস্টেম সেটিংস → গোপনীয়তা ও নিরাপত্তা → অ্যাক্সেসিবিলিটিতে Coucou চালু করুন। আগে থেকেই চালু থাকলে − দিয়ে সরিয়ে আবার যোগ করুন: Coucou-এর নতুন সংস্করণের আবার অনুমতি লাগে।"
+            "value" : "Lupy এখনও পেস্ট করতে বা Esc দেখতে পারে না: এর অ্যাক্সেসিবিলিটি অনুমতি দরকার। সিস্টেম সেটিংস → গোপনীয়তা ও নিরাপত্তা → অ্যাক্সেসিবিলিটিতে Lupy চালু করুন। আগে থেকেই চালু থাকলে − দিয়ে সরিয়ে আবার যোগ করুন: Lupy-এর নতুন সংস্করণের আবার অনুমতি লাগে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou can't paste yet, or see Esc: it needs the Accessibility permission. Turn on Coucou in System Settings → Privacy & Security → Accessibility. If it is already on, remove it with − and add it again: a new build of Coucou needs it again."
+            "value" : "Lupy can't paste yet, or see Esc: it needs the Accessibility permission. Turn on Lupy in System Settings → Privacy & Security → Accessibility. If it is already on, remove it with − and add it again: a new build of Lupy needs it again."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou aún no puede pegar ni ver Esc: necesita el permiso de Accesibilidad. Activa Coucou en Ajustes del Sistema → Privacidad y seguridad → Accesibilidad. Si ya está activado, quítalo con − y vuelve a añadirlo: una nueva versión de Coucou lo necesita de nuevo."
+            "value" : "Lupy aún no puede pegar ni ver Esc: necesita el permiso de Accesibilidad. Activa Lupy en Ajustes del Sistema → Privacidad y seguridad → Accesibilidad. Si ya está activado, quítalo con − y vuelve a añadirlo: una nueva versión de Lupy lo necesita de nuevo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou ne peut pas encore coller, ni voir Échap : il lui faut l'autorisation Accessibilité. Active Coucou dans Réglages Système → Confidentialité et sécurité → Accessibilité. S'il y est déjà, retire-le avec − puis rajoute-le : une nouvelle version de Coucou doit être autorisée à nouveau."
+            "value" : "Lupy ne peut pas encore coller, ni voir Échap : il lui faut l'autorisation Accessibilité. Active Lupy dans Réglages Système → Confidentialité et sécurité → Accessibilité. S'il y est déjà, retire-le avec − puis rajoute-le : une nouvelle version de Lupy doit être autorisée à nouveau."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou अभी न चिपका सकता है, न Esc देख सकता है: इसे एक्सेसिबिलिटी अनुमति चाहिए। सिस्टम सेटिंग्स → गोपनीयता और सुरक्षा → एक्सेसिबिलिटी में Coucou चालू करें। अगर यह पहले से चालू है, तो − से हटाकर फिर जोड़ें: Coucou के नए संस्करण को फिर से अनुमति चाहिए।"
+            "value" : "Lupy अभी न चिपका सकता है, न Esc देख सकता है: इसे एक्सेसिबिलिटी अनुमति चाहिए। सिस्टम सेटिंग्स → गोपनीयता और सुरक्षा → एक्सेसिबिलिटी में Lupy चालू करें। अगर यह पहले से चालू है, तो − से हटाकर फिर जोड़ें: Lupy के नए संस्करण को फिर से अनुमति चाहिए।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou belum bisa menempel atau melihat Esc: ia butuh izin Aksesibilitas. Aktifkan Coucou di Pengaturan Sistem → Privasi & Keamanan → Aksesibilitas. Jika sudah aktif, hapus dengan − lalu tambahkan lagi: versi baru Coucou perlu izin lagi."
+            "value" : "Lupy belum bisa menempel atau melihat Esc: ia butuh izin Aksesibilitas. Aktifkan Lupy di Pengaturan Sistem → Privasi & Keamanan → Aksesibilitas. Jika sudah aktif, hapus dengan − lalu tambahkan lagi: versi baru Lupy perlu izin lagi."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O Coucou ainda não consegue colar nem ver o Esc: ele precisa da permissão de Acessibilidade. Ative o Coucou em Ajustes do Sistema → Privacidade e Segurança → Acessibilidade. Se já estiver ativado, remova com − e adicione de novo: uma nova versão do Coucou precisa da permissão outra vez."
+            "value" : "O Lupy ainda não consegue colar nem ver o Esc: ele precisa da permissão de Acessibilidade. Ative o Lupy em Ajustes do Sistema → Privacidade e Segurança → Acessibilidade. Se já estiver ativado, remova com − e adicione de novo: uma nova versão do Lupy precisa da permissão outra vez."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou пока не может вставлять текст и видеть Esc: нужен доступ к Универсальному доступу. Включите Coucou в Системных настройках → Конфиденциальность и безопасность → Универсальный доступ. Если он уже включён, удалите его кнопкой − и добавьте снова: новой версии Coucou нужно разрешение заново."
+            "value" : "Lupy пока не может вставлять текст и видеть Esc: нужен доступ к Универсальному доступу. Включите Lupy в Системных настройках → Конфиденциальность и безопасность → Универсальный доступ. Если он уже включён, удалите его кнопкой − и добавьте снова: новой версии Lupy нужно разрешение заново."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 还不能粘贴，也无法识别 Esc：它需要“辅助功能”权限。请在“系统设置”→“隐私与安全性”→“辅助功能”中打开 Coucou。如果已经打开，请用“−”移除后重新添加：新版本的 Coucou 需要重新授权。"
+            "value" : "Lupy 还不能粘贴，也无法识别 Esc：它需要“辅助功能”权限。请在“系统设置”→“隐私与安全性”→“辅助功能”中打开 Lupy。如果已经打开，请用“−”移除后重新添加：新版本的 Lupy 需要重新授权。"
           }
         }
       }
@@ -1446,61 +1446,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تم السماح بتسهيلات الاستخدام: يلصق Coucou حيث تكتب."
+            "value" : "تم السماح بتسهيلات الاستخدام: يلصق Lupy حيث تكتب."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "অ্যাক্সেসিবিলিটি অনুমোদিত: আপনি যেখানে লেখেন Coucou সেখানে পেস্ট করে।"
+            "value" : "অ্যাক্সেসিবিলিটি অনুমোদিত: আপনি যেখানে লেখেন Lupy সেখানে পেস্ট করে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accessibility allowed: Coucou pastes where you type."
+            "value" : "Accessibility allowed: Lupy pastes where you type."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accesibilidad permitida: Coucou pega donde escribes."
+            "value" : "Accesibilidad permitida: Lupy pega donde escribes."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accessibilité autorisée : Coucou colle là où tu écris."
+            "value" : "Accessibilité autorisée : Lupy colle là où tu écris."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "एक्सेसिबिलिटी की अनुमति है: Coucou वहीं चिपकाता है जहाँ आप टाइप करते हैं।"
+            "value" : "एक्सेसिबिलिटी की अनुमति है: Lupy वहीं चिपकाता है जहाँ आप टाइप करते हैं।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aksesibilitas diizinkan: Coucou menempel di tempat kamu mengetik."
+            "value" : "Aksesibilitas diizinkan: Lupy menempel di tempat kamu mengetik."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Acessibilidade permitida: o Coucou cola onde você digita."
+            "value" : "Acessibilidade permitida: o Lupy cola onde você digita."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Универсальный доступ разрешён: Coucou вставляет текст туда, где вы печатаете."
+            "value" : "Универсальный доступ разрешён: Lupy вставляет текст туда, где вы печатаете."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已允许辅助功能：Coucou 会粘贴到你输入的位置。"
+            "value" : "已允许辅助功能：Lupy 会粘贴到你输入的位置。"
           }
         }
       }
@@ -1706,61 +1706,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "لا يسمعك Coucou: الميكروفون غير مسموح به أو غير متاح."
+            "value" : "لا يسمعك Lupy: الميكروفون غير مسموح به أو غير متاح."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou আপনাকে শুনতে পাচ্ছে না: মাইক্রোফোনের অনুমতি নেই বা পাওয়া যাচ্ছে না।"
+            "value" : "Lupy আপনাকে শুনতে পাচ্ছে না: মাইক্রোফোনের অনুমতি নেই বা পাওয়া যাচ্ছে না।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou can't hear you: the microphone is not allowed or not available."
+            "value" : "Lupy can't hear you: the microphone is not allowed or not available."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou no te oye: el micrófono no está permitido o no está disponible."
+            "value" : "Lupy no te oye: el micrófono no está permitido o no está disponible."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou ne t'entend pas : le micro n'est pas autorisé ou pas disponible."
+            "value" : "Lupy ne t'entend pas : le micro n'est pas autorisé ou pas disponible."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou आपको सुन नहीं पा रहा: माइक्रोफ़ोन की अनुमति नहीं है या वह उपलब्ध नहीं।"
+            "value" : "Lupy आपको सुन नहीं पा रहा: माइक्रोफ़ोन की अनुमति नहीं है या वह उपलब्ध नहीं।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou tidak bisa mendengarmu: mikrofon tidak diizinkan atau tidak tersedia."
+            "value" : "Lupy tidak bisa mendengarmu: mikrofon tidak diizinkan atau tidak tersedia."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O Coucou não te ouve: o microfone não está permitido ou indisponível."
+            "value" : "O Lupy não te ouve: o microfone não está permitido ou indisponível."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou вас не слышит: микрофон не разрешён или недоступен."
+            "value" : "Lupy вас не слышит: микрофон не разрешён или недоступен."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 听不到你：麦克风未获允许或不可用。"
+            "value" : "Lupy 听不到你：麦克风未获允许或不可用。"
           }
         }
       }
@@ -1771,61 +1771,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "لم يتمكن Coucou من اللصق: كلماتك منسوخة. اضغط ⌘V، واسمح بتسهيلات الاستخدام ليلصق بنفسه."
+            "value" : "لم يتمكن Lupy من اللصق: كلماتك منسوخة. اضغط ⌘V، واسمح بتسهيلات الاستخدام ليلصق بنفسه."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou পেস্ট করতে পারেনি: আপনার কথা কপি হয়েছে। ⌘V চাপুন, আর অ্যাক্সেসিবিলিটির অনুমতি দিন যাতে নিজেই পেস্ট করে।"
+            "value" : "Lupy পেস্ট করতে পারেনি: আপনার কথা কপি হয়েছে। ⌘V চাপুন, আর অ্যাক্সেসিবিলিটির অনুমতি দিন যাতে নিজেই পেস্ট করে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou couldn't paste: your words are copied. Press ⌘V, and allow Accessibility so it pastes for you."
+            "value" : "Lupy couldn't paste: your words are copied. Press ⌘V, and allow Accessibility so it pastes for you."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou no pudo pegar: tus palabras están copiadas. Pulsa ⌘V y permite Accesibilidad para que pegue solo."
+            "value" : "Lupy no pudo pegar: tus palabras están copiadas. Pulsa ⌘V y permite Accesibilidad para que pegue solo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou n'a pas pu coller : tes mots sont copiés. Fais ⌘V, et autorise l'Accessibilité pour qu'il colle tout seul."
+            "value" : "Lupy n'a pas pu coller : tes mots sont copiés. Fais ⌘V, et autorise l'Accessibilité pour qu'il colle tout seul."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou चिपका नहीं सका: आपके शब्द कॉपी हो गए हैं। ⌘V दबाएँ, और एक्सेसिबिलिटी की अनुमति दें ताकि वह खुद चिपकाए।"
+            "value" : "Lupy चिपका नहीं सका: आपके शब्द कॉपी हो गए हैं। ⌘V दबाएँ, और एक्सेसिबिलिटी की अनुमति दें ताकि वह खुद चिपकाए।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou tidak bisa menempel: kata-katamu sudah disalin. Tekan ⌘V, dan izinkan Aksesibilitas agar ia menempel sendiri."
+            "value" : "Lupy tidak bisa menempel: kata-katamu sudah disalin. Tekan ⌘V, dan izinkan Aksesibilitas agar ia menempel sendiri."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O Coucou não conseguiu colar: suas palavras foram copiadas. Pressione ⌘V e permita a Acessibilidade para ele colar sozinho."
+            "value" : "O Lupy não conseguiu colar: suas palavras foram copiadas. Pressione ⌘V e permita a Acessibilidade para ele colar sozinho."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou не смог вставить: слова скопированы. Нажмите ⌘V и разрешите Универсальный доступ, чтобы он вставлял сам."
+            "value" : "Lupy не смог вставить: слова скопированы. Нажмите ⌘V и разрешите Универсальный доступ, чтобы он вставлял сам."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 无法粘贴：你的话已拷贝。按 ⌘V，并允许“辅助功能”，让它自动粘贴。"
+            "value" : "Lupy 无法粘贴：你的话已拷贝。按 ⌘V，并允许“辅助功能”，让它自动粘贴。"
           }
         }
       }
@@ -2811,61 +2811,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يحوّل التعرّف على الكلام في جهاز Mac صوتك إلى نص، على الجهاز نفسه عندما يدعم جهازك ذلك؛ ولا يرسله Coucou إلى أي مكان. بعد اللصق تعود الحافظة إلى ما كانت تحتويه."
+            "value" : "يحوّل التعرّف على الكلام في جهاز Mac صوتك إلى نص، على الجهاز نفسه عندما يدعم جهازك ذلك؛ ولا يرسله Lupy إلى أي مكان. بعد اللصق تعود الحافظة إلى ما كانت تحتويه."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "আপনার Mac-এর স্পিচ রিকগনিশন আপনার কণ্ঠকে টেক্সটে রূপান্তর করে, Mac সমর্থন করলে ডিভাইসেই; Coucou এটি কোথাও পাঠায় না। পেস্ট করার পর ক্লিপবোর্ডে আগের জিনিস ফিরে আসে।"
+            "value" : "আপনার Mac-এর স্পিচ রিকগনিশন আপনার কণ্ঠকে টেক্সটে রূপান্তর করে, Mac সমর্থন করলে ডিভাইসেই; Lupy এটি কোথাও পাঠায় না। পেস্ট করার পর ক্লিপবোর্ডে আগের জিনিস ফিরে আসে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your voice is turned into text by your Mac's speech recognition, on-device when your Mac supports it; Coucou sends it nowhere. After pasting, the clipboard gets back what it held."
+            "value" : "Your voice is turned into text by your Mac's speech recognition, on-device when your Mac supports it; Lupy sends it nowhere. After pasting, the clipboard gets back what it held."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu voz se convierte en texto con el reconocimiento de voz de tu Mac, en el propio equipo cuando tu Mac lo admite; Coucou no la envía a ningún sitio. Tras pegar, el portapapeles recupera lo que tenía."
+            "value" : "Tu voz se convierte en texto con el reconocimiento de voz de tu Mac, en el propio equipo cuando tu Mac lo admite; Lupy no la envía a ningún sitio. Tras pegar, el portapapeles recupera lo que tenía."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ta voix est transformée en texte par la reconnaissance vocale de ton Mac, sur l'appareil quand ton Mac le permet ; Coucou ne l'envoie nulle part. Après le collage, le presse-papiers retrouve ce qu'il contenait."
+            "value" : "Ta voix est transformée en texte par la reconnaissance vocale de ton Mac, sur l'appareil quand ton Mac le permet ; Lupy ne l'envoie nulle part. Après le collage, le presse-papiers retrouve ce qu'il contenait."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "आपकी आवाज़ को आपके Mac की वाक् पहचान टेक्स्ट में बदलती है, जब आपका Mac समर्थन करे तो डिवाइस पर ही; Coucou इसे कहीं नहीं भेजता। चिपकाने के बाद क्लिपबोर्ड में पहले वाली चीज़ वापस आ जाती है।"
+            "value" : "आपकी आवाज़ को आपके Mac की वाक् पहचान टेक्स्ट में बदलती है, जब आपका Mac समर्थन करे तो डिवाइस पर ही; Lupy इसे कहीं नहीं भेजता। चिपकाने के बाद क्लिपबोर्ड में पहले वाली चीज़ वापस आ जाती है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suaramu diubah menjadi teks oleh pengenalan suara Mac, langsung di perangkat bila Mac mendukungnya; Coucou tidak mengirimnya ke mana pun. Setelah menempel, papan klip kembali berisi apa yang ada sebelumnya."
+            "value" : "Suaramu diubah menjadi teks oleh pengenalan suara Mac, langsung di perangkat bila Mac mendukungnya; Lupy tidak mengirimnya ke mana pun. Setelah menempel, papan klip kembali berisi apa yang ada sebelumnya."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sua voz vira texto pelo reconhecimento de fala do seu Mac, no próprio aparelho quando o Mac permite; o Coucou não a envia para lugar nenhum. Depois de colar, a área de transferência recupera o que tinha."
+            "value" : "Sua voz vira texto pelo reconhecimento de fala do seu Mac, no próprio aparelho quando o Mac permite; o Lupy não a envia para lugar nenhum. Depois de colar, a área de transferência recupera o que tinha."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ваш голос превращает в текст распознавание речи Mac — прямо на устройстве, если Mac это поддерживает; Coucou никуда его не отправляет. После вставки буфер обмена возвращает прежнее содержимое."
+            "value" : "Ваш голос превращает в текст распознавание речи Mac — прямо на устройстве, если Mac это поддерживает; Lupy никуда его не отправляет. После вставки буфер обмена возвращает прежнее содержимое."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你的声音由 Mac 的语音识别转成文字，Mac 支持时在设备上完成；Coucou 不会把它发送到任何地方。粘贴之后，剪贴板会恢复原来的内容。"
+            "value" : "你的声音由 Mac 的语音识别转成文字，Mac 支持时在设备上完成；Lupy 不会把它发送到任何地方。粘贴之后，剪贴板会恢复原来的内容。"
           }
         }
       }
@@ -3071,61 +3071,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "فتح Coucou"
+            "value" : "فتح Lupy"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou খুলুন"
+            "value" : "Lupy খুলুন"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Coucou"
+            "value" : "Open Lupy"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir Coucou"
+            "value" : "Abrir Lupy"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrir Coucou"
+            "value" : "Ouvrir Lupy"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou खोलें"
+            "value" : "Lupy खोलें"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buka Coucou"
+            "value" : "Buka Lupy"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir o Coucou"
+            "value" : "Abrir o Lupy"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Открыть Coucou"
+            "value" : "Открыть Lupy"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Coucou"
+            "value" : "打开 Lupy"
           }
         }
       }
@@ -3786,61 +3786,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "الأسماء والكلمات التي يجب أن يكتبها Coucou دائمًا بشكل صحيح."
+            "value" : "الأسماء والكلمات التي يجب أن يكتبها Lupy دائمًا بشكل صحيح."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "যে নাম আর শব্দ Coucou-কে সবসময় ঠিক লিখতে হবে।"
+            "value" : "যে নাম আর শব্দ Lupy-কে সবসময় ঠিক লিখতে হবে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Names and words Coucou must always spell right."
+            "value" : "Names and words Lupy must always spell right."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Los nombres y palabras que Coucou siempre debe escribir bien."
+            "value" : "Los nombres y palabras que Lupy siempre debe escribir bien."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les noms et les mots que Coucou doit toujours bien écrire."
+            "value" : "Les noms et les mots que Lupy doit toujours bien écrire."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "नाम और शब्द जिन्हें Coucou को हमेशा सही लिखना चाहिए।"
+            "value" : "नाम और शब्द जिन्हें Lupy को हमेशा सही लिखना चाहिए।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nama dan kata yang harus selalu ditulis benar oleh Coucou."
+            "value" : "Nama dan kata yang harus selalu ditulis benar oleh Lupy."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Os nomes e palavras que o Coucou deve sempre escrever certo."
+            "value" : "Os nomes e palavras que o Lupy deve sempre escrever certo."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Имена и слова, которые Coucou всегда должен писать правильно."
+            "value" : "Имена и слова, которые Lupy всегда должен писать правильно."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 必须始终写对的名字和词语。"
+            "value" : "Lupy 必须始终写对的名字和词语。"
           }
         }
       }
@@ -3981,61 +3981,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "إلى أن يُنزَّل Parakeet، يستخدم Coucou التعرّف على الكلام في Mac."
+            "value" : "إلى أن يُنزَّل Parakeet، يستخدم Lupy التعرّف على الكلام في Mac."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parakeet ডাউনলোড না হওয়া পর্যন্ত Coucou Mac-এর স্পিচ রিকগনিশন ব্যবহার করে।"
+            "value" : "Parakeet ডাউনলোড না হওয়া পর্যন্ত Lupy Mac-এর স্পিচ রিকগনিশন ব্যবহার করে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Until Parakeet is downloaded, Coucou uses your Mac's speech recognition."
+            "value" : "Until Parakeet is downloaded, Lupy uses your Mac's speech recognition."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hasta que Parakeet esté descargado, Coucou usa el reconocimiento de voz del Mac."
+            "value" : "Hasta que Parakeet esté descargado, Lupy usa el reconocimiento de voz del Mac."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tant que Parakeet n'est pas téléchargé, Coucou utilise la reconnaissance vocale du Mac."
+            "value" : "Tant que Parakeet n'est pas téléchargé, Lupy utilise la reconnaissance vocale du Mac."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "जब तक Parakeet डाउनलोड नहीं होता, Coucou Mac की वाक् पहचान इस्तेमाल करता है।"
+            "value" : "जब तक Parakeet डाउनलोड नहीं होता, Lupy Mac की वाक् पहचान इस्तेमाल करता है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sampai Parakeet diunduh, Coucou memakai pengenalan suara Mac."
+            "value" : "Sampai Parakeet diunduh, Lupy memakai pengenalan suara Mac."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Até o Parakeet ser baixado, o Coucou usa o reconhecimento de fala do Mac."
+            "value" : "Até o Parakeet ser baixado, o Lupy usa o reconhecimento de fala do Mac."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Пока Parakeet не скачан, Coucou использует распознавание речи Mac."
+            "value" : "Пока Parakeet не скачан, Lupy использует распознавание речи Mac."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在下载 Parakeet 之前，Coucou 使用 Mac 的语音识别。"
+            "value" : "在下载 Parakeet 之前，Lupy 使用 Mac 的语音识别。"
           }
         }
       }
@@ -5476,61 +5476,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow…"
+            "value" : "Lupy Flow…"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow…"
+            "value" : "Lupy Flow…"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow…"
+            "value" : "Lupy Flow…"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow…"
+            "value" : "Lupy Flow…"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow…"
+            "value" : "Lupy Flow…"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow…"
+            "value" : "Lupy Flow…"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow…"
+            "value" : "Lupy Flow…"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow…"
+            "value" : "Lupy Flow…"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow…"
+            "value" : "Lupy Flow…"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow…"
+            "value" : "Lupy Flow…"
           }
         }
       }
@@ -5996,61 +5996,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "«OK Coucou» وصوت موتشي ومفتاح الإملاء."
+            "value" : "«OK Lupy» وصوت موتشي ومفتاح الإملاء."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“OK Coucou”, মোচির কণ্ঠ আর ডিক্টেশন কী।"
+            "value" : "“OK Lupy”, মোচির কণ্ঠ আর ডিক্টেশন কী।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou », Mochi's voice and the dictation key."
+            "value" : "« OK Lupy », Mochi's voice and the dictation key."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "«OK Coucou», la voz de Mochi y la tecla de dictado."
+            "value" : "«OK Lupy», la voz de Mochi y la tecla de dictado."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou », la voix de Mochi et la touche de dictée."
+            "value" : "« OK Lupy », la voix de Mochi et la touche de dictée."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“OK Coucou”, मोची की आवाज़ और डिक्टेशन कुंजी।"
+            "value" : "“OK Lupy”, मोची की आवाज़ और डिक्टेशन कुंजी।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“OK Coucou”, suara Mochi, dan tombol dikte."
+            "value" : "“OK Lupy”, suara Mochi, dan tombol dikte."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“OK Coucou”, a voz do Mochi e a tecla de ditado."
+            "value" : "“OK Lupy”, a voz do Mochi e a tecla de ditado."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "«OK Coucou», голос Мочи и клавиша диктовки."
+            "value" : "«OK Lupy», голос Мочи и клавиша диктовки."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“OK Coucou”、Mochi 的声音和听写按键。"
+            "value" : "“OK Lupy”、Mochi 的声音和听写按键。"
           }
         }
       }
@@ -6256,61 +6256,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "فتح Coucou Flow"
+            "value" : "فتح Lupy Flow"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow খুলুন"
+            "value" : "Lupy Flow খুলুন"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Coucou Flow"
+            "value" : "Open Lupy Flow"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir Coucou Flow"
+            "value" : "Abrir Lupy Flow"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrir Coucou Flow"
+            "value" : "Ouvrir Lupy Flow"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Flow खोलें"
+            "value" : "Lupy Flow खोलें"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buka Coucou Flow"
+            "value" : "Buka Lupy Flow"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir o Coucou Flow"
+            "value" : "Abrir o Lupy Flow"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Открыть Coucou Flow"
+            "value" : "Открыть Lupy Flow"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Coucou Flow"
+            "value" : "打开 Lupy Flow"
           }
         }
       }
@@ -7166,61 +7166,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "عندما يسمع Coucou الكلمات على اليسار، يكتب الكلمات على اليمين."
+            "value" : "عندما يسمع Lupy الكلمات على اليسار، يكتب الكلمات على اليمين."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "বাঁ দিকের শব্দ শুনলে Coucou ডান দিকের শব্দ লেখে।"
+            "value" : "বাঁ দিকের শব্দ শুনলে Lupy ডান দিকের শব্দ লেখে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When Coucou hears the words on the left, it writes the ones on the right."
+            "value" : "When Lupy hears the words on the left, it writes the ones on the right."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuando Coucou oye las palabras de la izquierda, escribe las de la derecha."
+            "value" : "Cuando Lupy oye las palabras de la izquierda, escribe las de la derecha."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quand Coucou entend les mots de gauche, il écrit ceux de droite."
+            "value" : "Quand Lupy entend les mots de gauche, il écrit ceux de droite."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "जब Coucou बाईं ओर के शब्द सुनता है, तो दाईं ओर के शब्द लिखता है।"
+            "value" : "जब Lupy बाईं ओर के शब्द सुनता है, तो दाईं ओर के शब्द लिखता है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Saat Coucou mendengar kata di kiri, ia menulis kata di kanan."
+            "value" : "Saat Lupy mendengar kata di kiri, ia menulis kata di kanan."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quando o Coucou ouve as palavras da esquerda, escreve as da direita."
+            "value" : "Quando o Lupy ouve as palavras da esquerda, escreve as da direita."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Услышав слова слева, Coucou пишет слова справа."
+            "value" : "Услышав слова слева, Lupy пишет слова справа."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 听到左边的词时，会写成右边的词。"
+            "value" : "Lupy 听到左边的词时，会写成右边的词。"
           }
         }
       }
@@ -7816,61 +7816,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "إظهار Coucou في Dock"
+            "value" : "إظهار Lupy في Dock"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dock-এ Coucou দেখান"
+            "value" : "Dock-এ Lupy দেখান"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show Coucou in the Dock"
+            "value" : "Show Lupy in the Dock"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar Coucou en el Dock"
+            "value" : "Mostrar Lupy en el Dock"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Afficher Coucou dans le Dock"
+            "value" : "Afficher Lupy dans le Dock"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou को Dock में दिखाएँ"
+            "value" : "Lupy को Dock में दिखाएँ"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tampilkan Coucou di Dock"
+            "value" : "Tampilkan Lupy di Dock"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar o Coucou no Dock"
+            "value" : "Mostrar o Lupy no Dock"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Показывать Coucou в Dock"
+            "value" : "Показывать Lupy в Dock"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在程序坞中显示 Coucou"
+            "value" : "在程序坞中显示 Lupy"
           }
         }
       }
@@ -7881,61 +7881,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "افتح Coucou كأي تطبيق؛ والنقر على أيقونته يعيد هذه النافذة. عند الإيقاف يبقى Coucou في شريط القوائم فقط."
+            "value" : "افتح Lupy كأي تطبيق؛ والنقر على أيقونته يعيد هذه النافذة. عند الإيقاف يبقى Lupy في شريط القوائم فقط."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "যেকোনো অ্যাপের মতো Coucou খুলুন; এর আইকনে ক্লিক করলে এই উইন্ডো ফিরে আসে। বন্ধ থাকলে Coucou শুধু মেনু বারে থাকে।"
+            "value" : "যেকোনো অ্যাপের মতো Lupy খুলুন; এর আইকনে ক্লিক করলে এই উইন্ডো ফিরে আসে। বন্ধ থাকলে Lupy শুধু মেনু বারে থাকে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Coucou like any app; a click on its icon brings this window back. Off, Coucou lives in the menu bar only."
+            "value" : "Open Lupy like any app; a click on its icon brings this window back. Off, Lupy lives in the menu bar only."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre Coucou como cualquier app; un clic en su icono trae esta ventana. Desactivado, Coucou solo está en la barra de menús."
+            "value" : "Abre Lupy como cualquier app; un clic en su icono trae esta ventana. Desactivado, Lupy solo está en la barra de menús."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvre Coucou comme n'importe quelle app ; un clic sur son icône ramène cette fenêtre. Désactivé, Coucou vit seulement dans la barre des menus."
+            "value" : "Ouvre Lupy comme n'importe quelle app ; un clic sur son icône ramène cette fenêtre. Désactivé, Lupy vit seulement dans la barre des menus."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou को किसी भी ऐप की तरह खोलें; इसके आइकन पर क्लिक करने से यह विंडो वापस आती है। बंद होने पर Coucou सिर्फ़ मेनू बार में रहता है।"
+            "value" : "Lupy को किसी भी ऐप की तरह खोलें; इसके आइकन पर क्लिक करने से यह विंडो वापस आती है। बंद होने पर Lupy सिर्फ़ मेनू बार में रहता है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buka Coucou seperti aplikasi lain; klik ikonnya untuk memunculkan jendela ini. Jika mati, Coucou hanya ada di bar menu."
+            "value" : "Buka Lupy seperti aplikasi lain; klik ikonnya untuk memunculkan jendela ini. Jika mati, Lupy hanya ada di bar menu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abra o Coucou como qualquer app; um clique no ícone traz esta janela de volta. Desligado, o Coucou fica só na barra de menus."
+            "value" : "Abra o Lupy como qualquer app; um clique no ícone traz esta janela de volta. Desligado, o Lupy fica só na barra de menus."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Открывайте Coucou как обычное приложение; щелчок по значку возвращает это окно. Если выключено, Coucou живёт только в строке меню."
+            "value" : "Открывайте Lupy как обычное приложение; щелчок по значку возвращает это окно. Если выключено, Lupy живёт только в строке меню."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "像其他 App 一样打开 Coucou；点按其图标即可回到此窗口。关闭后，Coucou 只在菜单栏中。"
+            "value" : "像其他 App 一样打开 Lupy；点按其图标即可回到此窗口。关闭后，Lupy 只在菜单栏中。"
           }
         }
       }
@@ -8401,61 +8401,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "فتح هذه النافذة عند فتح Coucou"
+            "value" : "فتح هذه النافذة عند فتح Lupy"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou খুললে এই উইন্ডো খুলুন"
+            "value" : "Lupy খুললে এই উইন্ডো খুলুন"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open this window when you open Coucou"
+            "value" : "Open this window when you open Lupy"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir esta ventana al abrir Coucou"
+            "value" : "Abrir esta ventana al abrir Lupy"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrir cette fenêtre quand tu lances Coucou"
+            "value" : "Ouvrir cette fenêtre quand tu lances Lupy"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou खोलने पर यह विंडो खोलें"
+            "value" : "Lupy खोलने पर यह विंडो खोलें"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buka jendela ini saat membuka Coucou"
+            "value" : "Buka jendela ini saat membuka Lupy"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir esta janela ao abrir o Coucou"
+            "value" : "Abrir esta janela ao abrir o Lupy"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Открывать это окно при запуске Coucou"
+            "value" : "Открывать это окно при запуске Lupy"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Coucou 时打开此窗口"
+            "value" : "打开 Lupy 时打开此窗口"
           }
         }
       }
@@ -8726,61 +8726,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يبقى السجل والإحصاءات وملاحظاتك على جهاز Mac هذا، في مجلد Coucou. لا تُحفظ الإملاءات صوتيًا أبدًا، ويُحذف صوت المكالمة فور كتابة نصها."
+            "value" : "يبقى السجل والإحصاءات وملاحظاتك على جهاز Mac هذا، في مجلد Lupy. لا تُحفظ الإملاءات صوتيًا أبدًا، ويُحذف صوت المكالمة فور كتابة نصها."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ইতিহাস, পরিসংখ্যান আর আপনার নোট এই Mac-এ, Coucou-র ফোল্ডারে থাকে। ডিক্টেশন কখনো অডিও হিসেবে রাখা হয় না; কলের অডিও ট্রান্সক্রিপ্ট লেখা হলেই মুছে ফেলা হয়।"
+            "value" : "ইতিহাস, পরিসংখ্যান আর আপনার নোট এই Mac-এ, Lupy-র ফোল্ডারে থাকে। ডিক্টেশন কখনো অডিও হিসেবে রাখা হয় না; কলের অডিও ট্রান্সক্রিপ্ট লেখা হলেই মুছে ফেলা হয়।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The history, the statistics and your notes stay on this Mac, in Coucou's folder. Dictations are never saved as audio; a call's audio is deleted as soon as its transcript is written."
+            "value" : "The history, the statistics and your notes stay on this Mac, in Lupy's folder. Dictations are never saved as audio; a call's audio is deleted as soon as its transcript is written."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El historial, las estadísticas y tus notas se quedan en este Mac, en la carpeta de Coucou. Los dictados nunca se guardan como audio; el audio de una llamada se borra en cuanto se escribe su transcripción."
+            "value" : "El historial, las estadísticas y tus notas se quedan en este Mac, en la carpeta de Lupy. Los dictados nunca se guardan como audio; el audio de una llamada se borra en cuanto se escribe su transcripción."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'historique, les statistiques et tes notes restent sur ce Mac, dans le dossier de Coucou. Les dictées ne sont jamais gardées en audio ; l'audio d'un call est effacé dès que sa transcription est écrite."
+            "value" : "L'historique, les statistiques et tes notes restent sur ce Mac, dans le dossier de Lupy. Les dictées ne sont jamais gardées en audio ; l'audio d'un call est effacé dès que sa transcription est écrite."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "इतिहास, आँकड़े और आपके नोट्स इसी Mac पर, Coucou के फ़ोल्डर में रहते हैं। डिक्टेशन कभी ऑडियो के रूप में नहीं रखे जाते; कॉल का ऑडियो ट्रांसक्रिप्ट लिखते ही मिटा दिया जाता है।"
+            "value" : "इतिहास, आँकड़े और आपके नोट्स इसी Mac पर, Lupy के फ़ोल्डर में रहते हैं। डिक्टेशन कभी ऑडियो के रूप में नहीं रखे जाते; कॉल का ऑडियो ट्रांसक्रिप्ट लिखते ही मिटा दिया जाता है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Riwayat, statistik, dan catatanmu tetap di Mac ini, di folder Coucou. Dikte tidak pernah disimpan sebagai audio; audio panggilan dihapus begitu transkripnya selesai ditulis."
+            "value" : "Riwayat, statistik, dan catatanmu tetap di Mac ini, di folder Lupy. Dikte tidak pernah disimpan sebagai audio; audio panggilan dihapus begitu transkripnya selesai ditulis."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O histórico, as estatísticas e suas notas ficam neste Mac, na pasta do Coucou. Os ditados nunca são guardados em áudio; o áudio de uma chamada é apagado assim que a transcrição é escrita."
+            "value" : "O histórico, as estatísticas e suas notas ficam neste Mac, na pasta do Lupy. Os ditados nunca são guardados em áudio; o áudio de uma chamada é apagado assim que a transcrição é escrita."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "История, статистика и заметки хранятся на этом Mac, в папке Coucou. Диктовки никогда не сохраняются как аудио; запись звонка удаляется, как только готова расшифровка."
+            "value" : "История, статистика и заметки хранятся на этом Mac, в папке Lupy. Диктовки никогда не сохраняются как аудио; запись звонка удаляется, как только готова расшифровка."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "历史记录、统计和你的笔记都保存在这台 Mac 上的 Coucou 文件夹中。听写从不保存为音频；通话的音频在转写完成后立即删除。"
+            "value" : "历史记录、统计和你的笔记都保存在这台 Mac 上的 Lupy 文件夹中。听写从不保存为音频；通话的音频在转写完成后立即删除。"
           }
         }
       }
@@ -9246,61 +9246,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "النص الذي يلصقه Coucou"
+            "value" : "النص الذي يلصقه Lupy"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "যে লেখা Coucou পেস্ট করবে"
+            "value" : "যে লেখা Lupy পেস্ট করবে"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The text Coucou pastes"
+            "value" : "The text Lupy pastes"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El texto que pega Coucou"
+            "value" : "El texto que pega Lupy"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le texte que Coucou colle"
+            "value" : "Le texte que Lupy colle"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "वह टेक्स्ट जो Coucou चिपकाएगा"
+            "value" : "वह टेक्स्ट जो Lupy चिपकाएगा"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Teks yang ditempel Coucou"
+            "value" : "Teks yang ditempel Lupy"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O texto que o Coucou cola"
+            "value" : "O texto que o Lupy cola"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Текст, который вставит Coucou"
+            "value" : "Текст, который вставит Lupy"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 要粘贴的文字"
+            "value" : "Lupy 要粘贴的文字"
           }
         }
       }
@@ -9376,61 +9376,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "قل العبارة أثناء الإملاء: يلصق Coucou النص كاملًا مكانها."
+            "value" : "قل العبارة أثناء الإملاء: يلصق Lupy النص كاملًا مكانها."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ডিক্টেট করার সময় বাক্যাংশটি বলুন: Coucou তার জায়গায় পুরো লেখা পেস্ট করবে।"
+            "value" : "ডিক্টেট করার সময় বাক্যাংশটি বলুন: Lupy তার জায়গায় পুরো লেখা পেস্ট করবে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Say the trigger while dictating: Coucou pastes the whole text in its place."
+            "value" : "Say the trigger while dictating: Lupy pastes the whole text in its place."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Di la frase al dictar: Coucou pega el texto entero en su lugar."
+            "value" : "Di la frase al dictar: Lupy pega el texto entero en su lugar."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dis la phrase en dictant : Coucou colle le texte entier à sa place."
+            "value" : "Dis la phrase en dictant : Lupy colle le texte entier à sa place."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "डिक्टेट करते समय वाक्यांश बोलें: Coucou उसकी जगह पूरा टेक्स्ट चिपका देगा।"
+            "value" : "डिक्टेट करते समय वाक्यांश बोलें: Lupy उसकी जगह पूरा टेक्स्ट चिपका देगा।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ucapkan pemicunya saat dikte: Coucou menempel teks utuhnya sebagai gantinya."
+            "value" : "Ucapkan pemicunya saat dikte: Lupy menempel teks utuhnya sebagai gantinya."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diga a frase ao ditar: o Coucou cola o texto inteiro no lugar dela."
+            "value" : "Diga a frase ao ditar: o Lupy cola o texto inteiro no lugar dela."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Произнесите фразу во время диктовки — Coucou вставит вместо неё весь текст."
+            "value" : "Произнесите фразу во время диктовки — Lupy вставит вместо неё весь текст."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "听写时说出触发语：Coucou 会把整段文字粘贴在它的位置。"
+            "value" : "听写时说出触发语：Lupy 会把整段文字粘贴在它的位置。"
           }
         }
       }
@@ -11261,61 +11261,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "لا كلمات بعد. أضف الأسماء والعلامات والمصطلحات التي يخطئ Coucou في كتابتها."
+            "value" : "لا كلمات بعد. أضف الأسماء والعلامات والمصطلحات التي يخطئ Lupy في كتابتها."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "এখনো কোনো শব্দ নেই। যে নাম, ব্র্যান্ড আর পরিভাষা Coucou ভুল লেখে সেগুলো যোগ করুন।"
+            "value" : "এখনো কোনো শব্দ নেই। যে নাম, ব্র্যান্ড আর পরিভাষা Lupy ভুল লেখে সেগুলো যোগ করুন।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No word yet. Add the names, brands and jargon Coucou gets wrong."
+            "value" : "No word yet. Add the names, brands and jargon Lupy gets wrong."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay palabras. Añade los nombres, marcas y tecnicismos que Coucou escribe mal."
+            "value" : "Aún no hay palabras. Añade los nombres, marcas y tecnicismos que Lupy escribe mal."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun mot pour l'instant. Ajoute les noms, marques et mots techniques que Coucou écrit mal."
+            "value" : "Aucun mot pour l'instant. Ajoute les noms, marques et mots techniques que Lupy écrit mal."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "अभी कोई शब्द नहीं। वे नाम, ब्रांड और तकनीकी शब्द जोड़ें जिन्हें Coucou गलत लिखता है।"
+            "value" : "अभी कोई शब्द नहीं। वे नाम, ब्रांड और तकनीकी शब्द जोड़ें जिन्हें Lupy गलत लिखता है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Belum ada kata. Tambahkan nama, merek, dan istilah yang sering salah ditulis Coucou."
+            "value" : "Belum ada kata. Tambahkan nama, merek, dan istilah yang sering salah ditulis Lupy."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nenhuma palavra ainda. Adicione nomes, marcas e termos técnicos que o Coucou escreve errado."
+            "value" : "Nenhuma palavra ainda. Adicione nomes, marcas e termos técnicos que o Lupy escreve errado."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Слов пока нет. Добавьте имена, бренды и термины, которые Coucou пишет неправильно."
+            "value" : "Слов пока нет. Добавьте имена, бренды и термины, которые Lupy пишет неправильно."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "还没有词语。添加 Coucou 写错的名字、品牌和术语。"
+            "value" : "还没有词语。添加 Lupy 写错的名字、品牌和术语。"
           }
         }
       }
@@ -12366,61 +12366,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "لا يستطيع Coucou استخدام الميكروفون. اسمح به من إعدادات النظام ← الخصوصية والأمن ← الميكروفون."
+            "value" : "لا يستطيع Lupy استخدام الميكروفون. اسمح به من إعدادات النظام ← الخصوصية والأمن ← الميكروفون."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou মাইক্রোফোন ব্যবহার করতে পারছে না। সিস্টেম সেটিংস → গোপনীয়তা ও নিরাপত্তা → মাইক্রোফোন-এ অনুমতি দিন।"
+            "value" : "Lupy মাইক্রোফোন ব্যবহার করতে পারছে না। সিস্টেম সেটিংস → গোপনীয়তা ও নিরাপত্তা → মাইক্রোফোন-এ অনুমতি দিন।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou can't use the microphone. Allow it in System Settings → Privacy & Security → Microphone."
+            "value" : "Lupy can't use the microphone. Allow it in System Settings → Privacy & Security → Microphone."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou no puede usar el micrófono. Permítelo en Ajustes del Sistema → Privacidad y seguridad → Micrófono."
+            "value" : "Lupy no puede usar el micrófono. Permítelo en Ajustes del Sistema → Privacidad y seguridad → Micrófono."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou ne peut pas utiliser le micro. Autorise-le dans Réglages Système → Confidentialité et sécurité → Micro."
+            "value" : "Lupy ne peut pas utiliser le micro. Autorise-le dans Réglages Système → Confidentialité et sécurité → Micro."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou माइक्रोफ़ोन इस्तेमाल नहीं कर पा रहा। सिस्टम सेटिंग्स → गोपनीयता और सुरक्षा → माइक्रोफ़ोन में अनुमति दें।"
+            "value" : "Lupy माइक्रोफ़ोन इस्तेमाल नहीं कर पा रहा। सिस्टम सेटिंग्स → गोपनीयता और सुरक्षा → माइक्रोफ़ोन में अनुमति दें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou tidak bisa memakai mikrofon. Izinkan di Pengaturan Sistem → Privasi & Keamanan → Mikrofon."
+            "value" : "Lupy tidak bisa memakai mikrofon. Izinkan di Pengaturan Sistem → Privasi & Keamanan → Mikrofon."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O Coucou não pode usar o microfone. Permita em Ajustes do Sistema → Privacidade e Segurança → Microfone."
+            "value" : "O Lupy não pode usar o microfone. Permita em Ajustes do Sistema → Privacidade e Segurança → Microfone."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou не может использовать микрофон. Разрешите его в Системных настройках → Конфиденциальность и безопасность → Микрофон."
+            "value" : "Lupy не может использовать микрофон. Разрешите его в Системных настройках → Конфиденциальность и безопасность → Микрофон."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 无法使用麦克风。请在“系统设置”→“隐私与安全性”→“麦克风”中允许。"
+            "value" : "Lupy 无法使用麦克风。请在“系统设置”→“隐私与安全性”→“麦克风”中允许。"
           }
         }
       }
@@ -12431,61 +12431,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "نزّل النماذج أولًا من Coucou Flow ← الإعدادات."
+            "value" : "نزّل النماذج أولًا من Lupy Flow ← الإعدادات."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "আগে Coucou Flow → সেটিংস-এ মডেল ডাউনলোড করুন।"
+            "value" : "আগে Lupy Flow → সেটিংস-এ মডেল ডাউনলোড করুন।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Download the models in Coucou Flow → Settings first."
+            "value" : "Download the models in Lupy Flow → Settings first."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Primero descarga los modelos en Coucou Flow → Ajustes."
+            "value" : "Primero descarga los modelos en Lupy Flow → Ajustes."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Télécharge d'abord les modèles dans Coucou Flow → Réglages."
+            "value" : "Télécharge d'abord les modèles dans Lupy Flow → Réglages."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "पहले Coucou Flow → सेटिंग्स में मॉडल डाउनलोड करें।"
+            "value" : "पहले Lupy Flow → सेटिंग्स में मॉडल डाउनलोड करें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unduh dulu modelnya di Coucou Flow → Pengaturan."
+            "value" : "Unduh dulu modelnya di Lupy Flow → Pengaturan."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Primeiro baixe os modelos em Coucou Flow → Ajustes."
+            "value" : "Primeiro baixe os modelos em Lupy Flow → Ajustes."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сначала скачайте модели в Coucou Flow → Настройки."
+            "value" : "Сначала скачайте модели в Lupy Flow → Настройки."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请先在 Coucou Flow →“设置”中下载模型。"
+            "value" : "请先在 Lupy Flow →“设置”中下载模型。"
           }
         }
       }
@@ -13341,61 +13341,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يكتب Coucou النص شخصًا بشخص…"
+            "value" : "يكتب Lupy النص شخصًا بشخص…"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou প্রতিজনের ট্রান্সক্রিপ্ট লিখছে…"
+            "value" : "Lupy প্রতিজনের ট্রান্সক্রিপ্ট লিখছে…"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou is writing the transcript, person by person…"
+            "value" : "Lupy is writing the transcript, person by person…"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou está escribiendo la transcripción, persona por persona…"
+            "value" : "Lupy está escribiendo la transcripción, persona por persona…"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou écrit la transcription, personne par personne…"
+            "value" : "Lupy écrit la transcription, personne par personne…"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou हर व्यक्ति के हिसाब से ट्रांसक्रिप्ट लिख रहा है…"
+            "value" : "Lupy हर व्यक्ति के हिसाब से ट्रांसक्रिप्ट लिख रहा है…"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou sedang menulis transkrip, per orang…"
+            "value" : "Lupy sedang menulis transkrip, per orang…"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O Coucou está escrevendo a transcrição, pessoa por pessoa…"
+            "value" : "O Lupy está escrevendo a transcrição, pessoa por pessoa…"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou составляет расшифровку по участникам…"
+            "value" : "Lupy составляет расшифровку по участникам…"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 正在按人逐句写转写…"
+            "value" : "Lupy 正在按人逐句写转写…"
           }
         }
       }
@@ -13666,61 +13666,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يكتب Coucou مكالماتك على جهاز Mac باستخدام Parakeet، ويميّز الأصوات بنموذج صغير ثانٍ. يُنزَّل الاثنان مرة واحدة (نحو 650 ميغابايت)، ثم يعمل كل شيء بلا إنترنت."
+            "value" : "يكتب Lupy مكالماتك على جهاز Mac باستخدام Parakeet، ويميّز الأصوات بنموذج صغير ثانٍ. يُنزَّل الاثنان مرة واحدة (نحو 650 ميغابايت)، ثم يعمل كل شيء بلا إنترنت."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou Parakeet দিয়ে আপনার Mac-এই কল লিখে ফেলে, আর দ্বিতীয় একটি ছোট মডেল দিয়ে কণ্ঠ আলাদা করে। দুটোই একবার ডাউনলোড হয় (প্রায় ৬৫০ MB), তারপর সব অফলাইনে চলে।"
+            "value" : "Lupy Parakeet দিয়ে আপনার Mac-এই কল লিখে ফেলে, আর দ্বিতীয় একটি ছোট মডেল দিয়ে কণ্ঠ আলাদা করে। দুটোই একবার ডাউনলোড হয় (প্রায় ৬৫০ MB), তারপর সব অফলাইনে চলে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou writes your calls on your Mac with Parakeet, and tells the voices apart with a second small model. Both are downloaded once (about 650 MB), then everything works offline."
+            "value" : "Lupy writes your calls on your Mac with Parakeet, and tells the voices apart with a second small model. Both are downloaded once (about 650 MB), then everything works offline."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou transcribe tus llamadas en tu Mac con Parakeet y distingue las voces con un segundo modelo pequeño. Ambos se descargan una vez (unos 650 MB) y luego todo funciona sin conexión."
+            "value" : "Lupy transcribe tus llamadas en tu Mac con Parakeet y distingue las voces con un segundo modelo pequeño. Ambos se descargan una vez (unos 650 MB) y luego todo funciona sin conexión."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou écrit tes calls sur ton Mac avec Parakeet, et reconnaît les voix avec un second petit modèle. Les deux se téléchargent une fois (environ 650 Mo), puis tout marche hors ligne."
+            "value" : "Lupy écrit tes calls sur ton Mac avec Parakeet, et reconnaît les voix avec un second petit modèle. Les deux se téléchargent une fois (environ 650 Mo), puis tout marche hors ligne."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou आपकी कॉल Parakeet से आपके Mac पर ही लिखता है, और एक दूसरे छोटे मॉडल से आवाज़ें पहचानता है। दोनों एक बार डाउनलोड होते हैं (लगभग 650 MB), फिर सब ऑफ़लाइन चलता है।"
+            "value" : "Lupy आपकी कॉल Parakeet से आपके Mac पर ही लिखता है, और एक दूसरे छोटे मॉडल से आवाज़ें पहचानता है। दोनों एक बार डाउनलोड होते हैं (लगभग 650 MB), फिर सब ऑफ़लाइन चलता है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou menulis panggilanmu di Mac dengan Parakeet, dan membedakan suara dengan model kecil kedua. Keduanya diunduh sekali (sekitar 650 MB), lalu semuanya bekerja luring."
+            "value" : "Lupy menulis panggilanmu di Mac dengan Parakeet, dan membedakan suara dengan model kecil kedua. Keduanya diunduh sekali (sekitar 650 MB), lalu semuanya bekerja luring."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O Coucou transcreve suas chamadas no seu Mac com o Parakeet e distingue as vozes com um segundo modelo pequeno. Os dois são baixados uma vez (cerca de 650 MB) e depois tudo funciona offline."
+            "value" : "O Lupy transcreve suas chamadas no seu Mac com o Parakeet e distingue as vozes com um segundo modelo pequeno. Os dois são baixados uma vez (cerca de 650 MB) e depois tudo funciona offline."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou записывает звонки текстом прямо на Mac с помощью Parakeet и различает голоса второй небольшой моделью. Обе скачиваются один раз (около 650 МБ), дальше всё работает без сети."
+            "value" : "Lupy записывает звонки текстом прямо на Mac с помощью Parakeet и различает голоса второй небольшой моделью. Обе скачиваются один раз (около 650 МБ), дальше всё работает без сети."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 用 Parakeet 在你的 Mac 上转写通话，并用第二个小模型区分说话人。两者只需下载一次（约 650 MB），之后一切离线运行。"
+            "value" : "Lupy 用 Parakeet 在你的 Mac 上转写通话，并用第二个小模型区分说话人。两者只需下载一次（约 650 MB），之后一切离线运行。"
           }
         }
       }
@@ -14318,61 +14318,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou » — كلمة التنشيط الصوتية"
+            "value" : "« OK Lupy » — كلمة التنشيط الصوتية"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou » — ভয়েস ওয়েক ওয়ার্ড"
+            "value" : "« OK Lupy » — ভয়েস ওয়েক ওয়ার্ড"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou » — voice wake word"
+            "value" : "« OK Lupy » — voice wake word"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou » — palabra de activación de voz"
+            "value" : "« OK Lupy » — palabra de activación de voz"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou » — commande vocale mains libres"
+            "value" : "« OK Lupy » — commande vocale mains libres"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou » — वॉइस वेक वर्ड"
+            "value" : "« OK Lupy » — वॉइस वेक वर्ड"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou » — kata pengaktif suara"
+            "value" : "« OK Lupy » — kata pengaktif suara"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou » — palavra de ativação de voz"
+            "value" : "« OK Lupy » — palavra de ativação de voz"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou » — голосовая активация"
+            "value" : "« OK Lupy » — голосовая активация"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Coucou » — 语音唤醒词"
+            "value" : "« OK Lupy » — 语音唤醒词"
           }
         }
       }
@@ -15018,61 +15018,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "هل تريد تثبيت خطافات Coucou في ~/.claude؟"
+            "value" : "هل تريد تثبيت خطافات Lupy في ~/.claude؟"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "~/.claude-এ Coucou হুক ইনস্টল করবেন?"
+            "value" : "~/.claude-এ Lupy হুক ইনস্টল করবেন?"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Install Coucou hooks in ~/.claude?"
+            "value" : "Install Lupy hooks in ~/.claude?"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Instalar los hooks de Coucou en ~/.claude?"
+            "value" : "¿Instalar los hooks de Lupy en ~/.claude?"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installer les hooks Coucou dans ~/.claude ?"
+            "value" : "Installer les hooks Lupy dans ~/.claude ?"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "~/.claude में Coucou हुक इंस्टॉल करें?"
+            "value" : "~/.claude में Lupy हुक इंस्टॉल करें?"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pasang hooks Coucou di ~/.claude?"
+            "value" : "Pasang hooks Lupy di ~/.claude?"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instalar os hooks do Coucou em ~/.claude?"
+            "value" : "Instalar os hooks do Lupy em ~/.claude?"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Установить хуки Coucou в ~/.claude?"
+            "value" : "Установить хуки Lupy в ~/.claude?"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "是否将 Coucou Hooks 安装到 ~/.claude？"
+            "value" : "是否将 Lupy Hooks 安装到 ~/.claude？"
           }
         }
       }
@@ -15146,61 +15146,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "السماح لـ Coucou بالتحكم في الموسيقى"
+            "value" : "السماح لـ Lupy بالتحكم في الموسيقى"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou-কে Music নিয়ন্ত্রণ করতে দিন"
+            "value" : "Lupy-কে Music নিয়ন্ত্রণ করতে দিন"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Allow Coucou to control Music"
+            "value" : "Allow Lupy to control Music"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permitir que Coucou controle Music"
+            "value" : "Permitir que Lupy controle Music"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autoriser Coucou à contrôler Music"
+            "value" : "Autoriser Lupy à contrôler Music"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou को Music नियंत्रित करने दें"
+            "value" : "Lupy को Music नियंत्रित करने दें"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Izinkan Coucou mengontrol Music"
+            "value" : "Izinkan Lupy mengontrol Music"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permitir que o Coucou controle o Music"
+            "value" : "Permitir que o Lupy controle o Music"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Разрешить Coucou управлять Music"
+            "value" : "Разрешить Lupy управлять Music"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "允许 Coucou 控制音乐"
+            "value" : "允许 Lupy 控制音乐"
           }
         }
       }
@@ -15210,61 +15210,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "السماح لـ Coucou بالتحكم في Spotify"
+            "value" : "السماح لـ Lupy بالتحكم في Spotify"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou-কে Spotify নিয়ন্ত্রণ করতে দিন"
+            "value" : "Lupy-কে Spotify নিয়ন্ত্রণ করতে দিন"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Allow Coucou to control Spotify"
+            "value" : "Allow Lupy to control Spotify"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permitir que Coucou controle Spotify"
+            "value" : "Permitir que Lupy controle Spotify"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autoriser Coucou à contrôler Spotify"
+            "value" : "Autoriser Lupy à contrôler Spotify"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou को Spotify नियंत्रित करने दें"
+            "value" : "Lupy को Spotify नियंत्रित करने दें"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Izinkan Coucou mengontrol Spotify"
+            "value" : "Izinkan Lupy mengontrol Spotify"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permitir que o Coucou controle o Spotify"
+            "value" : "Permitir que o Lupy controle o Spotify"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Разрешить Coucou управлять Spotify"
+            "value" : "Разрешить Lupy управлять Spotify"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "允许 Coucou 控制 Spotify"
+            "value" : "允许 Lupy 控制 Spotify"
           }
         }
       }
@@ -17203,61 +17203,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اختر الأدوات التي تستخدمها. يعرض Coucou فقط ما تُعلنه هنا."
+            "value" : "اختر الأدوات التي تستخدمها. يعرض Lupy فقط ما تُعلنه هنا."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "আপনি যে টুলগুলো ব্যবহার করেন তা বেছে নিন। Coucou শুধুমাত্র আপনার ঘোষণা করা জিনিস দেখায়।"
+            "value" : "আপনি যে টুলগুলো ব্যবহার করেন তা বেছে নিন। Lupy শুধুমাত্র আপনার ঘোষণা করা জিনিস দেখায়।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose the tools you use. Coucou only shows what you declare here."
+            "value" : "Choose the tools you use. Lupy only shows what you declare here."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige las herramientas que usas. Coucou solo muestra lo que declares aquí."
+            "value" : "Elige las herramientas que usas. Lupy solo muestra lo que declares aquí."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisis les outils que tu utilises. Coucou n'affiche que ce que tu déclares ici."
+            "value" : "Choisis les outils que tu utilises. Lupy n'affiche que ce que tu déclares ici."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "वे टूल चुनें जो आप उपयोग करते हैं। Coucou केवल वही दिखाता है जो आप यहाँ घोषित करते हैं।"
+            "value" : "वे टूल चुनें जो आप उपयोग करते हैं। Lupy केवल वही दिखाता है जो आप यहाँ घोषित करते हैं।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pilih alat yang Anda gunakan. Coucou hanya menampilkan yang Anda deklarasikan di sini."
+            "value" : "Pilih alat yang Anda gunakan. Lupy hanya menampilkan yang Anda deklarasikan di sini."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escolha as ferramentas que você usa. O Coucou mostra apenas o que você declarar aqui."
+            "value" : "Escolha as ferramentas que você usa. O Lupy mostra apenas o que você declarar aqui."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Выбери инструменты, которые ты используешь. Coucou показывает только то, что ты здесь объявишь."
+            "value" : "Выбери инструменты, которые ты используешь. Lupy показывает только то, что ты здесь объявишь."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择你使用的工具。Coucou 只显示你在这里声明的内容。"
+            "value" : "选择你使用的工具。Lupy 只显示你在这里声明的内容。"
           }
         }
       }
@@ -18290,10 +18290,24 @@
       }
     },
     "Coucou" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lupy"
+          }
+        }
+      }
     },
     "Coucou · github.com/Louis-CFM/coucou" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Based on Coucou by Louis Raillé · github.com/Louis-CFM/coucou"
+          }
+        }
+      }
     },
     "crypto.alert %lld" : {
       "localizations" : {
@@ -22289,61 +22303,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "التعليمات المُرسَلة من iPhone تستخدم النموذج المفتوح حاليًا في الدردشة. يُطبَّق موجه النظام وتاريخ المحادثة. التعليمات المُرسَلة أثناء توقف Coucou تُضاف إلى قائمة الانتظار وتُنفَّذ عند التشغيل التالي."
+            "value" : "التعليمات المُرسَلة من iPhone تستخدم النموذج المفتوح حاليًا في الدردشة. يُطبَّق موجه النظام وتاريخ المحادثة. التعليمات المُرسَلة أثناء توقف Lupy تُضاف إلى قائمة الانتظار وتُنفَّذ عند التشغيل التالي."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iPhone থেকে পাঠানো নির্দেশনা চ্যাটে বর্তমানে খোলা মডেল ব্যবহার করে। সিস্টেম প্রম্পট এবং কথোপকথনের ইতিহাস প্রযোজ্য। Coucou চলছে না থাকলে পাঠানো নির্দেশনাগুলো কিউতে রাখা হয় এবং পরবর্তী চালুতে চালানো হয়।"
+            "value" : "iPhone থেকে পাঠানো নির্দেশনা চ্যাটে বর্তমানে খোলা মডেল ব্যবহার করে। সিস্টেম প্রম্পট এবং কথোপকথনের ইতিহাস প্রযোজ্য। Lupy চলছে না থাকলে পাঠানো নির্দেশনাগুলো কিউতে রাখা হয় এবং পরবর্তী চালুতে চালানো হয়।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "An instruction sent from the iPhone uses the model open in chat. The system prompt and conversation history apply. Instructions sent when Coucou is not running are queued and executed on next launch."
+            "value" : "An instruction sent from the iPhone uses the model open in chat. The system prompt and conversation history apply. Instructions sent when Lupy is not running are queued and executed on next launch."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Una instrucción enviada desde el iPhone usa el modelo abierto actualmente en el chat. Se aplican el prompt de sistema y el historial de conversación. Las instrucciones enviadas mientras Coucou no está en ejecución se ponen en cola y se ejecutan en el siguiente inicio."
+            "value" : "Una instrucción enviada desde el iPhone usa el modelo abierto actualmente en el chat. Se aplican el prompt de sistema y el historial de conversación. Las instrucciones enviadas mientras Lupy no está en ejecución se ponen en cola y se ejecutan en el siguiente inicio."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Une instruction envoyée depuis l'iPhone utilise le modèle ouvert dans le chat. Le prompt système et l'historique de conversation s'appliquent. Les instructions envoyées quand Coucou ne tourne pas sont mises en file d'attente et exécutées au prochain démarrage."
+            "value" : "Une instruction envoyée depuis l'iPhone utilise le modèle ouvert dans le chat. Le prompt système et l'historique de conversation s'appliquent. Les instructions envoyées quand Lupy ne tourne pas sont mises en file d'attente et exécutées au prochain démarrage."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iPhone से भेजा गया निर्देश चैट में वर्तमान में खुले मॉडल का उपयोग करता है। सिस्टम प्रॉम्प्ट और बातचीत का इतिहास लागू होता है। Coucou चल नहीं रहे होने पर भेजे गए निर्देश कतार में रखे जाते हैं और अगली बार चालू होने पर चलाए जाते हैं।"
+            "value" : "iPhone से भेजा गया निर्देश चैट में वर्तमान में खुले मॉडल का उपयोग करता है। सिस्टम प्रॉम्प्ट और बातचीत का इतिहास लागू होता है। Lupy चल नहीं रहे होने पर भेजे गए निर्देश कतार में रखे जाते हैं और अगली बार चालू होने पर चलाए जाते हैं।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instruksi yang dikirim dari iPhone menggunakan model yang sedang terbuka di chat. Prompt sistem dan riwayat percakapan berlaku. Instruksi yang dikirim saat Coucou tidak berjalan dimasukkan ke antrean dan dijalankan saat peluncuran berikutnya."
+            "value" : "Instruksi yang dikirim dari iPhone menggunakan model yang sedang terbuka di chat. Prompt sistem dan riwayat percakapan berlaku. Instruksi yang dikirim saat Lupy tidak berjalan dimasukkan ke antrean dan dijalankan saat peluncuran berikutnya."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uma instrução enviada pelo iPhone usa o modelo aberto no momento no chat. O prompt de sistema e o histórico de conversa se aplicam. Instruções enviadas enquanto o Coucou não está em execução ficam na fila e são executadas no próximo início."
+            "value" : "Uma instrução enviada pelo iPhone usa o modelo aberto no momento no chat. O prompt de sistema e o histórico de conversa se aplicam. Instruções enviadas enquanto o Lupy não está em execução ficam na fila e são executadas no próximo início."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Инструкция, отправленная с iPhone, использует модель, открытую в чате. Системный промпт и история разговора применяются. Инструкции, отправленные пока Coucou не запущен, ставятся в очередь и выполняются при следующем запуске."
+            "value" : "Инструкция, отправленная с iPhone, использует модель, открытую в чате. Системный промпт и история разговора применяются. Инструкции, отправленные пока Lupy не запущен, ставятся в очередь и выполняются при следующем запуске."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "从 iPhone 发送的指令使用聊天中当前打开的模型。系统提示和对话历史适用。Coucou 未运行时发送的指令将排队，并在下次启动时执行。"
+            "value" : "从 iPhone 发送的指令使用聊天中当前打开的模型。系统提示和对话历史适用。Lupy 未运行时发送的指令将排队，并在下次启动时执行。"
           }
         }
       }
@@ -22417,61 +22431,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يمر عبر ريلاي Coucou إلى خدمة Apple للإشعارات. يُرسَل فقط اسم الوكيل وحالته: لا اسم مشروع ولا أمر ولا مسار."
+            "value" : "يمر عبر ريلاي Lupy إلى خدمة Apple للإشعارات. يُرسَل فقط اسم الوكيل وحالته: لا اسم مشروع ولا أمر ولا مسار."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple-এর পুশ সার্ভিসে Coucou রিলের মাধ্যমে যায়। শুধুমাত্র এজেন্টের নাম এবং অবস্থা পাঠানো হয়: কোনো প্রজেক্ট নাম, কমান্ড বা পাথ নয়।"
+            "value" : "Apple-এর পুশ সার্ভিসে Lupy রিলের মাধ্যমে যায়। শুধুমাত্র এজেন্টের নাম এবং অবস্থা পাঠানো হয়: কোনো প্রজেক্ট নাম, কমান্ড বা পাথ নয়।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Goes through the Coucou relay to Apple's push service. Only the agent name and state are sent: no project name, command, or path."
+            "value" : "Goes through the Lupy relay to Apple's push service. Only the agent name and state are sent: no project name, command, or path."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pasa por el relay de Coucou al servicio push de Apple. Solo se envían el nombre y el estado del agente: sin nombre de proyecto, comando ni ruta."
+            "value" : "Pasa por el relay de Lupy al servicio push de Apple. Solo se envían el nombre y el estado del agente: sin nombre de proyecto, comando ni ruta."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Passe par le relais Coucou vers le service push d'Apple. Seuls le nom et l'état de l'agent sont envoyés : aucun nom de projet, commande ou chemin."
+            "value" : "Passe par le relais Lupy vers le service push d'Apple. Seuls le nom et l'état de l'agent sont envoyés : aucun nom de projet, commande ou chemin."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou रिले के माध्यम से Apple के पुश सर्विस से जाता है। केवल एजेंट का नाम और स्थिति भेजी जाती है: कोई प्रोजेक्ट नाम, कमांड या पाथ नहीं।"
+            "value" : "Lupy रिले के माध्यम से Apple के पुश सर्विस से जाता है। केवल एजेंट का नाम और स्थिति भेजी जाती है: कोई प्रोजेक्ट नाम, कमांड या पाथ नहीं।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Melewati relay Coucou ke layanan push Apple. Hanya nama dan status agen yang dikirim: tanpa nama proyek, perintah, atau jalur."
+            "value" : "Melewati relay Lupy ke layanan push Apple. Hanya nama dan status agen yang dikirim: tanpa nama proyek, perintah, atau jalur."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Passa pelo relay do Coucou para o serviço push da Apple. Apenas o nome e o estado do agente são enviados: sem nome de projeto, comando ou caminho."
+            "value" : "Passa pelo relay do Lupy para o serviço push da Apple. Apenas o nome e o estado do agente são enviados: sem nome de projeto, comando ou caminho."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Проходит через ретранслятор Coucou к сервису push Apple. Отправляются только имя и состояние агента: без имени проекта, команды или пути."
+            "value" : "Проходит через ретранслятор Lupy к сервису push Apple. Отправляются только имя и состояние агента: без имени проекта, команды или пути."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "通过 Coucou 中继传至 Apple 推送服务。仅发送 Agent 的名称和状态：不含项目名称、命令或路径。"
+            "value" : "通过 Lupy 中继传至 Apple 推送服务。仅发送 Agent 的名称和状态：不含项目名称、命令或路径。"
           }
         }
       }
@@ -22545,61 +22559,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يُرسل جلساتك إلى iCloud الخاص بك لتطبيق Coucou على iPhone. تُشفَّر أسماء المشاريع والأوامر والأسئلة بمفاتيح iCloud الخاصة بك. إيقاف التشغيل يحذفها من iCloud."
+            "value" : "يُرسل جلساتك إلى iCloud الخاص بك لتطبيق Lupy على iPhone. تُشفَّر أسماء المشاريع والأوامر والأسئلة بمفاتيح iCloud الخاصة بك. إيقاف التشغيل يحذفها من iCloud."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou iPhone অ্যাপের জন্য আপনার সেশনগুলো আপনার প্রাইভেট iCloud-এ পাঠায়। প্রজেক্টের নাম, কমান্ড এবং প্রশ্নগুলো আপনার iCloud কী দিয়ে এনক্রিপ্ট করা হয়। বন্ধ করলে iCloud থেকে মুছে যাবে।"
+            "value" : "Lupy iPhone অ্যাপের জন্য আপনার সেশনগুলো আপনার প্রাইভেট iCloud-এ পাঠায়। প্রজেক্টের নাম, কমান্ড এবং প্রশ্নগুলো আপনার iCloud কী দিয়ে এনক্রিপ্ট করা হয়। বন্ধ করলে iCloud থেকে মুছে যাবে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sends your sessions to your private iCloud for the Coucou app on iPhone. Project names, commands, and questions are encrypted with your iCloud keys. Disabling removes data from iCloud."
+            "value" : "Sends your sessions to your private iCloud for the Lupy app on iPhone. Project names, commands, and questions are encrypted with your iCloud keys. Disabling removes data from iCloud."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Envía tus sesiones a tu iCloud privado para la app Coucou de iPhone. Los nombres de proyecto, comandos y preguntas se cifran con tus claves de iCloud. Desactivarlo las elimina de iCloud."
+            "value" : "Envía tus sesiones a tu iCloud privado para la app Lupy de iPhone. Los nombres de proyecto, comandos y preguntas se cifran con tus claves de iCloud. Desactivarlo las elimina de iCloud."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Envoie tes sessions sur ton iCloud privé pour l'app Coucou sur iPhone. Les noms de projets, commandes et questions sont chiffrés avec tes clés iCloud. Désactiver supprime les données d'iCloud."
+            "value" : "Envoie tes sessions sur ton iCloud privé pour l'app Lupy sur iPhone. Les noms de projets, commandes et questions sont chiffrés avec tes clés iCloud. Désactiver supprime les données d'iCloud."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou iPhone ऐप के लिए आपके सेशन आपके प्राइवेट iCloud में भेजता है। प्रोजेक्ट नाम, कमांड और सवाल आपकी iCloud कुंजियों से एन्क्रिप्ट किए जाते हैं। बंद करने पर iCloud से हटा दिए जाते हैं।"
+            "value" : "Lupy iPhone ऐप के लिए आपके सेशन आपके प्राइवेट iCloud में भेजता है। प्रोजेक्ट नाम, कमांड और सवाल आपकी iCloud कुंजियों से एन्क्रिप्ट किए जाते हैं। बंद करने पर iCloud से हटा दिए जाते हैं।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mengirim sesi Anda ke iCloud pribadi Anda untuk aplikasi Coucou iPhone. Nama proyek, perintah, dan pertanyaan dienkripsi dengan kunci iCloud Anda. Mematikannya menghapusnya dari iCloud."
+            "value" : "Mengirim sesi Anda ke iCloud pribadi Anda untuk aplikasi Lupy iPhone. Nama proyek, perintah, dan pertanyaan dienkripsi dengan kunci iCloud Anda. Mematikannya menghapusnya dari iCloud."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Envia suas sessões para seu iCloud privado para o app Coucou no iPhone. Nomes de projetos, comandos e perguntas são criptografados com suas chaves do iCloud. Desativar remove-os do iCloud."
+            "value" : "Envia suas sessões para seu iCloud privado para o app Lupy no iPhone. Nomes de projetos, comandos e perguntas são criptografados com suas chaves do iCloud. Desativar remove-os do iCloud."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отправляет твои сессии в личный iCloud для приложения Coucou на iPhone. Имена проектов, команды и вопросы шифруются твоими ключами iCloud. Отключение удаляет их из iCloud."
+            "value" : "Отправляет твои сессии в личный iCloud для приложения Lupy на iPhone. Имена проектов, команды и вопросы шифруются твоими ключами iCloud. Отключение удаляет их из iCloud."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将你的会话发送到私有 iCloud，供 Coucou iPhone 应用使用。项目名称、命令和问题使用你的 iCloud 密钥加密。关闭后将从 iCloud 中删除。"
+            "value" : "将你的会话发送到私有 iCloud，供 Lupy iPhone 应用使用。项目名称、命令和问题使用你的 iCloud 密钥加密。关闭后将从 iCloud 中删除。"
           }
         }
       }
@@ -25131,61 +25145,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "فتح Coucou"
+            "value" : "فتح Lupy"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou খুলুন"
+            "value" : "Lupy খুলুন"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Coucou"
+            "value" : "Open Lupy"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir Coucou"
+            "value" : "Abrir Lupy"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrir Coucou"
+            "value" : "Ouvrir Lupy"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou खोलें"
+            "value" : "Lupy खोलें"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buka Coucou"
+            "value" : "Buka Lupy"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir Coucou"
+            "value" : "Abrir Lupy"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Открыть Coucou"
+            "value" : "Открыть Lupy"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Coucou"
+            "value" : "打开 Lupy"
           }
         }
       }
@@ -26348,61 +26362,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يعرض استخدام خطة Claude (الحدود الخمس ساعات والأسبوعية) في ترويسة الشريط العلوي. تضيف Coucou سطر حالة مُرحِّلاً إلى ~/.claude/settings.json. إن كان لديك سطر حالة بالفعل، يستمر في العمل كالمعتاد. للخططَين Pro وMax فقط."
+            "value" : "يعرض استخدام خطة Claude (الحدود الخمس ساعات والأسبوعية) في ترويسة الشريط العلوي. تضيف Lupy سطر حالة مُرحِّلاً إلى ~/.claude/settings.json. إن كان لديك سطر حالة بالفعل، يستمر في العمل كالمعتاد. للخططَين Pro وMax فقط."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "নচ হেডারে আপনার Claude প্ল্যানের ব্যবহার (৫ ঘণ্টা ও সাপ্তাহিক সীমা) দেখায়। Coucou ~/.claude/settings.json-এ একটি স্ট্যাটাস লাইন রিলে যোগ করে। আপনার কাছে ইতিমধ্যে স্ট্যাটাস লাইন থাকলে তা আগের মতোই কাজ করবে। শুধুমাত্র Pro এবং Max প্ল্যানের জন্য।"
+            "value" : "নচ হেডারে আপনার Claude প্ল্যানের ব্যবহার (৫ ঘণ্টা ও সাপ্তাহিক সীমা) দেখায়। Lupy ~/.claude/settings.json-এ একটি স্ট্যাটাস লাইন রিলে যোগ করে। আপনার কাছে ইতিমধ্যে স্ট্যাটাস লাইন থাকলে তা আগের মতোই কাজ করবে। শুধুমাত্র Pro এবং Max প্ল্যানের জন্য।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows your Claude plan usage (5-hour and weekly limits) in the notch header. Coucou adds a status line relay in ~/.claude/settings.json. If you already have a status line, it keeps working as before. Pro and Max plans only."
+            "value" : "Shows your Claude plan usage (5-hour and weekly limits) in the notch header. Lupy adds a status line relay in ~/.claude/settings.json. If you already have a status line, it keeps working as before. Pro and Max plans only."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muestra el uso de tu plan Claude (límites de 5 horas y semanales) en el encabezado del notch. Coucou añade una línea de estado relay en ~/.claude/settings.json. Si ya tienes una línea de estado, seguirá funcionando como antes. Solo planes Pro y Max."
+            "value" : "Muestra el uso de tu plan Claude (límites de 5 horas y semanales) en el encabezado del notch. Lupy añade una línea de estado relay en ~/.claude/settings.json. Si ya tienes una línea de estado, seguirá funcionando como antes. Solo planes Pro y Max."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Affiche ton utilisation du forfait Claude (limites de 5 heures et hebdomadaire) dans l'en-tête de l'encoche. Coucou ajoute un relais de ligne de statut dans ~/.claude/settings.json. Si tu as déjà une ligne de statut, elle continue de fonctionner comme avant. Forfaits Pro et Max uniquement."
+            "value" : "Affiche ton utilisation du forfait Claude (limites de 5 heures et hebdomadaire) dans l'en-tête de l'encoche. Lupy ajoute un relais de ligne de statut dans ~/.claude/settings.json. Si tu as déjà une ligne de statut, elle continue de fonctionner comme avant. Forfaits Pro et Max uniquement."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "नॉच हेडर में आपके Claude प्लान का उपयोग (5 घंटे और साप्ताहिक सीमाएं) दिखाता है। Coucou ~/.claude/settings.json में एक स्टेटस लाइन रिले जोड़ता है। अगर आपके पास पहले से स्टेटस लाइन है, तो वह पहले की तरह काम करती रहेगी। केवल Pro और Max प्लान के लिए।"
+            "value" : "नॉच हेडर में आपके Claude प्लान का उपयोग (5 घंटे और साप्ताहिक सीमाएं) दिखाता है। Lupy ~/.claude/settings.json में एक स्टेटस लाइन रिले जोड़ता है। अगर आपके पास पहले से स्टेटस लाइन है, तो वह पहले की तरह काम करती रहेगी। केवल Pro और Max प्लान के लिए।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Menampilkan penggunaan paket Claude (batas 5 jam dan mingguan) di header notch. Coucou menambahkan relay baris status ke ~/.claude/settings.json. Jika Anda sudah memiliki baris status, tetap berjalan seperti sebelumnya. Hanya untuk paket Pro dan Max."
+            "value" : "Menampilkan penggunaan paket Claude (batas 5 jam dan mingguan) di header notch. Lupy menambahkan relay baris status ke ~/.claude/settings.json. Jika Anda sudah memiliki baris status, tetap berjalan seperti sebelumnya. Hanya untuk paket Pro dan Max."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostra o uso do seu plano Claude (limites de 5 horas e semanais) no cabeçalho do notch. O Coucou adiciona um relay de linha de status ao ~/.claude/settings.json. Se você já tiver uma linha de status, ela continua funcionando normalmente. Apenas planos Pro e Max."
+            "value" : "Mostra o uso do seu plano Claude (limites de 5 horas e semanais) no cabeçalho do notch. O Lupy adiciona um relay de linha de status ao ~/.claude/settings.json. Se você já tiver uma linha de status, ela continua funcionando normalmente. Apenas planos Pro e Max."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Показывает использование плана Claude (лимиты на 5 часов и на неделю) в шапке нотча. Coucou добавляет ретранслятор строки статуса в ~/.claude/settings.json. Если строка статуса уже есть, она продолжит работать как прежде. Только для планов Pro и Max."
+            "value" : "Показывает использование плана Claude (лимиты на 5 часов и на неделю) в шапке нотча. Lupy добавляет ретранслятор строки статуса в ~/.claude/settings.json. Если строка статуса уже есть, она продолжит работать как прежде. Только для планов Pro и Max."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在刘海标头中显示你的 Claude 计划用量（5 小时及每周限额）。Coucou 会在 ~/.claude/settings.json 中添加一条状态栏中继。如果你已有状态栏，它将照常运行。仅限 Pro 和 Max 计划。"
+            "value" : "在刘海标头中显示你的 Claude 计划用量（5 小时及每周限额）。Lupy 会在 ~/.claude/settings.json 中添加一条状态栏中继。如果你已有状态栏，它将照常运行。仅限 Pro 和 Max 计划。"
           }
         }
       }
@@ -27756,61 +27770,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تظهر طلبات الموافقة في الشريط. إذا لم تكن Coucou تعمل، يعود Hermes إلى طرفيته الخاصة."
+            "value" : "تظهر طلبات الموافقة في الشريط. إذا لم تكن Lupy تعمل، يعود Hermes إلى طرفيته الخاصة."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "নচে অনুমোদন অনুরোধ দেখানো হয়। Coucou না চললে Hermes তার নিজের প্রম্পটে ফলব্যাক করে।"
+            "value" : "নচে অনুমোদন অনুরোধ দেখানো হয়। Lupy না চললে Hermes তার নিজের প্রম্পটে ফলব্যাক করে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Approval requests appear in the notch. If Coucou is not running, Hermes falls back to its own prompt."
+            "value" : "Approval requests appear in the notch. If Lupy is not running, Hermes falls back to its own prompt."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Las solicitudes de aprobación aparecen en el notch. Si Coucou no está en ejecución, Hermes usa su propio prompt."
+            "value" : "Las solicitudes de aprobación aparecen en el notch. Si Lupy no está en ejecución, Hermes usa su propio prompt."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les demandes d'approbation s'affichent dans le notch. Si Coucou ne tourne pas, Hermes utilise son propre prompt."
+            "value" : "Les demandes d'approbation s'affichent dans le notch. Si Lupy ne tourne pas, Hermes utilise son propre prompt."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "नॉच में अनुमोदन अनुरोध दिखाए जाते हैं। यदि Coucou नहीं चल रहा तो Hermes अपने प्रॉम्प्ट पर वापस जाता है।"
+            "value" : "नॉच में अनुमोदन अनुरोध दिखाए जाते हैं। यदि Lupy नहीं चल रहा तो Hermes अपने प्रॉम्प्ट पर वापस जाता है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permintaan persetujuan muncul di notch. Jika Coucou tidak berjalan, Hermes menggunakan promptnya sendiri."
+            "value" : "Permintaan persetujuan muncul di notch. Jika Lupy tidak berjalan, Hermes menggunakan promptnya sendiri."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solicitações de aprovação aparecem no notch. Se Coucou não estiver em execução, Hermes usa seu próprio prompt."
+            "value" : "Solicitações de aprovação aparecem no notch. Se Lupy não estiver em execução, Hermes usa seu próprio prompt."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Запросы подтверждения отображаются в notch. Если Coucou не запущен, Hermes использует собственный prompt."
+            "value" : "Запросы подтверждения отображаются в notch. Если Lupy не запущен, Hermes использует собственный prompt."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "审批请求显示在刘海中。若 Coucou 未运行，Hermes 将回退到其自己的提示。"
+            "value" : "审批请求显示在刘海中。若 Lupy 未运行，Hermes 将回退到其自己的提示。"
           }
         }
       }
@@ -29291,61 +29305,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "العنوان العام فقط. لا تمس Coucou مفاتيحك الخاصة أبداً."
+            "value" : "العنوان العام فقط. لا تمس Lupy مفاتيحك الخاصة أبداً."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "শুধুমাত্র পাবলিক ঠিকানা। Coucou কখনো আপনার প্রাইভেট কী স্পর্শ করে না।"
+            "value" : "শুধুমাত্র পাবলিক ঠিকানা। Lupy কখনো আপনার প্রাইভেট কী স্পর্শ করে না।"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur öffentliche Adresse. Coucou berührt nie deine privaten Schlüssel."
+            "value" : "Nur öffentliche Adresse. Lupy berührt nie deine privaten Schlüssel."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Public address only. Coucou never touches your private keys."
+            "value" : "Public address only. Lupy never touches your private keys."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo dirección pública. Coucou nunca toca tus claves privadas."
+            "value" : "Solo dirección pública. Lupy nunca toca tus claves privadas."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adresse publique uniquement. Coucou ne touche jamais vos clés privées."
+            "value" : "Adresse publique uniquement. Lupy ne touche jamais vos clés privées."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "केवल सार्वजनिक पता। Coucou आपकी प्राइवेट कीज़ को कभी नहीं छूता।"
+            "value" : "केवल सार्वजनिक पता। Lupy आपकी प्राइवेट कीज़ को कभी नहीं छूता।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hanya alamat publik. Coucou tidak pernah menyentuh kunci privat Anda."
+            "value" : "Hanya alamat publik. Lupy tidak pernah menyentuh kunci privat Anda."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apenas endereço público. Coucou nunca toca suas chaves privadas."
+            "value" : "Apenas endereço público. Lupy nunca toca suas chaves privadas."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "仅公开地址。Coucou 从不接触您的私钥。"
+            "value" : "仅公开地址。Lupy 从不接触您的私钥。"
           }
         }
       }
@@ -31607,61 +31621,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "إعادة تشغيل Coucou"
+            "value" : "إعادة تشغيل Lupy"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou পুনরায় শুরু করুন"
+            "value" : "Lupy পুনরায় শুরু করুন"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Restart Coucou"
+            "value" : "Restart Lupy"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reiniciar Coucou"
+            "value" : "Reiniciar Lupy"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Redémarrer Coucou"
+            "value" : "Redémarrer Lupy"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou को पुनः आरंभ करें"
+            "value" : "Lupy को पुनः आरंभ करें"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mulai ulang Coucou"
+            "value" : "Mulai ulang Lupy"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reiniciar Coucou"
+            "value" : "Reiniciar Lupy"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Перезапустить Coucou"
+            "value" : "Перезапустить Lupy"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重启 Coucou"
+            "value" : "重启 Lupy"
           }
         }
       }
@@ -32509,61 +32523,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "الإعدادات — Coucou"
+            "value" : "الإعدادات — Lupy"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "সেটিংস — Coucou"
+            "value" : "সেটিংস — Lupy"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Settings — Coucou"
+            "value" : "Settings — Lupy"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajustes — Coucou"
+            "value" : "Ajustes — Lupy"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Réglages — Coucou"
+            "value" : "Réglages — Lupy"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "सेटिंग्स — Coucou"
+            "value" : "सेटिंग्स — Lupy"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pengaturan — Coucou"
+            "value" : "Pengaturan — Lupy"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configurações — Coucou"
+            "value" : "Configurações — Lupy"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Настройки — Coucou"
+            "value" : "Настройки — Lupy"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置 — Coucou"
+            "value" : "设置 — Lupy"
           }
         }
       }
@@ -34238,61 +34252,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "التحدث إلى Coucou"
+            "value" : "التحدث إلى Lupy"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou-এর সাথে কথা বলুন"
+            "value" : "Lupy-এর সাথে কথা বলুন"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Talk to Coucou"
+            "value" : "Talk to Lupy"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hablar con Coucou"
+            "value" : "Hablar con Lupy"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parler à Coucou"
+            "value" : "Parler à Lupy"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou से बात करें"
+            "value" : "Lupy से बात करें"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bicara ke Coucou"
+            "value" : "Bicara ke Lupy"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Falar com Coucou"
+            "value" : "Falar com Lupy"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Говорить с Coucou"
+            "value" : "Говорить с Lupy"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "与 Coucou 对话"
+            "value" : "与 Lupy 对话"
           }
         }
       }
@@ -34490,7 +34504,14 @@
       }
     },
     "Shows your Codex plan usage (weekly limit and free resets left) in the notch header. Coucou asks the Codex CLI (codex app-server) when the pill shows; nothing is installed. Codex must be signed in with ChatGPT." : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows your Codex plan usage (weekly limit and free resets left) in the notch header. Lupy asks the Codex CLI (codex app-server) when the pill shows; nothing is installed. Codex must be signed in with ChatGPT."
+          }
+        }
+      }
     },
     "Shuffle off" : {
       "localizations" : {
@@ -38987,61 +39008,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou يجيب بـ"
+            "value" : "Lupy يجيب بـ"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou উত্তর দেয়"
+            "value" : "Lupy উত্তর দেয়"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou answers in"
+            "value" : "Lupy answers in"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou responde en"
+            "value" : "Lupy responde en"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou répond en"
+            "value" : "Lupy répond en"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou जवाब देता है"
+            "value" : "Lupy जवाब देता है"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou menjawab dalam"
+            "value" : "Lupy menjawab dalam"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou responde em"
+            "value" : "Lupy responde em"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou отвечает на"
+            "value" : "Lupy отвечает на"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 回答语言"
+            "value" : "Lupy 回答语言"
           }
         }
       }
@@ -40987,55 +41008,55 @@
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou জোরে জবাব দেয়"
+            "value" : "Lupy জোরে জবাব দেয়"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou responds aloud"
+            "value" : "Lupy responds aloud"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou responde en voz alta"
+            "value" : "Lupy responde en voz alta"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou répond à voix haute"
+            "value" : "Lupy répond à voix haute"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou ज़ोर से जवाब देता है"
+            "value" : "Lupy ज़ोर से जवाब देता है"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou merespons dengan suara"
+            "value" : "Lupy merespons dengan suara"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou responde em voz alta"
+            "value" : "Lupy responde em voz alta"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou отвечает вслух"
+            "value" : "Lupy отвечает вслух"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 大声回应"
+            "value" : "Lupy 大声回应"
           }
         }
       }
@@ -41052,55 +41073,55 @@
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou কথ্য ভাষায় ফলাফল পড়ে। সবকিছু ডিভাইসেই হয়।"
+            "value" : "Lupy কথ্য ভাষায় ফলাফল পড়ে। সবকিছু ডিভাইসেই হয়।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou reads back results in the spoken language, using a synthesized voice. 100% on-device."
+            "value" : "Lupy reads back results in the spoken language, using a synthesized voice. 100% on-device."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou lee los resultados en el idioma hablado con una voz sintetizada. Todo en el dispositivo."
+            "value" : "Lupy lee los resultados en el idioma hablado con una voz sintetizada. Todo en el dispositivo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou lit les résultats dans la langue parlée. Tout se passe sur l'appareil."
+            "value" : "Lupy lit les résultats dans la langue parlée. Tout se passe sur l'appareil."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou बोली जाने वाली भाषा में परिणाम पढ़ता है। सब कुछ डिवाइस पर।"
+            "value" : "Lupy बोली जाने वाली भाषा में परिणाम पढ़ता है। सब कुछ डिवाइस पर।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou membaca hasil dalam bahasa yang diucapkan. Semuanya di perangkat."
+            "value" : "Lupy membaca hasil dalam bahasa yang diucapkan. Semuanya di perangkat."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou lê os resultados no idioma falado. Tudo no dispositivo."
+            "value" : "Lupy lê os resultados no idioma falado. Tudo no dispositivo."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou зачитывает результаты на языке команды. Всё на устройстве."
+            "value" : "Lupy зачитывает результаты на языке команды. Всё на устройстве."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou 用语音语言朗读结果。完全在设备上处理。"
+            "value" : "Lupy 用语音语言朗读结果。完全在设备上处理。"
           }
         }
       }
@@ -41306,61 +41327,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude عقل Coucou"
+            "value" : "Claude عقل Lupy"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou-র মস্তিষ্ক: Claude"
+            "value" : "Lupy-র মস্তিষ্ক: Claude"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude as Coucou's brain"
+            "value" : "Claude as Lupy's brain"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude como cerebro de Coucou"
+            "value" : "Claude como cerebro de Lupy"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude comme cerveau de Coucou"
+            "value" : "Claude comme cerveau de Lupy"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coucou का दिमाग: Claude"
+            "value" : "Lupy का दिमाग: Claude"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude sebagai otak Coucou"
+            "value" : "Claude sebagai otak Lupy"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude como cérebro do Coucou"
+            "value" : "Claude como cérebro do Lupy"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude — мозг Coucou"
+            "value" : "Claude — мозг Lupy"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "由 Claude 担任 Coucou 的大脑"
+            "value" : "由 Claude 担任 Lupy 的大脑"
           }
         }
       }
@@ -41371,61 +41392,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "بعد «OK Coucou»، يُرسل ما تقوله إلى Claude بمفتاح Anthropic API الخاص بك، مع ما يقرؤه Coucou للإجابة (حبوبك، بيانات خدماتك، عنوان جهة اتصال). ينفّذ ويبحث على الويب. لا يُرسل الصوت أبدًا."
+            "value" : "بعد «OK Lupy»، يُرسل ما تقوله إلى Claude بمفتاح Anthropic API الخاص بك، مع ما يقرؤه Lupy للإجابة (حبوبك، بيانات خدماتك، عنوان جهة اتصال). ينفّذ ويبحث على الويب. لا يُرسل الصوت أبدًا."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "«OK Coucou»-এর পরে তুমি যা বলো তা তোমার Anthropic API কী দিয়ে Claude-এর কাছে যায়, সঙ্গে Coucou উত্তর দিতে যা পড়ে (তোমার পিল, তোমার সার্ভিসের ডেটা, কোনো কন্টাক্টের ঠিকানা)। সে কাজ করে আর ওয়েবে খোঁজে। অডিও কখনো নয়।"
+            "value" : "«OK Lupy»-এর পরে তুমি যা বলো তা তোমার Anthropic API কী দিয়ে Claude-এর কাছে যায়, সঙ্গে Lupy উত্তর দিতে যা পড়ে (তোমার পিল, তোমার সার্ভিসের ডেটা, কোনো কন্টাক্টের ঠিকানা)। সে কাজ করে আর ওয়েবে খোঁজে। অডিও কখনো নয়।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "After «OK Coucou», what you say goes to Claude with your Anthropic API key, with what Coucou reads to answer (your pills, your services' data, a contact's address). It acts and searches the web. Never audio."
+            "value" : "After «OK Lupy», what you say goes to Claude with your Anthropic API key, with what Lupy reads to answer (your pills, your services' data, a contact's address). It acts and searches the web. Never audio."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tras «OK Coucou», lo que dices va a Claude con tu clave de API de Anthropic, junto con lo que Coucou lee para responder (tus píldoras, los datos de tus servicios, la dirección de un contacto). Actúa y busca en la web. Nunca el audio."
+            "value" : "Tras «OK Lupy», lo que dices va a Claude con tu clave de API de Anthropic, junto con lo que Lupy lee para responder (tus píldoras, los datos de tus servicios, la dirección de un contacto). Actúa y busca en la web. Nunca el audio."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Après « OK Coucou », ce que tu dis part chez Claude avec ta clé API Anthropic, avec ce que Coucou lit pour répondre (tes pilules, les données de tes services, l'adresse d'un contact). Il agit et cherche sur le web. Jamais l'audio."
+            "value" : "Après « OK Lupy », ce que tu dis part chez Claude avec ta clé API Anthropic, avec ce que Lupy lit pour répondre (tes pilules, les données de tes services, l'adresse d'un contact). Il agit et cherche sur le web. Jamais l'audio."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "«OK Coucou» के बाद तुम जो कहते हो वह तुम्हारी Anthropic API कुंजी से Claude को जाता है, साथ में वह जो Coucou जवाब देने के लिए पढ़ता है (तुम्हारी पिल्स, तुम्हारी सेवाओं का डेटा, किसी संपर्क का पता)। वह काम करता है और वेब पर खोजता है। ऑडियो कभी नहीं।"
+            "value" : "«OK Lupy» के बाद तुम जो कहते हो वह तुम्हारी Anthropic API कुंजी से Claude को जाता है, साथ में वह जो Lupy जवाब देने के लिए पढ़ता है (तुम्हारी पिल्स, तुम्हारी सेवाओं का डेटा, किसी संपर्क का पता)। वह काम करता है और वेब पर खोजता है। ऑडियो कभी नहीं।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Setelah «OK Coucou», ucapanmu dikirim ke Claude dengan kunci API Anthropic-mu, beserta apa yang dibaca Coucou untuk menjawab (pil-mu, data layananmu, alamat kontak). Ia bertindak dan mencari di web. Tidak pernah audio."
+            "value" : "Setelah «OK Lupy», ucapanmu dikirim ke Claude dengan kunci API Anthropic-mu, beserta apa yang dibaca Lupy untuk menjawab (pil-mu, data layananmu, alamat kontak). Ia bertindak dan mencari di web. Tidak pernah audio."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Depois de «OK Coucou», o que você diz vai para o Claude com sua chave de API da Anthropic, junto com o que o Coucou lê para responder (suas pílulas, os dados dos seus serviços, o endereço de um contato). Ele age e pesquisa na web. Nunca o áudio."
+            "value" : "Depois de «OK Lupy», o que você diz vai para o Claude com sua chave de API da Anthropic, junto com o que o Lupy lê para responder (suas pílulas, os dados dos seus serviços, o endereço de um contato). Ele age e pesquisa na web. Nunca o áudio."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "После «OK Coucou» сказанное уходит в Claude по твоему ключу Anthropic API вместе с тем, что Coucou читает для ответа (твои пилюли, данные твоих сервисов, адрес контакта). Он действует и ищет в интернете. Звук — никогда."
+            "value" : "После «OK Lupy» сказанное уходит в Claude по твоему ключу Anthropic API вместе с тем, что Lupy читает для ответа (твои пилюли, данные твоих сервисов, адрес контакта). Он действует и ищет в интернете. Звук — никогда."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "说「OK Coucou」后，你说的话会用你的 Anthropic API 密钥发送给 Claude，同时发送 Coucou 为回答而读取的内容（你的药丸、你的服务数据、联系人地址）。它会执行操作并进行网页搜索。从不发送音频。"
+            "value" : "说「OK Lupy」后，你说的话会用你的 Anthropic API 密钥发送给 Claude，同时发送 Lupy 为回答而读取的内容（你的药丸、你的服务数据、联系人地址）。它会执行操作并进行网页搜索。从不发送音频。"
           }
         }
       }
@@ -42598,61 +42619,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "عند التفعيل، يستمع Coucou لكلمة التنشيط « OK Coucou ». يعمل التعرف على الكلام بالكامل على الجهاز — لا يغادر أي صوت أو نص جهاز Mac."
+            "value" : "عند التفعيل، يستمع Lupy لكلمة التنشيط « OK Lupy ». يعمل التعرف على الكلام بالكامل على الجهاز — لا يغادر أي صوت أو نص جهاز Mac."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "সক্ষম হলে, Coucou ওয়েক ওয়ার্ড « OK Coucou » শোনে। ভাষণ স্বীকৃতি সম্পূর্ণ ডিভাইসে চলে — কোনো অডিও বা ট্রান্সক্রিপ্ট আপনার Mac ছেড়ে যায় না।"
+            "value" : "সক্ষম হলে, Lupy ওয়েক ওয়ার্ড « OK Lupy » শোনে। ভাষণ স্বীকৃতি সম্পূর্ণ ডিভাইসে চলে — কোনো অডিও বা ট্রান্সক্রিপ্ট আপনার Mac ছেড়ে যায় না।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When enabled, Coucou listens for the wake word « OK Coucou ». Speech recognition runs entirely on-device — no audio or transcript leaves your Mac."
+            "value" : "When enabled, Lupy listens for the wake word « OK Lupy ». Speech recognition runs entirely on-device — no audio or transcript leaves your Mac."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuando está activado, Coucou escucha la palabra de activación « OK Coucou ». El reconocimiento de voz se ejecuta completamente en el dispositivo — ningún audio ni transcripción sale de tu Mac."
+            "value" : "Cuando está activado, Lupy escucha la palabra de activación « OK Lupy ». El reconocimiento de voz se ejecuta completamente en el dispositivo — ningún audio ni transcripción sale de tu Mac."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quand cette option est activée, Coucou écoute le mot de réveil « OK Coucou ». La reconnaissance vocale se fait entièrement sur l’appareil — aucun audio ni transcription ne quitte votre Mac."
+            "value" : "Quand cette option est activée, Lupy écoute le mot de réveil « OK Lupy ». La reconnaissance vocale se fait entièrement sur l’appareil — aucun audio ni transcription ne quitte votre Mac."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "सक्षम होने पर, Coucou वेक शब्द « OK Coucou » सुनता है। वाक् पहचान पूरी तरह डिवाइस पर चलती है — कोई ऑडियो या ट्रांसक्रिप्ट आपके Mac को नहीं छोड़ता।"
+            "value" : "सक्षम होने पर, Lupy वेक शब्द « OK Lupy » सुनता है। वाक् पहचान पूरी तरह डिवाइस पर चलती है — कोई ऑडियो या ट्रांसक्रिप्ट आपके Mac को नहीं छोड़ता।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Saat diaktifkan, Coucou mendengarkan kata pengaktif « OK Coucou ». Pengenalan ucapan berjalan sepenuhnya di perangkat — tidak ada audio atau transkrip yang meninggalkan Mac Anda."
+            "value" : "Saat diaktifkan, Lupy mendengarkan kata pengaktif « OK Lupy ». Pengenalan ucapan berjalan sepenuhnya di perangkat — tidak ada audio atau transkrip yang meninggalkan Mac Anda."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quando ativado, o Coucou escuta a palavra de ativação « OK Coucou ». O reconhecimento de fala é executado inteiramente no dispositivo — nenhum áudio ou transcrição sai do seu Mac."
+            "value" : "Quando ativado, o Lupy escuta a palavra de ativação « OK Lupy ». O reconhecimento de fala é executado inteiramente no dispositivo — nenhum áudio ou transcrição sai do seu Mac."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Когда включено, Coucou слушает слово активации « OK Coucou ». Распознавание речи работает полностью на устройстве — никакие аудиозаписи или транскрипции не покидают ваш Mac."
+            "value" : "Когда включено, Lupy слушает слово активации « OK Lupy ». Распознавание речи работает полностью на устройстве — никакие аудиозаписи или транскрипции не покидают ваш Mac."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用后，Coucou 会监听唤醒词« OK Coucou »。语音识别完全在设备上运行—任何音频或文字记录都不会离开您的 Mac。"
+            "value" : "启用后，Lupy 会监听唤醒词« OK Lupy »。语音识别完全在设备上运行—任何音频或文字记录都不会离开您的 Mac。"
           }
         }
       }
