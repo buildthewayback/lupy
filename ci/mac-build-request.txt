@@ -1,2 +1,2 @@
-Build requested: 2026-10-16T18:20Z
-Reason: build F10 — F9 fix (one missing return); LUPY 2 candidate
+Build requested: 2026-10-16T19:20Z
+Reason: build F11 — LUPY 2 final; control self-test approved-Send observation disambiguated (F10 macOS-26 flake)
