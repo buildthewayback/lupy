@@ -1,2 +1,2 @@
-Build requested: 2026-10-16T09:05Z
-Reason: build F6 — first compile of the island conversation surface (.lupyChat, D-028–D-031); chat self-test + island-chat screenshot in verification
+Build requested: 2026-10-16T09:35Z
+Reason: build F7 — F6 compile fixes (captureInConversation, statusColor, Substring wraps); island conversation candidate
