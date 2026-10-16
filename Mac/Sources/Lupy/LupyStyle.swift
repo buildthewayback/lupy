@@ -2,8 +2,29 @@
 // colours (HubTheme, HubButtonStyle, HubLabel, HubEmptyState in FlowHub.swift / FlowHubMochis.swift),
 // so Lupy's pages look like the rest of the Coucou window. Names keep the ported screens readable.
 
+import AppKit
 import LupyCore
 import SwiftUI
+
+/// Lupy: true while Lupy is the frontmost app. The window's Mochis and band particles pause when
+/// it is not (Coucou's Flow window is occasional, so upstream animates whenever the window is
+/// visible; Lupy's main window stays open all day, and a background app must not burn CPU/battery).
+@MainActor
+final class LupyAppFrontmost: ObservableObject {
+    static let shared = LupyAppFrontmost()
+    @Published private(set) var value: Bool
+
+    private var observers: [NSObjectProtocol] = []
+
+    private init() {
+        value = NSApp?.isActive ?? true
+        for (name, v) in [(NSApplication.didBecomeActiveNotification, true), (NSApplication.didResignActiveNotification, false)] {
+            observers.append(NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.value = v }
+            })
+        }
+    }
+}
 
 enum LupyTheme {
     static let window = HubTheme.window

@@ -180,6 +180,8 @@ final class HubMochiTroupe: ObservableObject {
 struct HubMochiScene: View {
     @StateObject private var troupe: HubMochiTroupe
     @Environment(\.hubVisible) private var visible
+    // Lupy: also pause while another app is frontmost (this window stays open all day).
+    @StateObject private var lupyFront = LupyAppFrontmost.shared
 
     init(cast: [HubMochiSpec], range: ClosedRange<CGFloat> = 0.05...0.95) {
         _troupe = StateObject(wrappedValue: {
@@ -191,7 +193,7 @@ struct HubMochiScene: View {
 
     var body: some View {
         GeometryReader { geo in
-            TimelineView(.animation(paused: !visible)) { timeline in
+            TimelineView(.animation(paused: !visible || !lupyFront.value)) { timeline in   // Lupy: pause in background
                 let frame = timeline.date
                 Canvas { context, size in
                     _ = frame
@@ -421,9 +423,11 @@ struct HubHeroBackdrop: View {
     let light: HubHeroLight
     var cornerRadius: CGFloat = 18
     @Environment(\.hubVisible) private var visible
+    // Lupy: also pause while another app is frontmost.
+    @StateObject private var lupyFront = LupyAppFrontmost.shared
 
     var body: some View {
-        TimelineView(.animation(paused: !visible)) { timeline in
+        TimelineView(.animation(paused: !visible || !lupyFront.value)) { timeline in   // Lupy: pause in background
             let frame = timeline.date
             Canvas { context, size in
                 _ = frame
