@@ -1,6 +1,7 @@
 // Lupy — entry point. `Lupy --self-test [--report path]` runs the native self-test of the
 // assistant core and exits (CI, support). `Lupy --control-self-test [--report path]` exercises
-// computer control and the Lupy cursor on TextEdit. Otherwise Coucou's app starts as it always
+// computer control and the Lupy cursor on TextEdit. `Lupy --chat-self-test [--report path]`
+// drives the island's conversation loop end-to-end. Otherwise Coucou's app starts as it always
 // has, with Lupy's assistant started from its app delegate.
 
 import AppKit
@@ -16,6 +17,9 @@ enum LupyMain {
         }
         if args.contains("--control-self-test") {
             LupyControlSelfTest.runAndExit(arguments: args)
+        }
+        if args.contains("--chat-self-test") {
+            exit(LupyChatSelfTest.run(arguments: args))
         }
         NotchBuddyApp.main()
     }

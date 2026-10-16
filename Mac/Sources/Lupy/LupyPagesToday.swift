@@ -12,7 +12,7 @@ struct LupyTodayContent: View {
         let a = model.attention
         // Lupy (port): the greeting, status and Mochis are in the page's hero band (LupyTodayPage).
         VStack(alignment: .leading, spacing: 18) {
-            LupyCaptureBar()
+            LupyChatPanel()
             if LupyControlCenter.shared.isActive || LupyControlCenter.shared.lastRun != nil {
                 LupyControlStatusCard()
             }
@@ -68,91 +68,8 @@ struct LupyTodayContent: View {
     }
 }
 
-struct LupyCaptureBar: View {
-    private var model: LupyModel { LupyModel.shared }
-    @State private var text = ""
-    @State private var projectID: LupyID?
-    @State private var useModel = true
-    @State private var askMode = false
-    /// Lupy (port): Coucou's own dictation (on-device when the Mac supports it; several languages).
-    @State private var dictation = MacDictation()
-
-    var body: some View {
-        let projects = model.state.activeProjects
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top, spacing: 10) {
-                TextField(askMode ? "Ask Lupy anything about your work…" : "What do you want to get done? e.g. “Invoice ACME by Friday, then follow up next week”", text: $text, axis: .vertical)
-                    .textFieldStyle(.plain)
-                    .font(.system(size: 14))
-                    .lineLimit(1...5)
-                    .padding(12)
-                    .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(HubTheme.field))
-                    .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Color.white.opacity(0.1)))
-                    .onSubmit(submit)
-                    .onChange(of: dictation.transcript) { _, _ in
-                        if dictation.isRecording { text = dictation.text }
-                    }
-                Button {
-                    Task { @MainActor in
-                        if dictation.isRecording { text = await dictation.finish() }
-                        else { await dictation.start(from: text) }
-                    }
-                } label: {
-                    Image(systemName: dictation.isRecording ? "mic.fill" : "mic")
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundColor(dictation.isRecording ? Color(hex: "#F4505E") : Color(hex: "#A4A9B1"))
-                        .frame(width: 40, height: 40)
-                        .background(Circle().fill(Color.white.opacity(dictation.isRecording ? 0.12 : 0.06)))
-                }
-                .buttonStyle(.plain)
-                .help("Dictate. You see and can edit the text before anything is used.")
-                .accessibilityLabel(dictation.isRecording ? "Stop dictation" : "Dictate")
-            }
-            if dictation.isRecording {
-                Text("Listening… your words appear above; nothing is sent until you press \(askMode ? "Ask" : "Plan it").")
-                    .font(.system(size: 12)).foregroundColor(LupyTheme.secondary)
-            }
-            HStack(spacing: 12) {
-                Picker("", selection: $askMode) {
-                    Text("Plan a goal").tag(false)
-                    Text("Ask Lupy").tag(true)
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .frame(width: 190)
-                .disabled(!model.hasUsableModel && !askMode)
-                Picker("Project", selection: Binding(get: { projectID ?? model.defaultCaptureProject }, set: { projectID = $0 })) {
-                    ForEach(projects) { p in Text(p.name).tag(p.id) }
-                }
-                .frame(maxWidth: 260)
-                if askMode {
-                    EmptyView()
-                } else if model.hasUsableModel {
-                    Toggle("Plan with cloud model", isOn: $useModel).toggleStyle(.switch).controlSize(.small)
-                } else {
-                    Text("Offline planning").font(.system(size: 11.5)).foregroundColor(LupyTheme.muted).lineLimit(1)
-                        .help("No cloud model is set up, so Lupy plans with offline rules. Add one in Lupy → Assistant.")
-                }
-                Spacer()
-                Button(askMode ? "Ask" : "Plan it", action: submit).buttonStyle(LupyPrimaryButtonStyle()).disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    .keyboardShortcut(.return, modifiers: .command)
-            }
-        }
-        .padding(16)
-        .background(LupyCardBackground(wash: .soft))
-    }
-
-    private func submit() {
-        let t = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !t.isEmpty else { return }
-        if askMode {
-            model.ask(t, projectID: projectID ?? model.defaultCaptureProject)
-        } else {
-            model.capture(t, projectID: projectID ?? model.defaultCaptureProject, useModel: useModel && model.hasUsableModel)
-        }
-        text = ""
-    }
-}
+// LupyCaptureBar was replaced by LupyChatPanel (LupyChatPanel.swift): the same conversation
+// the island shows, with the project and planning options the window has room for.
 
 struct LupyPlanReviewCard: View {
     private var model: LupyModel { LupyModel.shared }

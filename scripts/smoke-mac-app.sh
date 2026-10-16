@@ -99,6 +99,32 @@ if [ -n "${PID:-}" ]; then
   kill "$QPID" 2>/dev/null
   pgrep -x Lupy >/dev/null && { echo "quit: forced" >> "$REPORT"; pkill -x Lupy; } || echo "quit: clean" >> "$REPORT"
 fi
+echo "== Island conversation (the quick interaction surface) — demo launch with the chat open" >> "$REPORT"
+SMOKE_DIR2="$(mktemp -d)/lupy-smoke-chat"
+open -n "$APP" --args --data-dir "$SMOKE_DIR2" --demo --show-island-chat
+sleep 11
+PID2=$(pgrep -x Lupy | head -1 || true)
+if [ -n "${PID2:-}" ]; then
+  echo "running: yes (pid $PID2)" >> "$REPORT"
+  if screencapture -x "$OUT/chat-full.png" 2>/dev/null; then
+    W2=$(sips -g pixelWidth "$OUT/chat-full.png" | awk '/pixelWidth/ {print $2}')
+    IW2=$(( W2 < 1000 ? W2 : 1000 ))
+    screencapture -x -R "$(( (W2 - IW2) / 2 )),0,${IW2},380" "$OUT/island-chat.png" 2>/dev/null && shrink "$OUT/island-chat.png" "$OUT/island-chat.b64"
+    echo "screenshot (island conversation): captured (${W2}px wide screen)" >> "$REPORT"
+  else
+    echo "screenshot: not available on this machine" >> "$REPORT"
+  fi
+else
+  echo "running: NO — the app exited or failed to launch" >> "$REPORT"
+  fail=1
+fi
+if [ -n "${PID2:-}" ]; then
+  osascript -e 'tell application id "app.lupy.Lupy" to quit' >/dev/null 2>&1 &
+  Q2=$!
+  for _ in 1 2 3 4 5 6 7 8; do pgrep -x Lupy >/dev/null || break; sleep 1; done
+  kill "$Q2" 2>/dev/null
+  pgrep -x Lupy >/dev/null && { echo "quit: forced" >> "$REPORT"; pkill -x Lupy; } || echo "quit: clean" >> "$REPORT"
+fi
 rm -f "$OUT"/*.png
 cat "$REPORT"
 exit $fail

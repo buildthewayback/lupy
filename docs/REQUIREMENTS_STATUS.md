@@ -99,3 +99,40 @@ design/decision. This record supersedes `docs/FUNCTIONAL_MATRIX.md` (D-027).
 4. Add one provider key (Lupy → Assistant) and try "Ask Lupy".
 5. Deliver one real handoff with "Deliver with Lupy" to the agent he actually uses.
 6. His comparison of the whole experience against the Coucou he remembers.
+
+## 6. The island as Lupy's quick-access control centre (directive 2026-10-16)
+
+Lupy = Coucou's visual foundation **adapted to serve Lupy's own interaction model** (D-028): the island
+is the quick interaction surface, the window is where deeper work is managed, and both share one
+conversation and one state. Implemented in the F6 campaign; verification states below.
+
+| Requirement | State | Implementation | Verification / evidence | Remaining |
+|---|---|---|---|---|
+| Click the island (or a configurable shortcut) → Lupy's interaction surface | IMPLEMENTED, NOT FULLY VERIFIED | `.lupyChat` island view (`LupyIslandChatView`) on Coucou's chrome; `defaultView()` returns it; the ⌃⌥Space `openChat` shortcut (changeable in Shortcuts settings) opens it; the Lupy pill's ↗ opens it; the pills stay one tap away inside it | Code + syntax pass; island-chat screenshot + journeys in build F6 | Founder's Air feel |
+| Idle: compact, unobtrusive, Mochi communicates availability | COMPLETE AND VERIFIED (upstream behaviour) | Coucou's own resting bar/Mochi, unmodified | [F] identical files; [V] animation check (F2–F5) | — |
+| Speak or type — one assistant | IMPLEMENTED, NOT FULLY VERIFIED | Same `LupyChat` for both surfaces; mic = Coucou's `MacDictation` (on-device when available, right-click language menu); typing = the same field | Code; chat self-test drives the send loop; dictation itself needs a live mic (founder) | Founder's mic on his Air |
+| Correct before sending (speech transcription editable) | IMPLEMENTED, NOT FULLY VERIFIED | The transcript lands in the editable TextField; nothing is sent until Send; the field says so while dictating | Code (same mechanism as Coucou's PromptView, upstream-tested); visual check in island-chat screenshot | Founder's mic |
+| Understand and respond; follow-ups in the same conversation | IMPLEMENTED, NOT FULLY VERIFIED | `ChatIntentRouter` (offline, deterministic) + `prepareConversationTurn` (last 12 turns, same budget/policy gate/ledger as every call); status questions answered locally from engine state | [T] Conversation suite: routing (9 cases), history inclusion, caps, local answers, usage-once | Live model answers need the founder's key |
+| Execute: goals → plan → approval → tasks; screen work via the Lupy cursor | IMPLEMENTED, NOT FULLY VERIFIED | Goal capture works offline (heuristic plan) or with an allowed model; plan card in the conversation with Approve/Reject/Open; control intents start the visible-cursor agent run with Esc/Stop | [CS] control suite (F3–F5); chat self-test: goal→plan→approve→tasks, honest control blocker | Model-driven control needs a key |
+| Ask me when necessary (approvals where I already am) | COMPLETE AND VERIFIED | Coucou's approval card still wins the island (LupyIslandBridge); the conversation mirrors the pending approval inline with Allow/Deny — same engine decision path | [CT] approval-queue tests; chat self-test drives decideApproval paths | — |
+| Finish: report the actual result, inspect, continue or dismiss | IMPLEMENTED, NOT FULLY VERIFIED | Model answers land in the conversation (retries stay "thinking"); plan outcomes and control runs report real outcomes (`statusLine`, notices); "Open workspace" opens Today with the same conversation | [CS] delivery honesty; chat self-test journey 8/9 | Live runs on founder's Mac |
+| Island and workspace share conversation, tasks, approvals, progress | IMPLEMENTED, NOT FULLY VERIFIED | One `LupyChat` singleton + one `LupyModel`; Today leads with the same panel (the old capture bar was replaced); starting in one surface continues in the other | Chat self-test; screenshots of both surfaces in F6 | Founder's hands-on pass |
+| Stop cancels what is queued | COMPLETE AND VERIFIED (control) / IMPLEMENTED, NOT FULLY VERIFIED (chat "stop") | Control `stop` cancels queued steps ([CS] 9/9); chat "stop" stops control, rejects a waiting plan, or pauses follow-ups — each answer says exactly what was stopped | [CS]; chat self-test journeys | — |
+| Animations correspond to real states (no fake working, no wasted CPU) | IMPLEMENTED, NOT FULLY VERIFIED | Mochi states: pill state machine (control/searching/working, approvals, thinking via `stateOverride` while a model call is in flight, sleeping when paused), `BotEmote.listening` while dictating; window canvases pause when not frontmost (D-026/F4 fix); island views stop their animations when hidden (upstream `islandViewActive`) | [V] CPU sampling (F4/F5); F6 re-checks with the conversation open | F6 numbers |
+| Settings: one coherent experience, real effects only | IMPLEMENTED, NOT FULLY VERIFIED | Assistant page reorganised around user needs (D-031): voice & activation (dictation language, wake-word and shortcut links), providers, personalisation & memory, computer control, autonomy, island/window links, usage; Coucou's own settings pages remain the single home of island/voice/shortcut specifics | Code review; screenshots | Founder's pass |
+| Dictation language preference persists | COMPLETE AND VERIFIED | `MacDictation.language` is UserDefaults-backed (upstream); the settings picker writes it | Upstream mechanism | — |
+
+### The founder's ten journeys (directive §7) — verification map
+
+| # | Journey | Automated evidence | Human evidence still needed |
+|---|---|---|---|
+| 1 | Open the island, submit a typed instruction | Chat self-test 1 (goal→plan card); island-chat screenshot (F6) | Founder's Air |
+| 2 | Dictate, correct transcription, submit | Mechanism = Coucou's PromptView mic (upstream); transcript-edit code path identical to the island chat; the field stays editable until Send | Live mic |
+| 3 | Continue with follow-ups | [T] history inclusion + 12-turn cap; chat self-test 8 | Live model key |
+| 4 | Start multi-step work, observe genuine progress | Chat self-test 1–2 (plan→tasks); pill ticker steps; [CS] control progress | Live run |
+| 5 | Open the workspace without losing the task | Same `LupyChat`/`LupyModel` singletons; panel shows the same messages (screenshot F6); "Open workspace" button | Founder's pass |
+| 6 | Approve / reject inline | Chat self-test 2 (approve); reject path in router tests; approval mirror card; island approval card [CT] | Founder's pass |
+| 7 | Stop; pending actions cancelled | [CS] Stop cancels queued steps; chat self-test 7 (plan rejected + honest idle answer) | Founder's pass |
+| 8 | Complete a task, inspect the result | Engine lifecycle [T]; answers/plan outcomes recorded with evidence (action ledger) | Founder's pass |
+| 9 | Change settings, restart, preferences persist | Engine settings journal [T]/[S]; dictation language UserDefaults; second-launch check in the download verification | Founder's pass |
+| 10 | Animations match real states; no excessive background CPU | [V] CPU samples frontmost/background (F4/F5 numbers); F6 re-measures with the conversation open; animation check both Macs | Founder's feel |

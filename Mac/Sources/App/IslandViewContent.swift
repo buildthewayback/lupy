@@ -45,6 +45,8 @@ struct IslandViewContent: View {
             #else
             EmptyView()
             #endif
+        case .lupyChat:   // Lupy: the assistant's own interaction surface
+            LupyIslandChatView()
         }
     }
 }

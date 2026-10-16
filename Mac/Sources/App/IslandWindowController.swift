@@ -658,7 +658,7 @@ final class IslandWindowController: NSWindowController {
 
         case .openChat:
             islandPanel.makeKey()
-            expand(to: .prompt)
+            expand(to: .lupyChat)   // Lupy: the assistant's conversation replaces Coucou's chat view
 
         case .goToAlert:
             if state.pendingApproval != nil {
@@ -1263,7 +1263,9 @@ final class IslandWindowController: NSWindowController {
 
     func defaultView() -> IslandView {
         if state.pendingApproval != nil { return .approval }
-        return state.tasks.isEmpty ? .empty : .overview
+        // Lupy: clicking the island (or the open/close shortcut) lands on Lupy's conversation —
+        // the quick interaction surface. The pills stay one tap away inside it.
+        return .lupyChat
     }
 
     func baseMode() -> IslandMode {

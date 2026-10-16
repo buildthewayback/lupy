@@ -53,3 +53,10 @@ job ran. The agent token cannot cancel runs (HTTP 403 on the cancel endpoint), s
 cancelled through the workflow's `concurrency: cancel-in-progress` by pushing another commit.
 Fix: the trigger no longer depends on commit-message text; a build is requested only by changing
 `ci/mac-build-request.txt` (or by clicking "Run workflow").
+
+### F6 campaign (island conversation) — planned
+F6 = first compile of the `.lupyChat` surface (+1 new view file, +3 hooked upstream files:
+IslandTypes, IslandRootView, IslandWindowController; IslandViewContent +2 lines). Core tests
+already green in-sandbox (106/106). If F6 compiles: F7 = delivery candidate. Estimated ≈13 + ≈13
+macOS minutes ≈ 268 Linux-equivalent; campaign total would reach ≈1,160 of 2,000 (58%) — still
+above the 30 % reserve.

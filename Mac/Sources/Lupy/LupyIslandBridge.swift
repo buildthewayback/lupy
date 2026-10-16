@@ -172,7 +172,7 @@ final class LupyIslandBridge {
                 withAnimation(.spring(response: 0.5, dampingFraction: 0.72)) { st.focusId = prev }
             }
         }
-        st.view = st.tasks.isEmpty ? .empty : .overview
+        st.view = .lupyChat   // Lupy: the conversation continues where the founder was interrupted
     }
 
     // MARK: - Notices
@@ -230,15 +230,15 @@ final class LupyIslandBridge {
         }
     }
 
-    /// The Lupy pill was clicked in the island: open the Lupy window where the answer is.
+    /// The Lupy pill was clicked in the island: open Lupy's conversation surface right here —
+    /// the quick interaction point. The workspace (full detail, tasks, handoffs) opens from the
+    /// conversation's own “Open workspace” button, or the Lupy window's sidebar.
     func openFromIsland() {
-        let model = LupyModel.shared
-        if !model.state.pendingApprovals.isEmpty {
-            model.open(.lupyNeedsYou)
-        } else if LupyControlCenter.shared.isActive {
-            model.open(.lupyControl)
+        let st = AppState.shared
+        if st.mode == .expanded {
+            st.view = .lupyChat
         } else {
-            model.open(.lupyToday)
+            NotificationCenter.default.post(name: .hookExpand, object: IslandView.lupyChat)
         }
     }
 }

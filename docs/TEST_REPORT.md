@@ -119,3 +119,12 @@ data | island | security prompt” on commit `09c8c7571cecaff65047e9c5ad71387dee
 | Founder report | The repository's **Code → Download ZIP** is source code; the old build artifact was a zip inside a zip | Single-file artifact (`archive: false`) behind a direct link; every build now verifies the downloaded file on fresh macOS 14 and 26 machines |
 | Download check (build #4) | First-run welcome card (a SwiftUI sheet) blocked quitting — AppKit refuses to terminate while a sheet is attached (Cmd-Q, menu-bar Quit, log out / restart / shut down) | Welcome card drawn as an in-window overlay; build #5: quits cleanly on macOS 14 and 26 |
 | Screenshot review (build #4) | Download check said “opened without a security prompt” while its screenshots showed the prompt (the blocked process exists while the prompt is up) | Judge by on-screen windows; screenshots stay the ground truth |
+
+## 2026-10-16 — F6 campaign: the island conversation (directive: island = quick-access control centre)
+
+| Suite | Where | Result |
+|---|---|---|
+| **Conversation** (new) — intent routing (goals, questions, status, commands, control, plan decisions), local status answers, `prepareConversationTurn` (history included, policy gate, usage recorded once), history cap | LupyCore, sandbox WASM + native runner | **106/106 cases, 658 checks** (was 96/606; +10 cases, +52 checks) |
+| Island conversation surface (`.lupyChat`) + shared `LupyChat` + window panel + hooks | App target — syntax-checked in sandbox (SwiftSyntax); compiled on the macOS runner | Build F6 |
+| **Chat self-test** (`Lupy --chat-self-test`): typed instruction → goal → plan card; "approve it" → tasks; status answered from real state; honest no-model answer; honest control blocker; pause/resume; "stop" (plan rejected / honest idle); follow-up history through the engine (no network); transcript persisted and decoded | App binary on the installed download, fresh data dir | Verify job of build F6 |
+| Island-chat screenshot (conversation surface with welcome + chips) | `smoke-mac-app.sh` second demo launch (`--show-island-chat`) | Check run of build F6 |

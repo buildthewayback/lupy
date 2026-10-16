@@ -167,8 +167,15 @@ final class LupyModel {
         guard let engine else { return }
         do {
             let r = try engine.completeModelJob(job.id, status: result.status, headers: result.headers, body: result.body, latencyMillis: result.latencyMillis)
-            if !r.message.isEmpty { say(TextUtil.truncate(r.message, 220)) }
-            if let pid = r.planID { selectedPlanID = pid }
+            if let pid = r.planID {
+                selectedPlanID = pid
+                LupyChat.shared.planReady(pid)   // Lupy: the conversation shows the finished plan
+            }
+            // Lupy: a turn the conversation is waiting on lands there (answers, retries); other
+            // jobs keep reporting through the toast.
+            let retryJobs: [ModelJob] = r.effects.compactMap { if case .callModel(let j) = $0 { return j } else { return nil } }
+            let handled = LupyChat.shared.jobCompleted(jobID: job.id, result: r, retryJobs: retryJobs)
+            if !handled, !r.message.isEmpty { say(TextUtil.truncate(r.message, 220)) }
             run(r.effects)
         } catch {
             say("\(error)")

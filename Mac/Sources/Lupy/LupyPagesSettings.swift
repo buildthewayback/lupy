@@ -10,9 +10,13 @@ struct LupyAssistantSettings: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                LupyAutonomySettings()
-                LupyControlSettings()
+                // Organised around what the founder wants to adjust, not around Lupy's internals.
+                LupyVoiceActivationSettings()
                 LupyProvidersSettings()
+                LupyPersonalisationSettings()
+                LupyControlSettings()
+                LupyAutonomySettings()
+                LupyIslandWindowSettings()
                 LupyBudgetSettings()
                 LupyGitHubSettings()
                 LupyConnectorsSettings()
@@ -24,6 +28,81 @@ struct LupyAssistantSettings: View {
             }
             .padding(24)
             .frame(maxWidth: 920, alignment: .leading)
+        }
+    }
+}
+
+/// How you talk to Lupy: dictation language, the wake word, and the keyboard shortcut.
+/// Every control here has a real effect (the mic menus, Coucou's voice engine, the shortcuts page).
+struct LupyVoiceActivationSettings: View {
+    @Bindable private var dictation = MacDictation()
+
+    var body: some View {
+        LupySettingsCard(title: "Voice input & activation",
+                         subtitle: "Speech and typing are the same assistant: dictated words always appear as editable text first — nothing is sent until you review it.") {
+            HStack {
+                Picker("Dictation language", selection: $dictation.language) {
+                    Text("Automatic (my languages)").tag(MacDictation.automatic)
+                    ForEach(MacDictation.allLanguages, id: \.self) { id in
+                        Text(MacDictation.name(of: id)).tag(id)
+                    }
+                }
+                .frame(maxWidth: 320)
+                Spacer()
+            }
+            .font(.system(size: 12))
+            HStack(spacing: 16) {
+                Button("Wake word settings…") { LupyModel.shared.open(.voice) }.buttonStyle(LupySecondaryButtonStyle())
+                Button("Keyboard shortcuts…") { LupyModel.shared.open(.shortcuts) }.buttonStyle(LupySecondaryButtonStyle())
+                Spacer()
+            }
+            Text("“OK Lupy” wakes the voice commands (music, mail, notes — Coucou's engine). The mic button in the conversation dictates into the field for anything longer. ⌃⌥Space (changeable) opens the conversation from anywhere.")
+                .font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
+        }
+    }
+}
+
+/// Your name, and what Lupy remembers. Real settings only: the memory page owns the rest.
+struct LupyPersonalisationSettings: View {
+    private var model: LupyModel { LupyModel.shared }
+    @State private var name = ""
+
+    var body: some View {
+        LupySettingsCard(title: "Personalisation & memory",
+                         subtitle: "What Lupy calls you and what it remembers. Memory is per project; sensitive notes are never sent to cloud models.") {
+            HStack {
+                HubField(placeholder: "Your name", text: $name) { save() }
+                    .frame(maxWidth: 260)
+                Button("Save", action: save).buttonStyle(LupySecondaryButtonStyle()).disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                Spacer()
+                Button("Open memory…") { model.open(.lupyMemory) }.buttonStyle(LupySecondaryButtonStyle())
+            }
+            .font(.system(size: 12))
+        }
+        .onAppear { name = model.state.settings.founderName }
+    }
+
+    private func save() {
+        var s = model.state.settings
+        s.founderName = name.trimmingCharacters(in: .whitespaces)
+        model.act { try $0.updateSettings(s); return [] }
+        model.say("Got it — hello, \(s.founderName).")
+    }
+}
+
+/// Island and window behaviour live in Coucou's own settings (they are its engine);
+/// this card is the map to them, not a duplicate.
+struct LupyIslandWindowSettings: View {
+    var body: some View {
+        LupySettingsCard(title: "Island, window & sounds",
+                         subtitle: "Lupy runs on Coucou's island: its size, auto-close, sounds, wardrobe and screen are set in one place.") {
+            HStack(spacing: 16) {
+                Button("Island settings…") { LupyModel.shared.open(.general) }.buttonStyle(LupySecondaryButtonStyle())
+                Button("Shortcuts…") { LupyModel.shared.open(.shortcuts) }.buttonStyle(LupySecondaryButtonStyle())
+                Button("Start at login…") { LupyModel.shared.open(.general) }.buttonStyle(LupySecondaryButtonStyle())
+                Spacer()
+            }
+            .font(.system(size: 12))
         }
     }
 }
@@ -56,8 +135,6 @@ struct LupyAutonomySettings: View {
             HStack {
                 Toggle("Pause everything", isOn: Binding(get: { s.globalPause }, set: { on in model.act { try $0.setGlobalPause(on, reason: on ? "Paused in Settings" : ""); return [] } }))
                 Spacer()
-                // Lupy (port): the island is Coucou's now; its settings live on the General page.
-                Button("Island settings…") { model.open(.general) }.buttonStyle(LupySecondaryButtonStyle())
             }
             HStack {
                 Toggle("Quiet hours (22:00–07:30)", isOn: Binding(get: { s.quietHours.enabled }, set: { on in

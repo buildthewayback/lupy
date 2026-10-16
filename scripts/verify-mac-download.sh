@@ -8,12 +8,16 @@
 #   3. unzipped like Finder: Info.plist keys and privacy texts, executable, Apple-silicon code,
 #      minimum macOS, bundled libraries present, icon, intact ad-hoc code signature
 #   4. installed into /Applications: first launch with NO demo data (normal data folder), quit,
-#      second launch, then scripts/smoke-mac-app.sh (native self-test + demo-data launch metrics)
+#      second launch, then scripts/smoke-mac-app.sh (native self-test + demo-data launch metrics
+#      + the island conversation screenshot), then the conversation self-test (the island's
+#      interaction loop end-to-end: goal→plan→approve, status, honest no-model answer, stop,
+#      history, persistence)
 # Informational only (never pass/fail): what Gatekeeper says about a browser-downloaded copy.
 #
 # Usage: scripts/verify-mac-download.sh <downloaded.zip> [expected-sha256] [output-dir] [expected-file-name]
-# Writes <output-dir>/verify-report.txt (+ smoke-report.txt, selftest.txt) and base64 JPEG
-# screenshots (first-launch.b64, screenshot.b64, island.b64, gatekeeper.b64) for the CI report.
+# Writes <output-dir>/verify-report.txt (+ smoke-report.txt, selftest.txt, chat-selftest.txt) and
+# base64 JPEG screenshots (first-launch.b64, screenshot.b64, island.b64, island-chat.b64,
+# gatekeeper.b64) for the CI report.
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
@@ -239,6 +243,17 @@ if bash scripts/smoke-mac-app.sh "$DEST" "$OUT" > /dev/null 2>&1; then
   pass "self-test $(grep -c '^PASS' "$OUT/selftest.txt" 2>/dev/null)/$(grep -cE '^(PASS|FAIL)' "$OUT/selftest.txt" 2>/dev/null) and demo-data launch passed"
 else bad "smoke test failed (see smoke report below)"; fi
 grep -E '^(running|resident|Activity|CPU|quit|screenshot|animation)' "$OUT/smoke-report.txt" 2>/dev/null | sed 's/^/      /' >> "$REPORT"
+
+say "-- conversation self-test (the island's interaction loop, end-to-end on the real engine)"
+CHATDIR="$(mktemp -d)/lupy-chat-data"
+if "$DEST/Contents/MacOS/Lupy" --chat-self-test --data-dir "$CHATDIR" --report "$OUT/chat-selftest.txt" > "$OUT/chat-stdout.txt" 2>&1; then
+  pass "conversation self-test $(grep -c '^PASS' "$OUT/chat-selftest.txt" 2>/dev/null)/$(grep -cE '^(PASS|FAIL)' "$OUT/chat-selftest.txt" 2>/dev/null) checks"
+else
+  bad "conversation self-test failed (report below; stdout in chat-stdout.txt)"
+  tail -30 "$OUT/chat-selftest.txt" 2>/dev/null | sed 's/^/      /'
+fi
+grep -q "CHATTEST PASSED" "$OUT/chat-selftest.txt" 2>/dev/null && pass "CHATTEST PASSED marker present" || bad "CHATTEST PASSED marker missing"
+grep -E '^(PASS|FAIL)' "$OUT/chat-selftest.txt" 2>/dev/null | sed 's/^/      /' >> "$REPORT"
 
 # ---------------------------------------------------------------------------------------------
 say ""

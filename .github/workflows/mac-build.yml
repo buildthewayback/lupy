@@ -236,6 +236,7 @@ jobs:
               '```', read('verify-out/artifact-record.txt', 3000), '```',
               '```', read('verify-out/verify-report.txt', 42000), '```',
               '## Smoke report (self-test + demo-data launch)', '```', read('verify-out/smoke-report.txt', 12000), '```',
+              '## Conversation self-test (island interaction loop)', '```', read('verify-out/chat-selftest.txt', 12000), '```',
             ].join('\n').slice(0, 65000);
             const title = `Lupy download check · ${label}`;
             await github.rest.checks.create({ ...base, name: title, output: { title, summary } });

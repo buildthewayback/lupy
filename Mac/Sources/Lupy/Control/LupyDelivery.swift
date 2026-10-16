@@ -118,6 +118,11 @@ enum LupyRuntime {
                 Task { @MainActor in NotificationCenter.default.post(name: .hookExpand, object: IslandView.overview) }
             }
         }
+        if args.contains("--show-island-chat") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+                Task { @MainActor in NotificationCenter.default.post(name: .hookExpand, object: IslandView.lupyChat) }
+            }
+        }
     }
 
     static func shutdown() {
