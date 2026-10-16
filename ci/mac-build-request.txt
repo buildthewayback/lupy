@@ -1,2 +1,2 @@
-Build requested: 2026-10-16T14:30Z
-Reason: build F8 — chat self-test assertion fixes (honest stop/pause behaviour, resume before follow-up); island-conversation check-run entry
+Build requested: 2026-10-16T17:10Z
+Reason: build F9 — LUPY 2 (any-key API hub D-032, island UX D-034, rebrand D-033); single planned build of this campaign
