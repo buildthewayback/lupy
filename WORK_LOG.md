@@ -105,3 +105,12 @@ Chronological, newest last. Times UTC. Each entry: package · what changed · te
 ### 02:19–02:35 — F5: DELIVERED
 - F5 (run 38839867821, commit c8bad17): **whole run green — the delivery candidate**. Download verification ALL CHECKS PASSED on macOS 14.8.9 and 26.6.2 (Mochi animated, quits cleanly, 29 sounds, notices, icon); **computer-control self-test 9/9 PASSED on both**; background CPU down to 17 % / 32 % on the VMs (window canvases pause in background; the rest is Coucou's island, alive by design, hideable). Artifact **12021610015** `Lupy-0.2.0-c8bad17274-macOS-arm64.zip`, 19,370,871 B, SHA-256 `be51da82a3c1bb6abf505a80a6746baa84714f62686a71f6c6c1728a82f67fd5`, until 2027-01-14. 13 macOS min; campaign ≈ 888 Linux-eq (44.4 %).
 - Docs finalised for handoff: INSTALL_GUIDE (Coucou-based app, computer control, new link), LUPY_STATUS, REQUIREMENTS_STATUS (one completion record), TEST_REPORT, KNOWN_LIMITATIONS (L-22..L-24), CI_BUDGET, MAC_ACCEPTANCE_CHECKLIST (Coucou fidelity + computer control rows), COUCOU_FIDELITY (regenerated), DECISIONS (D-020..D-027).
+
+## 2026-10-16 — Island interaction directive (F6 campaign)
+Directive: the island becomes Lupy's quick-access control centre (real interaction loop:
+idle → activate → speak/type → correct before sending → understand/respond → execute →
+ask → finish); Coucou's animation engine reflects Lupy's real states; island and workspace
+share one conversation/state; settings organised around user needs; end-to-end journey tests.
+Plan: LupyCore intent router + conversation turns (tested) → LupyChat shared conversation
+(app) → island `.lupyChat` view on Coucou's chrome → Today page leads with the same
+conversation → settings reorg → `--chat-self-test` + CI → docs → build F6.
