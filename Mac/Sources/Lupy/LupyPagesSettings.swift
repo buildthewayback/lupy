@@ -305,7 +305,7 @@ struct LupyDiagnosticsSettings: View {
     var body: some View {
         let report = model.engine?.diagnostics(dataSizeBytes: model.dataSizeBytes)
         LupySettingsCard(title: "Diagnostics", subtitle: "Plain status for troubleshooting. Contains no keys or personal content.") {
-            Text((report?.lines ?? [model.startupError ?? "Not started"]).joined(separator: "\n") + "\nMemory in use: \(String(format: "%.0f", residentMemoryMB())) MB")
+            Text((report?.lines ?? [model.startupError ?? "Not started"]).joined(separator: "\n") + "\nMemory in use: \(String(format: "%.0f", lupyResidentMemoryMB())) MB")
                 .font(.system(size: 11.5, design: .monospaced)).foregroundColor(report?.healthy == false ? LupyTheme.amber : LupyTheme.body)
                 .textSelection(.enabled)
             Button("Copy diagnostics") { model.copy((report?.lines ?? []).joined(separator: "\n"), announce: "Diagnostics copied.") }.buttonStyle(LupySecondaryButtonStyle())

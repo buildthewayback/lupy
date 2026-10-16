@@ -141,7 +141,8 @@ jobs:
               `artifact id: ${process.env.ARTIFACT_ID || '(none)'}`,
               `artifact url: ${process.env.ARTIFACT_URL || '(none)'}`,
               `artifact digest: ${process.env.ARTIFACT_DIGEST || '(none)'}`,
-              '## Build', '```', read('build.log', 30000), '```',
+              '## Compiler errors and result', '```', read('build/errors.txt', 20000), '```',
+              '## Build (tail)', '```', read('build.log', 12000), '```',
               '## Core tests (tail)', '```', read('core-tests.log', 6000), '```',
               '## Coucou unit tests + Lupy wake test', '```', read('coucou-tests.log', 6000), '```',
             ].join('\n').slice(0, 65000);

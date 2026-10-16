@@ -152,6 +152,9 @@ final class SystemAudioTap: @unchecked Sendable {
     private let queue = DispatchQueue(label: "fr.louisraille.NotchBuddy.notetaker.system", qos: .userInitiated)
 
     func start(sink: @escaping @Sendable ([Float]) -> Void) throws {
+        // Lupy: Core Audio process taps exist from macOS 14.2 (Lupy supports 14.0+); on 14.0–14.1 a
+        // call note can still record the microphone, and this explains why system audio is missing.
+        guard #available(macOS 14.2, *) else { throw TapError.failed("recording what the Mac plays needs macOS 14.2 or later", -1) }
         let description = CATapDescription(stereoGlobalTapButExcludeProcesses: [])
         description.uuid = UUID()
         description.name = "Lupy Notetaker"
@@ -231,7 +234,7 @@ final class SystemAudioTap: @unchecked Sendable {
             }
             AudioHardwareDestroyAggregateDevice(aggregateID)
         }
-        if tapID != AudioObjectID(kAudioObjectUnknown) { AudioHardwareDestroyProcessTap(tapID) }
+        if tapID != AudioObjectID(kAudioObjectUnknown), #available(macOS 14.2, *) { AudioHardwareDestroyProcessTap(tapID) }
         procID = nil
         if let tapList { free(tapList.unsafeMutablePointer) }
         tapList = nil

@@ -28,7 +28,7 @@ xcodebuild -project Mac/Lupy.xcodeproj -scheme Lupy -configuration Release \
 status=$?
 set -e
 # Every distinct compiler error with its file and line (the CI report shows this list).
-grep -E "error:|BUILD (SUCCEEDED|FAILED)" build/xcodebuild.log | sed -E 's#^/Users/[^ ]*/(Mac|LupyCore)/#\1/#' | sort -u | head -250 || true
+grep -E "error:|BUILD (SUCCEEDED|FAILED)" build/xcodebuild.log | sed -E 's#^/Users/[^ ]*/(Mac|LupyCore)/#\1/#' | sort -u | head -250 | tee build/errors.txt || true
 grep -cE "warning:" build/xcodebuild.log | sed 's/^/warnings: /' || true
 if [ $status -ne 0 ]; then
   echo "xcodebuild failed with status $status"
