@@ -548,7 +548,7 @@ struct LupyHousekeepingSettings: View {
 
     private var privacy: some View {
         let s = model.state.settings
-        VStack(alignment: .leading, spacing: 8) {
+        return VStack(alignment: .leading, spacing: 8) {
             Text("What leaves your Mac").font(.system(size: 12.5, weight: .semibold)).foregroundColor(LupyTheme.text)
             Text("• Your data lives in ~/Library/Application Support/Lupy on this Mac.\n• API keys live only in the macOS Keychain — never in Lupy's files, backups or logs.\n• When a cloud model is allowed and used, Lupy sends only the context listed with each request (secrets are redacted, sensitive memory is withheld, other projects are never included).\n• Dictation uses Apple's speech recognition (on this Mac when supported).")
                 .font(.system(size: 11.5)).foregroundColor(LupyTheme.body)
