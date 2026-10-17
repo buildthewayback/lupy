@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T12:10Z
-Reason: layout measured off the founder's sketch — bubble left of the head, badge pinned to the right rim, no double ellipsis
+Build requested: 2026-10-17T11:20Z
+Reason: label and badge measured off the founder's sketch; label clears his shoulder, badge straddles the rim
