@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T13:55Z
-Reason: self-test start race; verify both macOS runners
+Build requested: 2026-10-17T14:35Z
+Reason: capture the real character window in the report
