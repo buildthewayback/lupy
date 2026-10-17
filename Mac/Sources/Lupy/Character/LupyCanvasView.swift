@@ -154,7 +154,7 @@ enum LupyRenderer {
         // Only while the body is close to white; on a coloured body it would muddy the
         // state's colour, and the colour is the message.
         let whiteness = (frame.bodyRed + frame.bodyGreen + frame.bodyBlue) / 3
-        if whiteness > 0.86 {
+        if LupyGeometry.showsBlush, whiteness > 0.86 {
             let blushY = LupyGeometry.blushYFromBase - LupyGeometry.bodyAspect * 0.5
             let rx = LupyGeometry.blushRX * unit * frame.scaleX
             let ry = LupyGeometry.blushRY * unit * frame.scaleY

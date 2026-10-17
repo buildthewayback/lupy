@@ -362,6 +362,15 @@ final class RigTests {
         ok(LupyComposition.unit(width: 24, height: 24) > 16,
            "the 24 pt menu-bar body is still bigger than half the frame")
 
+        print("\n== brand law: white body, colour only in the light ==")
+        // His words: "overall character need to be fully white and its background glow
+        // only". The blush is colour on the body, and his own sketch has neither cheek
+        // tinted. Off by default, and one flag so both renderers agree.
+        ok(LupyGeometry.showsBlush == false,
+           "no blush: the body is white, the colour is the light")
+        ok(LupyGeometry.bodyColour == (1.0, 1.0, 1.0),
+           "the body colour is #FFFFFF, not a tint")
+
         print("\n== the ∪∪ face the founder drew ==")
         // He chose closed lids as LUPY's resting face; open eyes only when he needs you.
         for st in [LupyCharacterState.idle, .working, .thinking, .searching, .finished] {

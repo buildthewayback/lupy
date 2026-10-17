@@ -63,6 +63,14 @@ enum LupyGeometry {
     static let eyeCentreX: Double = 0.16440
     static let eyeCentreYFromBase: Double = 0.34090
 
+    /// Whether the blush is drawn at all.
+    ///
+    /// OFF: the founder's law is "the body is fully white, the colour lives in the
+    /// glow", and his own sketch of LUPY has no blush — pure white, both cheeks. It
+    /// was inherited from Coucou, whose body takes colour. Both renderers read this
+    /// one flag, so the sheets cannot quietly disagree with the app again.
+    static let showsBlush: Bool = false
+
     /// Blush, in body-width units.
     static let blushX: Double = 0.24000
     static let blushYFromBase: Double = 0.17500

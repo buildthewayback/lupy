@@ -181,6 +181,23 @@ def draw_character(img, state, u, cx, cy, ss=1):
     # body: pure white, always
     d.polygon(body_pts, fill=BODY)
 
+    # blush — only if the kernel says so (LupyGeometry.showsBlush). It was drawn by
+    # the app but never by this renderer, so the sheets were showing a different
+    # character from the one that ships.
+    if state.get("blush"):
+        bx = 0.24 * u * ss
+        byy = -0.175 * u * ss
+        rx, ry = 0.088 * u * ss, 0.066 * u * ss
+        layer = Image.new("RGB", img.size, BODY)
+        ld = ImageDraw.Draw(layer)
+        for side in (-1, 1):
+            ld.ellipse([cx + side * bx - rx, cy + byy - ry,
+                        cx + side * bx + rx, cy + byy + ry], fill=(246, 169, 161))
+        layer = layer.filter(ImageFilter.GaussianBlur(u * ss * 0.022))
+        mask = Image.new("L", img.size, 0)
+        ImageDraw.Draw(mask).polygon(body_pts, fill=255)
+        img.paste(layer, (0, 0), mask)
+
     # eyes
     for ex, ey, rx, ry, style in state["eyes"]:
         if ry < 0.002:

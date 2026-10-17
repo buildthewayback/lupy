@@ -26,9 +26,11 @@ def parse(path):
             continue
         if p[0] == "FRAME":
             cur = {"name": p[1], "body": [], "eyes": [], "tint": (1, 1, 1),
-                   "amount": 0.3, "icon": "none", "label": p[1],
+                   "amount": 0.3, "icon": "none", "label": p[1], "blush": False,
                    "hot": 0.0, "busy": 0.0, "full": 0.0, "tired": 0.0, "asleep": False}
             states.append(cur)
+        elif p[0] == "BLUSH":
+            cur["blush"] = p[1] == "1"
         elif p[0] == "MOOD":
             cur["hot"] = float(p[1]); cur["busy"] = float(p[2])
             cur["full"] = float(p[3]); cur["tired"] = float(p[4])
