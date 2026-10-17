@@ -32,11 +32,11 @@ SPEC_PATH = os.path.join(HERE, "..", "..", "docs", "concepts", "lupy-character-s
 
 # ---------------------------------------------------------------- palette ----
 INK = (26, 20, 18)          # warm near-black, like the reference (never pure #000)
-BG = (13, 13, 17)
+BG = (24, 24, 27)
 
 STATES = [
     # key,        body colour, eye,       badge,      halo,  extra
-    ("idle",      (255, 255, 255), "pill",    None,       0.22, None),
+    ("idle",      (255, 250, 242), "pill",    None,       0.30, None),
     ("working",   (159, 216, 245), "pill",    "dots",     0.50, None),
     ("thinking",  (201, 174, 236), "pill",    "dots",     0.46, None),
     ("searching", (143, 134, 222), "pill",    "dots",     0.50, None),
@@ -119,6 +119,35 @@ def vgradient(W, H, top, bottom, y0, y1):
     return img
 
 
+def vmask(W, H, y_from, y_to, up=True):
+    """Smooth vertical falloff mask: 255 at one end, 0 at the other (no hard edges)."""
+    m = Image.new("L", (W, 1))
+    px = m.load()
+    span = max(1.0, abs(y_to - y_from))
+    for x in range(W):
+        px[x, 0] = 255
+    m = m.resize((W, H))
+    grad = Image.new("L", (W, H), 0)
+    gpx = grad.load()
+    for y in range(H):
+        if up:
+            t = (y - y_from) / span
+        else:
+            t = (y_to - y) / span
+        gpx_row = int(255 * min(1.0, max(0.0, t)))
+        for x in range(W):
+            gpx[x, y] = gpx_row
+    return grad
+
+
+def edge_ring(mask, width_px):
+    """L mask that is bright only in a band just inside the silhouette edge."""
+    from PIL import ImageFilter as IF
+    er = mask.filter(IF.MinFilter(int(width_px) * 2 + 1))
+    ring = ImageChops.subtract(mask, er)
+    return ring.filter(IF.GaussianBlur(max(1, width_px * 0.55)))
+
+
 def inner_rim(mask, blur, strength):
     """Bright at the silhouette edge, dark inside -> invert of a blurred mask."""
     m = mask.filter(ImageFilter.GaussianBlur(blur))
@@ -143,7 +172,7 @@ def draw_eyes(draw, shape, spec, scale, cx, base_y, W, H, colour=INK):
     e = spec["eye"]
     ew, eh = e["w"] * scale, e["h"] * scale
     dx = e["centre_x"] * scale
-    cy = base_y - e["centre_y_from_bottom"] * scale
+    cy = base_y - (e["centre_y_from_bottom"] - 0.010) * scale
     lw = max(2, int(ew * 0.42))
 
     for sgn in (-1, 1):
@@ -344,24 +373,57 @@ def render(key, colour, eye, badge, halo, extra, spec, outdir, tile, bg=BG):
     body = vgradient(W, H, shade(colour, -0.30), shade(colour, -0.02),
                      y0=base_y - scale * 0.86, y1=base_y + scale * 0.02)
 
+    # -- ivory tint: blend the body toward the reference's warm ivory (253,235,213)
+    ivory = mix(colour, (253, 235, 213), 0.62)
+    body = Image.blend(body, Image.new("RGB", (W, H), ivory), 0.42)
+
     # -- inner rim shading (volume)
-    rim = inner_rim(mask, blur=max(2, scale * 0.055), strength=0.55)
+    rim = inner_rim(mask, blur=max(2, scale * 0.062), strength=0.78)
     body = multiply_mask(body, rim)
 
+    # -- warm subsurface: jelly glows slightly warm through the lower body
+    sub = radial(W, H, cx, base_y - scale * 0.18, scale * 0.62, scale * 0.34, 0.30, 2.2)
+    sub = sub.filter(ImageFilter.GaussianBlur(scale * 0.08))
+    body = screen(body, sub, mix(colour, (255, 244, 226), 0.65))
+
+    # -- bottom contact shade (before the bounce so the bounce sits on top)
+    contact = radial(W, H, cx, base_y + scale * 0.14, scale * 0.62, scale * 0.20, 0.12, 2.4)
+    body = multiply_mask(body, contact.filter(ImageFilter.GaussianBlur(scale * 0.06)))
+
+    # -- bounce light: a soft bright arc hugging the lower edge (light off the desk)
+    bounce = edge_ring(mask, max(2, int(scale * 0.05)))
+    bounce_crop = ImageChops.multiply(bounce, vmask(W, H, base_y - scale * 0.34,
+                                                    base_y + scale * 0.06, up=False))
+    body = screen(body, bounce_crop.point(lambda v: int(v * 0.34)), (255, 244, 228))
+
+    # -- directional falloff: light from upper-left, right/bottom falls into shadow
+    fall = Image.new("L", (W, H), 0)
+    fp = fall.load()
+    for y in range(H):
+        for x in range(0, W, 2):
+            t = ((x - cx) / scale) * 0.55 + ((y - (base_y - scale * 0.45)) / scale) * 0.45
+            fp[x, y] = int(255 * min(1.0, max(0.0, t * 0.55)))
+            if x + 1 < W:
+                fp[x + 1, y] = fp[x, y]
+    fall = fall.filter(ImageFilter.GaussianBlur(scale * 0.07))
+    body = multiply_mask(body, ImageChops.multiply(fall, mask), 0.55)
+
     # -- top-front specular, broad + tight
-    spec1 = radial(W, H, cx - scale * 0.13, base_y - scale * 0.60,
-                   scale * 0.42, scale * 0.40, 0.55, 1.7)
-    spec1 = spec1.filter(ImageFilter.GaussianBlur(scale * 0.05))
+    spec1 = radial(W, H, cx - scale * 0.17, base_y - scale * 0.55,
+                   scale * 0.34, scale * 0.32, 0.62, 2.3)
+    spec1 = spec1.filter(ImageFilter.GaussianBlur(scale * 0.055))
     body = screen(body, spec1, (255, 255, 255))
 
-    spec2 = radial(W, H, cx - scale * 0.10, base_y - scale * 0.72,
-                   scale * 0.15, scale * 0.13, 0.80, 1.5)
-    spec2 = spec2.filter(ImageFilter.GaussianBlur(scale * 0.02))
+    spec2 = radial(W, H, cx - scale * 0.14, base_y - scale * 0.66,
+                   scale * 0.12, scale * 0.10, 0.90, 1.6)
+    spec2 = spec2.filter(ImageFilter.GaussianBlur(scale * 0.018))
     body = screen(body, spec2, (255, 255, 255))
 
-    # -- bottom contact shade
-    contact = radial(W, H, cx, base_y + scale * 0.10, scale * 0.55, scale * 0.20, 0.35, 2.0)
-    body = multiply_mask(body, contact.filter(ImageFilter.GaussianBlur(scale * 0.05)))
+    # -- crisp top rim light on the upper edge only
+    rim_top = edge_ring(mask, max(1, int(scale * 0.012))).point(lambda v: int(v * 0.30))
+    rim_top = ImageChops.multiply(rim_top, vmask(W, H, base_y - scale * 0.88,
+                                                  base_y - scale * 0.28, up=True))
+    body = screen(body, rim_top, (255, 255, 255))
 
     # -- composite body onto canvas
     canvas = Image.new("RGBA", (W, H), bg + (255,))
@@ -369,12 +431,30 @@ def render(key, colour, eye, badge, halo, extra, spec, outdir, tile, bg=BG):
     floor.paste((0, 0, 0, 255), (0, 0), shadow)
     canvas.alpha_composite(floor)
 
-    halo_img = Image.new("RGB", (W, H), colour)
-    halo_mask = mask.filter(ImageFilter.GaussianBlur(scale * 0.07)).point(
-        lambda v: int(min(255, v * halo * 1.6)))
-    halo_layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    halo_layer.paste(halo_img, (0, 0), halo_mask)
-    canvas = Image.alpha_composite(canvas, halo_layer)
+    # -- halo, two layers, tuned to the reference: ~(140,115,88) at 25px outside
+    warm_halo = mix(colour, (244, 190, 132), 0.78)
+
+    inner_m = mask.filter(ImageFilter.GaussianBlur(scale * 0.045)).point(
+        lambda v: int(min(255, ((v / 255.0) ** 1.25) * halo * 5.2 * 255.0)))
+    inner_layer = Image.new("RGBA", (W, H), warm_halo + (0,))
+    inner_layer.putalpha(inner_m)
+    canvas = Image.alpha_composite(canvas, inner_layer)
+
+    outer_m = mask.filter(ImageFilter.GaussianBlur(scale * 0.135)).point(
+        lambda v: int(min(255, ((v / 255.0) ** 0.95) * halo * 3.6 * 255.0)))
+    outer_layer = Image.new("RGBA", (W, H), warm_halo + (0,))
+    outer_layer.putalpha(outer_m)
+    canvas = Image.alpha_composite(canvas, outer_layer)
+
+    # -- FINAL COLOUR GRADE: match the reference's warm ivory relationship
+    # reference body averages ~(251,232,205) vs a neutral render's ~(247,241,234)
+    gp = body.load()
+    for y in range(H):
+        for x in range(W):
+            r_, g_, b_ = gp[x, y]
+            gp[x, y] = (min(255, int(r_ * 1.025)),
+                        min(255, int(g_ * 0.972)),
+                        min(255, int(b_ * 0.900)))
 
     body_rgba = body.convert("RGBA")
     body_rgba.putalpha(mask)

@@ -198,3 +198,21 @@ capped arch n, sleeping = cup u, drawn as explicit polylines with round caps (PI
 was collapsing them); badges at upper-left with a real bubble tail; spirals enlarged.
 Grep-verified: no ImageMagick calls left in the renderer except the optional sheet montage
 (now pure Pillow). Tree clean, pushed.
+
+## 2026-10-17 (LUPY 3, session 3) — STATES v3: matched to the reference by measurement
+Founder asked for more polish and asked to see every render in chat (no workspace access).
+Worked numerically against the reference instead of by eye:
+- Sampled the reference backdrop and vertical glow profile at the body centre:
+  ref halo at 10/25/40/60px above the body = (149,118,89)/(113,88,68)/(70,60,51)/(45,42,40).
+  Ours started at (39,37,38) — ~4x too weak and too cool.
+- Found the bug: `v ** 0.80` on a 0-255 value collapses 255 -> 82, so the halo mask was
+  always ~1/3 strength. Must normalise (`(v/255)**g * 255`).
+- Found a second bug: `Image.paste()` never writes the alpha channel, so the first halo
+  layer was fully transparent — it had been invisible for several passes.
+- Found a third: `str.replace()` fails silently when the pattern is not found; one patch
+  reported success while changing nothing. Verified with grep afterwards.
+Final state (all measured): body ivory (253,234,210) vs reference (251,230,199); halo
+matching within ~10% at every sampled distance; backdrop (24,24,27) vs ref (34,34,36);
+eye geometry w/body 0.141 vs 0.139, h/body 0.289 vs 0.289, c2c 0.329 vs 0.329.
+Removed the white rim outline (the reference has none), softened the base bounce.
+Contact sheet rebuilt with labels: docs/concepts/lupy-character-states.png (19 states).
