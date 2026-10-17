@@ -244,8 +244,12 @@ enum LupyEyes {
             // against the rim and squash the far eye into a sliver. A third of a radian
             // still reads unmistakably as "looking there", with the far eye only lightly
             // foreshortened — composed, not googly.
-            let longitude = side * neutralYaw + yaw * 0.30
-            let latitude = -neutralPitch + pitch * 0.32
+            // A closed lid does not look anywhere: letting the pointer drag the ∪∪
+            // around reads as a decal sliding on his face.
+            let lookYaw = style.isArc ? 0 : yaw
+            let lookPitch = style.isArc ? 0 : pitch
+            let longitude = side * neutralYaw + lookYaw * 0.30
+            let latitude = -neutralPitch + lookPitch * 0.32
             let cl = LM.cos(latitude)
             let visible = LM.cos(longitude) * cl > 0.04
 
@@ -254,8 +258,16 @@ enum LupyEyes {
             // narrowest point of the dome across the eye's full height — that is what
             // stops a corner of the eye poking through the rim.
             let ey = LM.sin(latitude) * (ry / bodyWidth)
+                + (style.isArc ? style.arcLift : 0)
             let fy = LM.clamp(cl / restFY, 0.18, 1.15)
-            let halfH = LupyGeometry.eyeH * fy * 0.5
+            // The rim clamp must measure the shape that is actually drawn: an arc is
+            // 1.8x the capsule's width, and using the capsule's width let a swung eye
+            // poke through the silhouette.
+            let drawnW = LupyGeometry.eyeW * (style.isArc ? style.arcSpan : style.capsuleScale.x)
+            let drawnH = style.isArc
+                ? style.arcInkHeight
+                : LupyGeometry.eyeH * style.capsuleScale.y
+            let halfH = drawnH * fy * 0.5
             let hwCentre = LupyBody.halfWidth(atY: ey)
             var room = hwCentre
             for k in [-0.85, 0.85] {
@@ -264,7 +276,7 @@ enum LupyEyes {
             }
             let fx = LM.clamp(LM.cos(longitude) / restFX, 0.18, 1.15)
             var ex = LM.sin(longitude) * hwCentre
-            let limit = room - LupyGeometry.eyeW * fx * 0.5 - 0.008
+            let limit = room - drawnW * fx * 0.5 - 0.008
             if ex > limit { ex = limit }
             if ex < -limit { ex = -limit }
 
@@ -784,9 +796,12 @@ struct LupyRig {
     func eyes(bodyWidth: Double) -> [LupyEyeFrame] {
         let rx = bodyWidth * 0.5
         let ry = bodyWidth * 0.5 * LupyGeometry.bodyAspect
+        // effectiveEyeStyle, not state.eyeStyle: the mood overrides (asleep, heavy
+        // lids) were computed and then never drawn — the character stayed awake with
+        // his eyes open on a sleeping machine.
         return LupyEyes.frames(yaw: gazeX.value, pitch: gazeY.value,
                                rx: rx, ry: ry, bodyWidth: bodyWidth,
-                               style: state.eyeStyle)
+                               style: effectiveEyeStyle)
     }
 }
 
@@ -825,12 +840,33 @@ extension LupyEyeStyle {
         }
     }
 
-    /// Half the span of a stroked arc eye, as a multiple of the eye's own width.
-    var arcSpan: Double { 1.32 }
-    /// How far the arc bows, as a fraction of body width. Negative = ∪ (down), positive = ∩ (up).
-    var arcBow: Double { 0.052 }
-    /// Stroke weight, as a fraction of the eye's drawn width.
-    var arcStroke: Double { 0.46 }
+    /// True for the two closed-lid shapes. A closed eye is not looking anywhere, so
+    /// it must not slide around with the pointer, and its ink is much wider than a
+    /// capsule (see arcSpan), which changes how close to the rim it may sit.
+    var isArc: Bool { self == .cup || self == .arch }
+
+    /// Half the span of a stroked arc eye, as a multiple of the eye's own (capsule)
+    /// width.
+    ///
+    /// This is the *path*, not the ink: a round cap adds half a stroke at each end.
+    /// The sketch's two lids leave 0.052 of body width of white between them. With
+    /// the eyes 0.328 apart centres-to-centres and a 0.084 stroke, the path has to be
+    /// 0.328 − 0.052 − 0.084 = 0.192 wide: 0.192 / 0.139 = 1.38. At the old 1.80 the
+    /// caps met in the middle and the two lids read as a moustache.
+    var arcSpan: Double { 1.38 }
+    /// How far the arc bows, as a fraction of body width — the path's rise, not the
+    /// ink's. The sketch's lid is 0.134 tall and its ink 0.084, so the rise is 0.050.
+    var arcBow: Double { 0.050 }
+    /// Stroke weight, as a fraction of the eye's *base* width (never the spanned
+    /// width — that made the sheet draw arcs at nearly double the app's weight).
+    /// 0.60 × 0.139 = 0.084 of body width, which is the sketch's measured ink.
+    var arcStroke: Double { 0.60 }
+    /// How far the closed lid sits above the resting socket, in body widths: the
+    /// sketch centres its lids 0.369 above the base, the socket is at 0.341.
+    var arcLift: Double { 0.028 }
+
+    /// The height the arc's ink actually covers, in body widths: the bow plus a stroke.
+    var arcInkHeight: Double { arcBow + 0.139 * arcStroke }
 
     /// Spiral ink, as a fraction of the eye's width. Coucou draws its dizzy spiral at
     /// 0.22 of the eye width; anything thinner reads as a hairline next to the fat
@@ -859,9 +895,13 @@ enum LupyCharacterState: Int, CaseIterable {
     case idle, working, thinking, searching, approval, question
     case error, finished, rateLimit, sleeping, dizzy
 
+    /// Eyes open only when he needs something from *you*: approval, a question, or
+    /// something broke. Everything else runs with the calm ∪∪ lids the founder drew —
+    /// state is carried by the light and the badge, not by staring.
     var eyeStyle: LupyEyeStyle {
         switch self {
-        case .idle, .working, .thinking, .searching, .question: return .capsule
+        case .idle, .working, .thinking, .searching: return .cup
+        case .question: return .capsule
         case .approval: return .wide
         case .error: return .dash
         case .rateLimit: return .halfLid

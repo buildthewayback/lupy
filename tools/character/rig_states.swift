@@ -30,7 +30,9 @@ struct StateEmitter {
         let isArc = style == .arch || style == .cup
         for f in rig.eyes(bodyWidth: 1.0) where f.visible {
             let halfW = f.w * f.fx * 0.5 * (isArc ? style.arcSpan : sc.x)
-            let halfH = f.h * f.fy * rig.drawnBlinkOpen * 0.5 * (isArc ? 1 : sc.y)
+            // The arc's ink height is bow + stroke, not the capsule's height.
+            let halfH = (isArc ? style.arcInkHeight : f.h * sc.y)
+                * f.fy * rig.drawnBlinkOpen * 0.5
             guard halfH > 0.0008 else { continue }
             let name: String
             switch style {

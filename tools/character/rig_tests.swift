@@ -321,6 +321,10 @@ final class RigTests {
         mm = 0
         while mm < 90 { sleepRig.step(dt: LupyFrameClock.step); mm += 1 }
         ok(sleepRig.effectiveEyeStyle == .arch, "an empty battery closes his eyes")
+        // The app draws what effectiveEyeStyle says. It used to ignore it, so the
+        // character stayed wide awake on a sleeping machine.
+        ok(sleepRig.eyes(bodyWidth: 1.0).allSatisfy { $0.style == .arch },
+           "the drawn eyes are the overridden ones, not the raw state's")
 
         print("\n== composition ==")
         ok(LupyComposition.glowReach <= LupyComposition.frameHalf,
@@ -357,6 +361,41 @@ final class RigTests {
            "the glow blur is the one number the app and the sheets share")
         ok(LupyComposition.unit(width: 24, height: 24) > 16,
            "the 24 pt menu-bar body is still bigger than half the frame")
+
+        print("\n== the ∪∪ face the founder drew ==")
+        // He chose closed lids as LUPY's resting face; open eyes only when he needs you.
+        for st in [LupyCharacterState.idle, .working, .thinking, .searching, .finished] {
+            ok(st.eyeStyle == .cup, "\(st.name) wears the calm ∪∪ lids")
+        }
+        for st in [LupyCharacterState.question, .approval, .error] {
+            ok(st.eyeStyle != .cup, "\(st.name) opens his eyes: it needs something from you")
+        }
+        // Geometry, measured off the sketch, in body widths.
+        near(LupyEyeStyle.cup.arcStroke * 0.139, 0.084, 0.004,
+             "the lid's ink is the sketch's 0.084 of body width")
+        near(LupyEyeStyle.cup.arcLift, 0.028, 0.002,
+             "the lids ride where the sketch puts them")
+        // A round cap adds half a stroke at each end: the path must keep the lids apart.
+        let eyeSpan = LupyGeometry.eyeCentreX * 2
+        let drawn = LupyEyeStyle.cup.arcSpan * LupyGeometry.eyeW + LupyEyeStyle.cup.arcStroke * LupyGeometry.eyeW
+        ok(eyeSpan - drawn > 0.03,
+           "the two lids never touch — they read as eyes, not a moustache")
+        // Closed lids do not look around: the pointer must not drag them.
+        var lookRig = LupyRig()
+        lookRig.requestedState = .working
+        lookRig.movePointer(to: 400, -200)
+        var n = 0
+        while n < 90 { lookRig.step(dt: LupyFrameClock.step); n += 1 }
+        let closed = lookRig.eyes(bodyWidth: 1.0)
+        ok(closed.allSatisfy { abs($0.x) < 0.18 },
+           "a closed lid stays put instead of sliding with the mouse")
+        // And they must fit inside the silhouette at their widest point.
+        for f in closed {
+            let halfSpan = LupyGeometry.eyeW * LupyEyeStyle.cup.arcSpan * 0.5
+            let rim = LupyBody.halfWidth(atY: f.y)
+            ok(abs(f.x) + halfSpan <= rim,
+               "the closed lid is drawn inside his own rim")
+        }
 
         print("\n== the words match the face ==")
         // The dots are drawn by the bubble, not typed into the label: one ellipsis only.

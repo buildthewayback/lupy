@@ -211,10 +211,12 @@ enum LupyRenderer {
                 // the bow come from the kernel, so the app and the sheet cannot drift.
                 let w = baseW * LupyEyeStyle.arch.arcSpan
                 let bow = unit * LupyEyeStyle.arch.arcBow * (eye.style == .arch ? -1 : 1)
+                // Centred on the socket. Drawn from the socket's line downwards, the
+                // ink sat entirely below the eye's real position and the lids read low.
                 var arc = Path()
-                arc.move(to: CGPoint(x: cx - w * 0.5, y: cy))
-                arc.addQuadCurve(to: CGPoint(x: cx + w * 0.5, y: cy),
-                                 control: CGPoint(x: cx, y: cy + bow))
+                arc.move(to: CGPoint(x: cx - w * 0.5, y: cy - bow * 0.5))
+                arc.addQuadCurve(to: CGPoint(x: cx + w * 0.5, y: cy - bow * 0.5),
+                                 control: CGPoint(x: cx, y: cy + bow * 0.5))
                 context.stroke(arc, with: .color(.black),
                                style: StrokeStyle(lineWidth: max(1, baseW * LupyEyeStyle.arch.arcStroke),
                                                   lineCap: .round, lineJoin: .round))

@@ -35,6 +35,9 @@ BUBBLE_FONT = 0.163
 BUBBLE_PAD = 0.075
 BUBBLE_TRAILING_INSET = 0.37   # right edge, from the body's centre
 BUBBLE_RISE = 0.34            # centre, above the body's centre
+ARC_SPAN = 1.38          # the ∪ is 1.8x a capsule's width
+ARC_BOW = 0.050
+ARC_STROKE = 0.60
 DOT_R = 0.018
 DOT_GAP = 0.016
 
@@ -197,15 +200,19 @@ def draw_character(img, state, u, cx, cy, ss=1):
                 a += 0.10
             stroke(d, pts, max(1.0, w * 0.20), INK)
         else:
-            bow = 0.052 * u * ss * (-1 if style == "arch" else 1)
+            # `w` is the drawn span (1.8x a capsule); the stroke is defined against the
+            # capsule's base width, as in the app. Using the span made the sheet's arcs
+            # nearly twice as heavy as the app's.
+            base_w = w / (ARC_SPAN if style in ("arch", "cup") else 1.0)
+            bow = ARC_BOW * u * ss * (-1 if style == "arch" else 1)
             n = 24
             pts = []
             for i in range(n + 1):
                 t = i / n
                 x = ex_p - w / 2 + w * t
-                y = ey_p + bow * (1 - (2 * t - 1) ** 2)
+                y = ey_p - bow / 2 + bow * (1 - (2 * t - 1) ** 2)
                 pts.append((x, y))
-            stroke(d, pts, max(1.0, w * 0.46), INK)
+            stroke(d, pts, max(1.0, base_w * ARC_STROKE), INK)
 
     # badge: pinned to the right rim, ring kissing the silhouette
     icon = state.get("icon", "none")
