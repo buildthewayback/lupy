@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T13:05Z
-Reason: ∪∪ resting face + control approval-wait fix; both macOS runners
+Build requested: 2026-10-17T13:55Z
+Reason: self-test start race; verify both macOS runners
