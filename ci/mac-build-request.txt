@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T08:35Z
-Reason: self-test failure — badge clipped at 94% framing; add LupyComposition (72%) and fix colour sampling
+Build requested: 2026-10-17T08:50Z
+Reason: self-test colour assertion compared only the blue channel; compare RGB distance and surface failures as annotations

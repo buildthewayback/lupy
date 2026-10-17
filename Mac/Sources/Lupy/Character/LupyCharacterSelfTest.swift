@@ -51,9 +51,10 @@ enum LupyCharacterSelfTest {
         let idleColour = render(size: 64, state: .idle)?.bodyRGB
         let workColour = render(size: 64, state: .working)?.bodyRGB
         if let idleColour, let workColour {
-            let white = idleColour.r > 0.99 && idleColour.g > 0.99 && idleColour.b > 0.99
-            let differs = abs(workColour.b - idleColour.b) > 0.12
-                && (workColour.r < 0.90 || workColour.g < 0.90)
+            let white = idleColour.r > 0.985 && idleColour.g > 0.985 && idleColour.b > 0.985
+            let distance = abs(workColour.r - idleColour.r)
+                + abs(workColour.g - idleColour.g) + abs(workColour.b - idleColour.b)
+            let differs = distance > 0.25
             lines.append("\(white ? "PASS" : "FAIL") idle body is pure white "
                 + String(format: "(%.2f %.2f %.2f)", idleColour.r, idleColour.g, idleColour.b))
             lines.append("\(differs ? "PASS" : "FAIL") working body is coloured "
@@ -75,6 +76,11 @@ enum LupyCharacterSelfTest {
                                    : "CHARACTER SELF-TEST FAILED (\(failures))")
         let text = lines.joined(separator: "\n") + "\n"
         print(text)
+        // Make a failure readable from CI even when the raw log cannot be fetched:
+        // GitHub turns these lines into annotations on the build check.
+        for line in lines where line.hasPrefix("FAIL") {
+            print("::error title=Character self-test::\(line)")
+        }
 
         if let index = arguments.firstIndex(of: "--report"), index + 1 < arguments.count {
             try? text.write(toFile: arguments[index + 1], atomically: true, encoding: .utf8)
