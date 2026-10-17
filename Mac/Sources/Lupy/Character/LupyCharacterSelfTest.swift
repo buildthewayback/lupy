@@ -112,7 +112,8 @@ enum LupyCharacterSelfTest {
             centreY: Double(size) * 0.5,
             bodyRed: body.r, bodyGreen: body.g, bodyBlue: body.b,
             tintRed: tint.r, tintGreen: tint.g, tintBlue: tint.b,
-            glowStrength: state.glowStrength
+            glowStrength: state.glowStrength,
+            spiralPhase: rig.time * LupyEyeStyle.spiral.spiralSpin
         )
 
         // Render at 4x so a 24 pt character still has enough pixels to inspect.

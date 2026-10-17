@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T11:05Z
-Reason: badge pinned to the character's right edge, status bubble beside him with animated dots, heavier turning spiral, crisper sheets
+Build requested: 2026-10-17T11:25Z
+Reason: restore LupyStateIconShape as its own file; pass spiralPhase in the self-test snapshot
