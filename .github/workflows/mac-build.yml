@@ -82,6 +82,12 @@ jobs:
             exit 1
           }
 
+      - name: Character rig self-test
+        run: |
+          APP="build/DerivedData/Build/Products/Release/Lupy.app"
+          "$APP/Contents/MacOS/Lupy" --character-self-test --report character-self-test.txt
+          cat character-self-test.txt
+
       - name: Package facts
         id: meta
         run: |
