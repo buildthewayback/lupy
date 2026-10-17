@@ -1,0 +1,16 @@
+COPY-PASTE THIS INTO A NEW ARENA SESSION (replace <NEWACCOUNT/lupy> with your real new GitHub owner/repo name):
+
+---
+
+Read the file **00_NEW_SESSION_START_HERE.md** in my Google Drive folder "Lupy LUPY3 Handoff" FIRST — ignore any older 00_READ_ME file in there, the new one supersedes it. Then:
+
+1. Ask me to connect GitHub if it isn't connected, then `git clone git@github.com:<NEWACCOUNT>/lupy.git` (the repo was transferred to my new account for fresh CI minutes; old toastmangoapp-cloud/lupy is retired). Start a fresh branch named arena/<your-session-id>-lupy.
+2. If docs/LUPY3_*.md are missing in the clone, copy all LUPY3_*.md files + WORK_LOG.md from the Drive folder into docs/ and founder-ref-20261017.jpg into docs/concepts/. Commit and push early.
+3. Prove you have eyes: open docs/concepts/founder-ref-20261017.jpg with vision and describe it back to me in your own words. No hands, no legs, white body, tall solid-black capsule eyes no pupils — if you can't see images say so immediately.
+4. Follow the build order exactly: character base first (3 white-base Lupy idle candidates for my approval), then UI per use case (horizontal smart-canvas island, Synvy glassmorphism, Milkinside palette), then backend including the round-8 skills/god-mode system.
+5. Character spec reminder: plump rounded-triangle mochi blob, white/warm-cream body, tall black capsule eyes NO pupils, soft jelly gloss with top highlight + pink cheek blush + gentle glow. NO crown/accessories yet — those come after I lock the base.
+6. Work the way 00_NEW_SESSION_START_HERE.md tells you to (verify everything, short multiple-choice questions when unsure, call me boss, push early, sandbox tests before CI, never fake delivery, never gate chat behind approvals).
+
+Let's go.
+
+---

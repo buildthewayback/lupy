@@ -69,3 +69,68 @@ Asked the 4 open questions before starting.
     single-job rerun refused by the API. **F11 (run 38938047078, `735de9b`) DELIVERED: all green
     both Macs** — 36/36 download, chat 19/19, control 9/9 (clean "run: finished"), memory 46–57 MB.
     Campaign total ≈1,932/2,000 Linux-eq (96.6%) — allowance spent; next builds wait for November.
+
+## 2026-10-16 (LUPY 3) — the rebuild directive
+Founder tested F11 with a real API key (works!), verdict: half-half — Coucou leftovers wired the
+Coucou way (island home shows coding pills; chat gates behind approvals). New directive: full
+architecture-first rebuild — deep Coucou audit, blueprint for his needs (browser use, agentic
+tasks, his areas), remove originals, build his surfaces, rewire. Days allowed; zero CI until the
+allowance resets 1 Nov. docs/LUPY3_PLAN.md; 4 scoping questions asked.
+
+## 2026-10-16 (LUPY 3) — interview complete; blueprint + audit drafted
+3 interview rounds (see LUPY3_PLAN.md): identity = personal AI orchestrator ("and my personal
+assistant kinda"), salon-website pipeline = the spec, research-first/quality-anchored, earned
+autonomy (nothing overnight on day one), ~$15/month model ladder, per-task eyes rule.
+DRAFTED: docs/LUPY3_BLUEPRINT.md (the contract: pipeline, ladder, second brain, browser agent,
+autonomy ladder, surfaces, what dies) + docs/LUPY3_AUDIT.md (dismantling map with verdicts;
+open "(?)" items go to the founder at blueprint review). Next: deepen the audit edge-by-edge,
+then build order planning. Builds wait for the CI allowance reset (1 Nov).
+
+## 2026-10-17 (LUPY 3) — swarm locked, utilities decided, UI researched, handoff written
+Founder round 4: one Lupy front / multi-agent swarm behind (many free-tier models, "5 or 10,
+as needed"); utilities (music/mail/notes/clipboard/iPhone/Flow daily pages) STAY if island-first
+and beautiful; UI must be researched heavily and be "amazing". Done: UI research doc (island
+apps, 2026 AI-chat conventions, agent-UX patterns, Liquid Glass) with Lupy design rules +
+tokens; BLUEPRINT v2 (swarm section, UI link, utilities decision); AUDIT v2 (all (?) resolved,
+absorb verdicts for insights/dictionary/snippets/styles); concept render; LUPY3_HANDOFF.md
+(ignition key for the next session + GitHub account migration plan). Next: founder blueprint
+review → build order.
+
+## 2026-10-17 evening (LUPY 3) — smart-canvas direction + references + concept renders
+Founder round 5: the island becomes a SMART CANVAS (avatar-first under camera, grows per
+need, persistent mic+composer, progressive disclosure, no fixed dashboard, Linear polish).
+References studied: Vibe Island (notch approvals ⌘Y/⌘N, quick-answers ⌘1–3, quota glance),
+AgentsRoom (3 ambient states, surge notifications), Coworker (validates deterministic-core
+orchestration + memory-before-orchestration), Linear (polish bar). UI research doc round-2
+section + revised design rules; BLUEPRINT §7 rewritten as smart canvas; original-character
+mandate (capsule eyes, same-or-better quality, Coucou rig as base) recorded. 4 concept
+renders generated into docs/concepts/. Awaiting founder brainstorm/acceptance before build.
+
+## 2026-10-17 night (LUPY 3) — corrections: character spec + UI style target
+Founder round 6: (1) NOT mango — org name ≠ character; ask, don't assume. (2) Character =
+his design (ref saved docs/concepts/founder-ref-20261017.jpg), WHITE base, tall solid-black
+capsule eyes no pupils (the signature), Coucou's animation quality, traits later (crown,
+accessories, seasonal, pyjamas) — fancy, not overloaded. (3) My first UI renders rejected —
+vertical was wrong; target = Synvy Neuro dark glassmorphism, HORIZONTAL widget-like, laptop
+first. (4) Order: character → UI use cases → backend. (5) AI images must be persistent:
+approved renders become locked references. Docs updated (BLUEPRINT §7/§8, UI_RESEARCH §3
+tokens + round 3, PLAN round 6). Generating white-character candidates from his reference
+for approval.
+
+## 2026-10-17 night II (LUPY 3) — vision handoff: references map written, session closes
+Founder decided: visual work moves to a new session WITH vision (this agent cannot view
+images; two character candidates were rejected). Wrote docs/LUPY3_REFERENCES.md — the
+master map of every link he gave (10 links + his character reference image) with his words
+on each, incl. the Milkinside palette (#374772/#576692/#989FAB/#C0C5D4…). Character spec
+corrected: NO hands/legs, exactly his reference, white, black capsule eyes no pupils.
+HANDOFF updated with vision-session first-actions. PLAN round 7 recorded. Character
+candidates from the rejected attempt were NOT saved (founder skipped both). Next session:
+read HANDOFF → study all references with eyes → character base → UI use cases → backend.
+
+## 2026-10-17 night III (LUPY 3) — Google Drive handoff copy (the 99% clone)
+Founder connected Google Drive so the next session isn't dependent on git only. Wrote
+docs/LUPY3_AGENT_MEMORY.md (full agent-state clone: session mechanics, facts, founder
+profile, priorities, dead ends). Preparing Drive folder "Lupy LUPY3 Handoff" with: all
+LUPY3_*.md docs + WORK_LOG + founder-ref-20261017.jpg + 00_READ_ME_FIRST.md +
+lupy3-local-commits.bundle (git bundle of the local-only commits 8493846..HEAD so the new
+session can restore the exact git history). HANDOFF updated with the Drive restore path.
