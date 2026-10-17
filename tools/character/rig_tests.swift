@@ -240,6 +240,56 @@ final class RigTests {
         ok(worstOverhang < 0.0,
            "eyes stay inside the silhouette at every gaze (worst overhang \(worstOverhang) at \(worstAt))")
 
+        print("\n== machine mood ==")
+        var v = LupyVitals()
+        v.cpu = 0.92
+        ok(v.mood(busySamples: 1).busy == 0, "one hot CPU sample is not enough (no panic)")
+        ok(v.mood(busySamples: 2).busy > 0.9, "two hot samples pin the processor mood")
+        var cool = LupyVitals(); cool.cpu = 0.3
+        ok(cool.mood(busySamples: 4).busy == 0, "a normal CPU stays calm")
+        var warm = LupyVitals(); warm.thermal = 2
+        near(warm.mood(busySamples: 0).hot, 0.8, 1e-9, "thermal serious = warm 0.8")
+        var fullm = LupyVitals(); fullm.memoryPressure = 2
+        near(fullm.mood(busySamples: 0).full, 1.0, 1e-9, "memory critical = full 1.0")
+        ok(fullm.overloaded(), "memory critical marks the machine overloaded")
+        var lowbat = LupyVitals(); lowbat.batteryPercent = 15; lowbat.onPower = false
+        near(lowbat.mood(busySamples: 0).tired, 1.0, 1e-9, "battery under 20 = tired")
+        var dead = LupyVitals(); dead.batteryPercent = 8; dead.onPower = false
+        ok(dead.mood(busySamples: 0).asleep, "battery under 10 = asleep")
+        var plugged = LupyVitals(); plugged.batteryPercent = 8; plugged.onPower = true
+        ok(!plugged.mood(busySamples: 0).asleep, "plugged in never sleeps")
+
+        print("\n== states tell the truth ==")
+        ok(LupyState.idle.bodyTintAmount == 0, "idle body stays pure white")
+        ok(LupyState.working.bodyTintAmount > 0.2, "working is coloured enough to read")
+        ok(LupyState.error.bodyTintAmount > LupyState.working.bodyTintAmount,
+           "errors are louder than normal work")
+        ok(LupyState.resolved(requested: .working, overloaded: true) == .dizzy,
+           "an overloaded Mac makes Lupy dizzy while working")
+        ok(LupyState.resolved(requested: .approval, overloaded: true) == .approval,
+           "a question is never hidden by the machine's mood")
+        var seen = Set<String>()
+        for st in LupyState.allCases { seen.insert(st.label) }
+        ok(seen.count == LupyState.allCases.count, "every state has its own sentence")
+
+        print("\n== mood changes the body ==")
+        var rigM = LupyRig()
+        rigM.moodTarget = LupyMood(full: 1)
+        var mm = 0
+        while mm < 90 { rigM.step(dt: LupyFrameClock.step); mm += 1 }
+        let puff = rigM.bodyScale
+        ok(puff.x > 1.05, "memory pressure puffs the body out (\(puff.x))")
+        var tiredRig = LupyRig()
+        tiredRig.moodTarget = LupyMood(tired: 1)
+        mm = 0
+        while mm < 90 { tiredRig.step(dt: LupyFrameClock.step); mm += 1 }
+        ok(tiredRig.effectiveEyeStyle == .halfLid, "a tired Mac gives him heavy lids")
+        var sleepRig = LupyRig()
+        sleepRig.moodTarget = LupyMood(asleep: true)
+        mm = 0
+        while mm < 90 { sleepRig.step(dt: LupyFrameClock.step); mm += 1 }
+        ok(sleepRig.effectiveEyeStyle == .arch, "an empty battery closes his eyes")
+
         print("\n-------------------------------------------")
         if failures == 0 {
             print("RIGTESTS PASSED (\(checks) checks)")

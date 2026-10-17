@@ -21,11 +21,19 @@ def parse(path):
         if not p:
             continue
         if p[0] == "FRAME":
-            cur = {"name": p[1], "body": [], "eyes": [], "tint": (1, 1, 1), "badge": "none"}
+            cur = {"name": p[1], "body": [], "eyes": [], "tint": (1, 1, 1),
+                   "amount": 0.0, "badge": "none", "label": p[1],
+                   "hot": 0.0, "busy": 0.0, "full": 0.0, "tired": 0.0, "asleep": False}
             states.append(cur)
+        elif p[0] == "MOOD":
+            cur["hot"] = float(p[1]); cur["busy"] = float(p[2])
+            cur["full"] = float(p[3]); cur["tired"] = float(p[4])
+            cur["asleep"] = p[5] == "1"
         elif p[0] == "STATE":
             cur["tint"] = tuple(float(v) for v in p[2:5])
-            cur["badge"] = p[5] if len(p) > 5 else "none"
+            cur["amount"] = float(p[5]) if len(p) > 5 else 0.0
+            cur["badge"] = p[6] if len(p) > 6 else "none"
+            cur["label"] = " ".join(p[7:]) if len(p) > 7 else p[1]
         elif p[0] == "BODY":
             cur["body"] = [tuple(map(float, q.split(","))) for q in p[1:]]
         elif p[0] == "EYE":
@@ -41,8 +49,8 @@ def rounded(d, box, radius, fill):
 
 def draw_arc_eye(d, cx, cy, half_w, style, unit, tinted):
     """Wide arc eye: a stroked quadratic with round caps, never a filled blob."""
-    w = half_w * 2 * 1.35            # arcs are wider than the capsule
-    thickness = half_w * 0.92
+    w = half_w * 2                   # span already comes from the rig
+    thickness = half_w * 0.55        # ink, not a smear: the arcs must not meet
     bow = 0.052 * unit
     if style == "arch":
         bow = -bow                  # ∩
@@ -148,17 +156,27 @@ def render(state, size, pad=0.20):
 
     d = ImageDraw.Draw(img)
 
-    # body: pure white, brand law
-    d.polygon(body_pts, fill=BODY)
+    # body: white at rest, reaching the state colour as the state gets louder.
+    # A quarter-second read, without losing the white LUPY at idle.
+    a = state.get("amount", 0.0)
+    if a > 0:
+        body_col = tuple(int(255 * (1 - a) + 255 * tint[i] * a) for i in range(3))
+    else:
+        body_col = BODY
+    hot = state.get("hot", 0.0)
+    if hot > 0.01:
+        flush = (255, 138, 112)
+        h = min(0.42, 0.42 * hot)
+        body_col = tuple(int(body_col[i] * (1 - h) + flush[i] * h) for i in range(3))
+    d.polygon(body_pts, fill=body_col)
 
     cyw = cy
     for side, ex, ey, rx, ry, style in state["eyes"]:
         ex_p, ey_p = px(ex, ey)
         if style in ("capsule", "wide", "dash", "half_lid"):
-            k = {"capsule": (1.0, 1.0), "wide": (1.16, 1.06),
-                 "dash": (1.12, 0.20), "half_lid": (1.30, 0.28)}[style]
-            w = rx * 2 * k[0]
-            h = ry * 2 * k[1]
+            # rx/ry already include the style's shape: the rig owns the numbers.
+            w = rx * 2
+            h = ry * 2
             rounded(d, [ex_p - w * s / 2, ey_p - h * s / 2,
                         ex_p + w * s / 2, ey_p + h * s / 2],
                     min(w, h) * s / 2, INK)
@@ -183,24 +201,39 @@ def _offset(pts, grow):
     return out
 
 
-def main():
-    src = sys.argv[1] if len(sys.argv) > 1 else "/tmp/states.txt"
-    out = sys.argv[2] if len(sys.argv) > 2 else "docs/concepts/lupy-rig-states.png"
-    size = int(sys.argv[3]) if len(sys.argv) > 3 else 190
-    states = parse(src)
-    cols = 6
-    rows = (len(states) + cols - 1) // cols
+def sheet(states, out, size, cols, labels=True):
     tiles = [render(s, size) for s in states]
     tw, th = tiles[0].size
-    label = 30
-    canvas = Image.new("RGB", (tw * cols, (th + label) * rows), (12, 12, 15))
+    lab = 34 if labels else 0
+    rows = (len(tiles) + cols - 1) // cols
+    canvas = Image.new("RGB", (tw * cols, (th + lab) * rows), BG)
     d = ImageDraw.Draw(canvas)
     for i, (t, s) in enumerate(zip(tiles, states)):
-        x, y = (i % cols) * tw, (i // cols) * (th + label)
+        x, y = (i % cols) * tw, (i // cols) * (th + lab)
         canvas.paste(t, (x, y))
-        d.text((x + 12, y + th + 8), s["name"], fill=(170, 172, 184))
+        if labels:
+            d.text((x + 12, y + th + 8), s["label"], fill=(214, 216, 228))
     canvas.save(out)
     print(f"wrote {out} {canvas.size[0]}x{canvas.size[1]}")
+
+
+def main():
+    src = sys.argv[1]
+    out = sys.argv[2]
+    size = int(sys.argv[3]) if len(sys.argv) > 3 else 190
+
+    states = parse(src)
+    real = [t for t in states if not t["name"].startswith(("mood_", "cpu_", "ram_", "too_"))]
+    moods = [t for t in states if t["name"] not in [r["name"] for r in real]]
+
+    names = {"mood_calm": "Calm", "cpu_pinned": "CPU pinned",
+             "ram_critical": "RAM critical", "too_hot": "Too hot"}
+    for t in moods:
+        t["label"] = names.get(t["name"], t["name"])
+
+    if moods:
+        sheet(moods, out.replace(".png", "-machine.png"), size, len(moods))
+    sheet(real, out, size, 6)
 
 
 if __name__ == "__main__":

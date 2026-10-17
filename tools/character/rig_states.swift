@@ -1,57 +1,83 @@
-// Emits every state from the shipping rig, so the sheet is drawn from real geometry.
+
+// Emits the character's drawable geometry as plain lines, for two sheets:
+//   * every task state, driven through the real rig
+//   * the machine-mood states (calm, CPU pinned, RAM critical, too hot)
 //
-//   node tools/swiftwasm/swiftc-wasm.mjs --run \
-//     Mac/Sources/Lupy/Character/LupyGeometry.swift \
-//     Mac/Sources/Lupy/Character/LupyCharacterMath.swift \
-//     tools/character/rig_states.swift > /tmp/states.txt
+// Every number comes from LupyBody / LupyRig / LupyState — the same code the app
+// draws with. The renderer only fills shapes. If a pixel is wrong, the rig is wrong.
 //
-//   FRAME <name> <yaw> <pitch> <blink>
-//   STATE <name> <r> <g> <b> <badge>
-//   BODY  x,y ...
-//   EYE   <side> <cx> <cy> <rx> <ry> <style>
+//   swiftc LupyGeometry.swift LupyCharacterMath.swift rig_states.swift -o /tmp/states
+
+enum LupyConsole {
+    static func line(_ s: String) { print(s) }
+}
 
 struct StateEmitter {
+    func emit(_ label: String, rig: LupyRig) {
+        let state = rig.state
+        let t = state.tint
+        let bs = rig.bodyScale
+        let style = rig.effectiveEyeStyle
+
+        LupyConsole.line("FRAME \(label) \(rig.gazeX.value) \(rig.gazeY.value) \(rig.blink.open)")
+        LupyConsole.line("MOOD \(rig.mood.hot) \(rig.mood.busy) \(rig.mood.full) \(rig.mood.tired) \(rig.mood.asleep ? 1 : 0)")
+        LupyConsole.line("STATE \(label) \(t.r) \(t.g) \(t.b) \(state.bodyTintAmount) \(state.badge?.name ?? "none") \(state.label)")
+        LupyConsole.line("BODY " + LupyBody.polygon().map {
+            "\($0.0 * bs.x),\($0.1 * bs.y)"
+        }.joined(separator: " "))
+
+        let sc = style.capsuleScale
+        let isArc = style == .arch || style == .cup
+        for f in rig.eyes(bodyWidth: 1.0) where f.visible {
+            let halfW = f.w * f.fx * 0.5 * (isArc ? style.arcSpan : sc.x)
+            let halfH = f.h * f.fy * rig.blink.open * 0.5 * (isArc ? 1 : sc.y)
+            guard halfH > 0.0008 else { continue }
+            let name: String
+            switch style {
+            case .capsule: name = "capsule"
+            case .wide:    name = "wide"
+            case .dash:    name = "dash"
+            case .halfLid: name = "half_lid"
+            case .arch:    name = "arch"
+            case .cup:     name = "cup"
+            case .spiral:  name = "spiral"
+            }
+            LupyConsole.line("EYE \(f.side) \(f.x * bs.x) \(f.y * bs.y) \(halfW) \(halfH) \(name)")
+        }
+    }
+
+    /// A tile driven by the machine rather than by a task.
+    func emitMood(_ name: String, requested: LupyState, vitals: LupyVitals, busySamples: Int) {
+        var rig = LupyRig()
+        rig.moodTarget = vitals.mood(busySamples: busySamples)
+        rig.state = LupyState.resolved(requested: requested, overloaded: vitals.overloaded())
+        rig.movePointer(to: 0, 0)
+        var i = 0
+        while i < 150 { rig.step(dt: LupyFrameClock.step); i += 1 }
+        emit(name, rig: rig)
+    }
+
     func run() {
         for state in LupyState.allCases {
             var rig = LupyRig()
             rig.state = state
             rig.movePointer(to: 0, 0)
-            // let the springs settle so the sheet shows the resting pose of each state
             var i = 0
-            while i < 120 { rig.step(dt: LupyFrameClock.step); i += 1 }
-
-            let name = state.name
-            print("FRAME \(name) \(rig.gazeX.value) \(rig.gazeY.value) \(rig.blink.open)")
-            let t = state.tint
-            print("STATE \(name) \(t.r) \(t.g) \(t.b) \(state.badge?.name ?? "none")")
-
-            let sc = rig.bodyScale
-            print("BODY " + LupyBody.polygon().map {
-                "\($0.0 * sc.x),\($0.1 * sc.y)"
-            }.joined(separator: " "))
-
-            for f in rig.eyes(bodyWidth: 1.0) where f.visible {
-                let halfW = f.w * f.fx * 0.5
-                let halfH = f.h * f.fy * rig.blink.open * 0.5
-                if halfH > 0.0008 {
-                    let style: String
-                    switch f.style {
-                    case .capsule: style = "capsule"
-                    case .wide: style = "wide"
-                    case .dash: style = "dash"
-                    case .halfLid: style = "half_lid"
-                    case .arch: style = "arch"
-                    case .cup: style = "cup"
-                    case .spiral: style = "spiral"
-                    }
-                    print("EYE \(f.side) \(f.x * sc.x) \(f.y * sc.y) \(halfW) \(halfH) \(style)")
-                }
-            }
+            while i < 150 { rig.step(dt: LupyFrameClock.step); i += 1 }
+            emit(state.name, rig: rig)
         }
+
+        emitMood("mood_calm", requested: .idle, vitals: LupyVitals(), busySamples: 0)
+        var pinned = LupyVitals(); pinned.cpu = 0.97
+        emitMood("cpu_pinned", requested: .working, vitals: pinned, busySamples: 3)
+        var ram = LupyVitals(); ram.memoryPressure = 2
+        emitMood("ram_critical", requested: .working, vitals: ram, busySamples: 0)
+        var warm = LupyVitals(); warm.thermal = 3
+        emitMood("too_hot", requested: .working, vitals: warm, busySamples: 0)
     }
 }
 
 @main
-struct Entry {
+struct Emitter {
     static func main() { StateEmitter().run() }
 }

@@ -565,6 +565,10 @@ struct LupyRig {
     /// Drives the eyes, the light and the badge. Never the silhouette.
     var state: LupyState = .idle
 
+    /// How the machine feels. Eased towards `moodTarget` so nothing snaps.
+    var mood = LupyMood()
+    var moodTarget = LupyMood()
+
     var blink = LupyBlink()
     var time: Double = 0
     var pointerActive = true
@@ -604,10 +608,27 @@ struct LupyRig {
         pointerActive = false
     }
 
+    /// The eyes actually drawn: mood can override the state's shape (heavy lids when
+    /// tired, closed when asleep), but a state that is *already* explicit wins.
+    var effectiveEyeStyle: LupyEyeStyle {
+        if mood.asleep { return .arch }
+        if mood.tired > 0.5 && (state == .idle || state == .working) { return .halfLid }
+        if state == .dizzy { return .spiral }
+        return state.eyeStyle
+    }
+
     /// One fixed step (LupyFrameClock.step).
     mutating func step(dt: Double) {
         time += dt
         pointerIdleTime += dt
+
+        // mood eases in ~0.4 s, the same feel as Coucou's 1 - 0.25^dt
+        let k = 1 - LM.exp(-dt / 0.42)
+        mood.busy += (moodTarget.busy - mood.busy) * k
+        mood.hot += (moodTarget.hot - mood.hot) * k
+        mood.full += (moodTarget.full - mood.full) * k
+        mood.tired += (moodTarget.tired - mood.tired) * k
+        mood.asleep = moodTarget.asleep
 
         var targetX = 0.0
         var targetY = 0.0
@@ -640,14 +661,32 @@ struct LupyRig {
         blink.step(dt: dt)
     }
 
-    /// Breathing: a slow, tiny vertical swell. Enough to read as alive at 64 px.
+    /// Breathing: a slow, tiny vertical swell. A pinned processor makes it faster —
+    /// the character is panting, which is the whole point of the mood system.
     var breath: Double {
-        LM.sin(time * (LM.twoPi / 4.4))
+        let period = 4.4 - 2.1 * mood.busy
+        return LM.sin(time * (LM.twoPi / period))
     }
 
     var bodyScale: (x: Double, y: Double) {
         let b = breath
-        return (1 - 0.0045 * b, 1 + 0.0075 * b)
+        var sx = 1 - 0.0045 * b
+        var sy = 1 + 0.0075 * b
+        // memory short: puffed up, like Coucou's full-memory pose
+        sx *= 1 + 0.07 * mood.full
+        sy *= 1 - 0.035 * mood.full
+        // pins him down a touch when the machine is overloaded
+        let stress = max(mood.busy, mood.full)
+        sx *= 1 - 0.006 * stress
+        sy *= 1 - 0.006 * stress
+        return (sx, sy)
+    }
+
+    /// A small tremble for a pinned processor. Zero when calm, so stills stay clean.
+    var tremble: (x: Double, y: Double) {
+        guard mood.busy > 0.02 else { return (0, 0) }
+        let a = min(1, mood.busy * 1.3)
+        return (LM.sin(time * 63) * 0.004 * a, LM.cos(time * 51) * 0.003 * a)
     }
 
     /// Eye frames for the current state.
@@ -679,6 +718,28 @@ enum LupyEyeStyle {
     case cup
     /// Thin spiral — dizzy. Still solid ink, still no pupil.
     case spiral
+}
+
+extension LupyEyeStyle {
+    /// The one place the drawn shape of an eye is defined. Both the AppKit/SwiftUI
+    /// renderer and the offline sheet read these numbers, so the character can never
+    /// drift between the app and the documentation.
+    var capsuleScale: (x: Double, y: Double) {
+        switch self {
+        case .capsule: return (1.00, 1.00)
+        case .wide:    return (1.16, 1.06)
+        case .dash:    return (1.12, 0.20)
+        case .halfLid: return (1.30, 0.28)
+        default:       return (1.00, 1.00)
+        }
+    }
+
+    /// Half the span of a stroked arc eye, as a multiple of the eye's own width.
+    var arcSpan: Double { 1.32 }
+    /// How far the arc bows, as a fraction of body width. Negative = ∪ (down), positive = ∩ (up).
+    var arcBow: Double { 0.052 }
+    /// Stroke weight, as a fraction of the eye's drawn width.
+    var arcStroke: Double { 0.46 }
 }
 
 /// The 11 states from the reference sheet. A state changes the eyes, the hue of the
@@ -715,6 +776,15 @@ enum LupyState: Int, CaseIterable {
         }
     }
 
+    /// The body colour actually drawn: pure white at rest, easing into the state
+    /// colour as the state gets louder. Idle must stay #FFFFFF — that is brand law.
+    var bodyColour: (r: Double, g: Double, b: Double) {
+        let a = bodyTintAmount
+        guard a > 0 else { return (1, 1, 1) }
+        let t = tint
+        return (1 + (t.r - 1) * a, 1 + (t.g - 1) * a, 1 + (t.b - 1) * a)
+    }
+
     /// Colour of the light around Lupy. The body itself stays pure white.
     var tint: (r: Double, g: Double, b: Double) {
         switch self {
@@ -732,6 +802,35 @@ enum LupyState: Int, CaseIterable {
         }
     }
 
+    /// How strongly the state colour reaches the body. Idle stays pure white (brand);
+    /// anything that wants your attention is coloured enough to read at a glance.
+    var bodyTintAmount: Double {
+        switch self {
+        case .idle: return 0.0
+        case .sleeping: return 0.18
+        case .working, .thinking, .searching: return 0.34
+        case .finished: return 0.30
+        case .approval, .question, .error, .rateLimit, .dizzy: return 0.46
+        }
+    }
+
+    /// The sentence that goes with the face. The island shows this; the eyes agree with it.
+    var label: String {
+        switch self {
+        case .idle: return "Ready"
+        case .working: return "Working"
+        case .thinking: return "Thinking"
+        case .searching: return "Searching"
+        case .approval: return "Waiting for your OK"
+        case .question: return "Has a question"
+        case .error: return "Something broke"
+        case .finished: return "Done"
+        case .rateLimit: return "Rate limited"
+        case .sleeping: return "Asleep"
+        case .dizzy: return "Overloaded"
+        }
+    }
+
     /// The single small overlay allowed per state.
     var badge: LupyBadge? {
         switch self {
@@ -742,6 +841,62 @@ enum LupyState: Int, CaseIterable {
         case .error: return .ring
         case .finished, .rateLimit: return .dot
         case .sleeping: return .zzz
+        }
+    }
+}
+
+// MARK: - The machine's body language
+
+/// How the Mac feels, 0...1 each — the same five channels Coucou's Mochi shows.
+/// Continuous on purpose: the body language eases between levels, never snaps.
+struct LupyMood: Equatable {
+    var busy: Double = 0      // processor pinned: tremble, fast breath, darting eyes
+    var hot: Double = 0       // warm: flushed tint, heat
+    var full: Double = 0      // memory short: puffs up
+    var tired: Double = 0     // battery low: heavy lids
+    var asleep = false        // battery nearly empty
+}
+
+/// Raw system readings. In the app these come from host_statistics / thermalState /
+/// DispatchSourceMemoryPressure / IOPS; in tests they are just numbers.
+struct LupyVitals: Equatable {
+    var cpu: Double = 0              // 0...1, last sample
+    var thermal: Int = 0             // 0 nominal, 1 fair, 2 serious, 3 critical
+    var memoryPressure: Int = 0      // 0 normal, 1 warning, 2 critical
+    var batteryPercent: Int? = nil   // nil on a desktop Mac
+    var onPower = true
+
+    /// Apply Coucou's rules, including "two samples in a row or it does not count".
+    func mood(busySamples: Int) -> LupyMood {
+        var m = LupyMood()
+        m.busy = busySamples >= 2 ? LM.clamp((cpu - 0.6) / 0.3, 0, 1) : 0
+        switch thermal {
+        case 1: m.hot = 0.4
+        case 2: m.hot = 0.8
+        case 3: m.hot = 1
+        default: m.hot = 0
+        }
+        m.full = memoryPressure >= 2 ? 1 : (memoryPressure == 1 ? 0.6 : 0)
+        if let battery = batteryPercent, !onPower {
+            m.tired = battery < 20 ? 1 : 0
+            m.asleep = battery < 10
+        }
+        return m
+    }
+
+    /// A memory-critical machine makes the character dizzy: that is the founder's
+    /// example, and it is also the honest one — nothing else is happening any more.
+    func overloaded() -> Bool { memoryPressure >= 2 }
+}
+
+extension LupyState {
+    /// What is actually drawn. A machine in memory-critical state is dizzy whatever
+    /// the task thinks it is doing — the body language tells the truth about the Mac.
+    static func resolved(requested: LupyState, overloaded: Bool) -> LupyState {
+        guard overloaded else { return requested }
+        switch requested {
+        case .approval, .question, .error: return requested   // never hide a question
+        default: return .dizzy
         }
     }
 }
