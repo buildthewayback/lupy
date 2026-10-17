@@ -181,3 +181,20 @@ Debug: IM `copy_opacity` REPLACES alpha instead of multiplying (blush painted th
 body) → `DstIn` is the correct operator; a grayscale gradient silently drops the alpha
 channel → masks/gradients must be forced to `-type TrueColorAlpha`; `gradient:` is top-down.
 Awaiting founder sign-off on M2 + the 11-state sheet before locking the persistent reference.
+
+## 2026-10-17 (LUPY 3, session 3) — STATES v2: real shading (founder: "needs more gloss and depth")
+Founder reviewed the flat sheet and asked for the gloss/volume of his reference. Rewrote the
+renderer from ImageMagick compositing to **Pillow pixel math** (`tools/character/render_states.py`
+v2) after proving IM's operators were unusable here: `copy_opacity` REPLACES alpha,
+`-composite` merges only TWO images (silently dropping the extra badge layers), and grayscale
+gradients drop the alpha channel. New stack, 19 states in ~1.7 s:
+  1 base vertical gradient (shade -0.30 top specular end -> -0.02 at base)
+  2 inner rim shading from a blurred distance field -> genuine volume
+  3 broad top-front specular + tight hotspot (screen blend)
+  4 bottom contact shade + soft floor shadow
+  5 colour halo, 6 blush (clipped), 7 eyes, 8 badge/overlays
+Also: eye ink is warm near-black #1A1418 (never pure #000) matching the reference; happy =
+capped arch n, sleeping = cup u, drawn as explicit polylines with round caps (PIL `arc()`
+was collapsing them); badges at upper-left with a real bubble tail; spirals enlarged.
+Grep-verified: no ImageMagick calls left in the renderer except the optional sheet montage
+(now pure Pillow). Tree clean, pushed.
