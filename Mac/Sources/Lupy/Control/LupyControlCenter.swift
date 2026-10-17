@@ -246,7 +246,8 @@ final class LupyControlCenter {
                     LupyModel.shared.changed()
                     testPhase?("awaiting")
                     if testHoldSeconds > 0 { try? await Task.sleep(nanoseconds: UInt64(testHoldSeconds * 1_000_000_000)) }
-                    let approved = await waitForDecision(pending.id)
+                    let approved = await waitForDecision(pending.id,
+                                                         idempotencyKey: action.idempotencyKey)
                     guard !isStopped else { return }
                     if !approved {
                         mark(i, .failed, "You declined: \(title). Lupy did not do it.")
@@ -303,17 +304,35 @@ final class LupyControlCenter {
         }
     }
 
-    private func waitForDecision(_ approvalID: LupyID) async -> Bool {
+    private func waitForDecision(_ approvalID: LupyID, idempotencyKey: String?) async -> Bool {
         if let auto = autoDecision {
             LupyModel.shared.act { try $0.decideApproval(approvalID, approve: auto, note: "Decided by the control self-test") }
         }
+        // A missing approval is NOT a decline.
+        //
+        // This used to return false the moment `state.approvals[id]` was nil — so on a
+        // slow Mac, one render frame between the decision and its event arriving made
+        // the self-test report "You declined: Click Send" for a run the founder had
+        // approved. It failed a different machine each run, which is how it looked like
+        // a flake. Only the ledger can say what happened: if the action has a record,
+        // the gate let it through and the click is legitimate.
+        var missingTicks = 0
         while !Task.isCancelled && !isStopped {
             let status = LupyModel.shared.state.approvals[approvalID]?.status
             switch status {
             case .approved?: return true
-            case .denied?, .expired?, .cancelled?, nil: return false
-            case .pending?: try? await Task.sleep(nanoseconds: 400_000_000)
+            case .denied?, .expired?, .cancelled?: return false
+            case .pending?: missingTicks = 0
+            case nil:
+                if let key = idempotencyKey,
+                   let engine = LupyModel.shared.engine,
+                   engine.state.actions.values.contains(where: { $0.action.idempotencyKey == key }) {
+                    return true
+                }
+                missingTicks += 1
+                if missingTicks > 25 { return false }    // ten seconds of nothing
             }
+            try? await Task.sleep(nanoseconds: 400_000_000)
         }
         return false
     }
