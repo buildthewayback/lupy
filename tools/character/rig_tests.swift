@@ -1,0 +1,257 @@
+// Sandbox test harness for LupyCharacterMath.
+// Run:
+//   node tools/swiftwasm/swiftc-wasm.mjs --run \
+//     Mac/Sources/Lupy/Character/LupyGeometry.swift \
+//     Mac/Sources/Lupy/Character/LupyCharacterMath.swift \
+//     tools/character/rig_tests.swift
+
+final class RigTests {
+    var failures = 0
+    var checks = 0
+
+    func ok(_ cond: Bool, _ what: String) {
+        checks += 1
+        if cond { print("ok    \(what)") }
+        else { failures += 1; print("FAIL  \(what)") }
+    }
+
+    func near(_ a: Double, _ b: Double, _ tol: Double, _ what: String) {
+        checks += 1
+        if abs(a - b) > tol {
+            failures += 1
+            print("FAIL  \(what): got \(a), want \(b) +/- \(tol)")
+        } else {
+            print("ok    \(what)  (\(a))")
+        }
+    }
+
+    func main() {
+        print("== math kernel vs known values ==")
+        near(LM.sin(0), 0, 1e-12, "sin(0)")
+        near(LM.sin(LM.pi / 2), 1, 1e-10, "sin(pi/2)")
+        near(LM.cos(0), 1, 1e-12, "cos(0)")
+        near(LM.cos(LM.pi), -1, 1e-10, "cos(pi)")
+        near(LM.sqrt(2), 1.41421356237, 1e-9, "sqrt(2)")
+        near(LM.exp(0), 1, 1e-12, "exp(0)")
+        near(LM.exp(1), 2.71828182846, 1e-8, "exp(1)")
+        near(LM.tanh(0), 0, 1e-12, "tanh(0)")
+        near(LM.tanh(1), 0.761594155956, 1e-8, "tanh(1)")
+
+        print("\n== body geometry ==")
+        let poly = LupyBody.polygon()
+        ok(poly.count == LupyBody.controlCount * 8, "polygon samples the 64 fitted segments")
+        ok(LupyBody.beziers().count == LupyBody.controlCount, "one Bézier per control point")
+        let bs = LupyBody.beziers()
+        near(bs[bs.count - 1].x3, bs[0].x0, 1e-9, "path is closed")
+        near(bs[bs.count - 1].y3, bs[0].y0, 1e-9, "path closes on the same point")
+        // fidelity: smoothing must never redraw the character
+        ok(LupyBody.fitError() < 0.004,
+           "smooth path stays within 0.4% of the measured outline (\(LupyBody.fitError()))")
+        // smoothness: no corner anywhere on the silhouette
+        var maxTurn = 0.0
+        var k = 0
+        while k < poly.count {
+            let a = poly[(k - 1 + poly.count) % poly.count]
+            let b = poly[k]
+            let c = poly[(k + 1) % poly.count]
+            let v1x = b.0 - a.0, v1y = b.1 - a.1
+            let v2x = c.0 - b.0, v2y = c.1 - b.1
+            let n1 = LM.sqrt(v1x * v1x + v1y * v1y)
+            let n2 = LM.sqrt(v2x * v2x + v2y * v2y)
+            let cosA = (v1x * v2x + v1y * v2y) / (n1 * n2)
+            // small-angle form of acos, accurate well past the range that matters
+            let turn = LM.sqrt(2 * (1 - cosA))
+            if turn > maxTurn { maxTurn = turn }
+            k += 1
+        }
+        // A real kink in a flattened path shows up as tens of degrees at one vertex.
+        // The natural apex of the silhouette turns a few degrees per sample.
+        ok(maxTurn < 0.09,
+           "silhouette has no kinks (max turn \(LM.fixed(maxTurn * 57.2958, 2)) deg)")
+        var minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9
+        for p in poly {
+            if p.0 < minX { minX = p.0 }
+            if p.0 > maxX { maxX = p.0 }
+            if p.1 < minY { minY = p.1 }
+            if p.1 > maxY { maxY = p.1 }
+        }
+        near(maxX - minX, 1.0, 0.01, "body width == 1.0 body-width unit")
+        near(maxY - minY, LupyGeometry.bodyAspect, 0.01, "body height == aspect")
+        near(minX + maxX, 0, 0.005, "body is horizontally centred")
+        near(minY + maxY, 0, 0.005, "body is vertically centred on y=0")
+        near(maxY, LupyGeometry.bodyAspect / 2, 0.005, "body top edge at +aspect/2")
+
+        print("\n== eye geometry at rest ==")
+        let frames = LupyEyes.frames(yaw: 0, pitch: 0, rx: 0.5,
+                                     ry: 0.5 * LupyGeometry.bodyAspect, bodyWidth: 1.0)
+        ok(frames.count == 2, "two eyes")
+        let left = frames[0]
+        ok(left.visible, "eyes visible at rest")
+        near(left.w, LupyGeometry.eyeW, 1e-9, "eye width from spec")
+        near(left.h, LupyGeometry.eyeH, 1e-9, "eye height from spec")
+        near(abs(left.x), 0.1644, 0.0005, "eye centre offset == measured 0.1644 body-widths")
+        near(left.y, 0.3409 - LupyGeometry.bodyAspect * 0.5, 0.0005,
+             "eye centre height == measured 0.3409 from the bottom")
+        near(LupyGeometry.eyeH / LupyGeometry.eyeW, 2.08, 0.06, "eye h/w ratio == 2.08")
+        ok(abs(left.fx - 1) < 0.02, "no foreshortening at rest")
+
+        print("\n== gaze ==")
+        let g0 = LupyGaze.from(pointerX: 500, pointerY: 500, centreX: 500, centreY: 500, bodyWidth: 200)
+        near(g0.yaw, 0, 1e-12, "gaze neutral when the pointer is on the centre")
+        let gR = LupyGaze.from(pointerX: 1000, pointerY: 500, centreX: 500, centreY: 500, bodyWidth: 200)
+        ok(gR.yaw > 0.8 && gR.yaw < 1.0, "gaze right saturates below 1 (got \(gR.yaw))")
+        let gUp = LupyGaze.from(pointerX: 500, pointerY: 100, centreX: 500, centreY: 500, bodyWidth: 200)
+        ok(gUp.pitch > 0, "pointer above the centre makes Lupy look up (got \(gUp.pitch))")
+        let gFar = LupyGaze.from(pointerX: 100000, pointerY: 500, centreX: 500, centreY: 500, bodyWidth: 200)
+        ok(gFar.yaw <= 1.0001, "tanh clamps the gaze, never overshoots")
+
+        print("\n== foreshortening (the 3D eye trick) ==")
+        let turned = LupyEyes.frames(yaw: 0.9, pitch: 0, rx: 0.5,
+                                     ry: 0.5 * LupyGeometry.bodyAspect, bodyWidth: 1.0)
+        ok(abs(turned[0].fx - turned[1].fx) > 0.05,
+           "turning compresses the two eyes differently")
+        ok(turned[1].fx < 0.9, "far eye compresses (fx=\(turned[1].fx))")
+        let up = LupyEyes.frames(yaw: 0, pitch: 1, rx: 0.5,
+                                 ry: 0.5 * LupyGeometry.bodyAspect, bodyWidth: 1)
+        let down = LupyEyes.frames(yaw: 0, pitch: -1, rx: 0.5,
+                                   ry: 0.5 * LupyGeometry.bodyAspect, bodyWidth: 1)
+        ok(up[0].y > 0.04, "looking up raises the eyes (y=\(up[0].y))")
+        ok(down[0].y < -0.14, "looking down lowers the eyes (y=\(down[0].y))")
+        ok(up[0].fy < 1.0 && down[0].fy < 1.0, "eyes squash at the top and bottom of the arc")
+        let b = LupyBody.bounds()
+        near(b.w, 1.0, 0.005, "bounds() reports the true drawn width")
+        let back = LupyEyes.frames(yaw: 1.0, pitch: 0, rx: 0.5,
+                                   ry: 0.5 * LupyGeometry.bodyAspect, bodyWidth: 1.0)
+        ok(back[0].fx >= 0.18, "scale floor stops the eye collapsing to a line")
+
+        print("\n== springs ==")
+        var s = LupySpring(value: 0, target: 1, omega: 18, zeta: 0.62)
+        var t = 0.0
+        while t < 0.6 {
+            s.step(dt: 1.0 / 60.0)
+            t += 1.0 / 60.0
+        }
+        near(s.value, 1.0, 0.02, "spring settles at its target")
+        ok(s.velocity < 2.0 && s.velocity > -2.0, "spring velocity decays")
+
+        var crit = LupySpring(value: 0, target: 1, omega: 18, zeta: 1.0)
+        var peak = 0.0
+        t = 0
+        while t < 0.6 {
+            crit.step(dt: 1.0 / 60.0)
+            if crit.value > peak { peak = crit.value }
+            t += 1.0 / 60.0
+        }
+        ok(peak <= 1.001, "critically damped spring does not overshoot (peak \(peak))")
+
+        print("\n== fixed timestep ==")
+        var clock = LupyClock()
+        var steps = 0
+        var i = 0
+        while i < 120 {
+            clock.advance(dt: 1.0 / 120.0) { steps += 1 }
+            i += 1
+        }
+        ok(steps == 60, "120 Hz display yields 60 fixed steps (got \(steps))")
+
+        var clock2 = LupyClock()
+        var steps2 = 0
+        i = 0
+        while i < 30 {
+            clock2.advance(dt: 1.0 / 30.0) { steps2 += 1 }
+            i += 1
+        }
+        ok(steps2 == 60, "30 Hz display covers a full second of animation (got \(steps2))")
+
+        print("\n== blink ==")
+        var blink = LupyBlink(firstBlinkIn: 0.1)
+        var minOpen = 1.0
+        i = 0
+        while i < 60 {
+            blink.step(dt: 1.0 / 60.0)
+            if blink.open < minOpen { minOpen = blink.open }
+            i += 1
+        }
+        ok(minOpen < 0.2, "blink actually closes (min open \(minOpen))")
+        near(blink.open, 1.0, 0.001, "eye re-opens after the blink")
+
+        print("\n== live rig ==")
+        var rig = LupyRig()
+        rig.movePointer(to: 600, 300)          // well to the right and below
+        var rigSteps = 0
+        var t2 = 0.0
+        while t2 < 1.0 {
+            rig.step(dt: LupyClock.step)
+            t2 += LupyClock.step
+            rigSteps += 1
+        }
+        ok(rigSteps == 60, "one second of rig time is 60 fixed steps (\(steps))")
+        ok(rig.gazeX.value > 0.7, "gaze settles toward a right-hand pointer (\(rig.gazeX.value))")
+        ok(rig.gazeY.value < -0.5, "gaze settles downward for a pointer below (\(rig.gazeY.value))")
+        ok(rig.gazeX.value <= 1.0 && rig.gazeY.value >= -1.0, "gaze stays inside its bounds")
+        // idle drift: after a few still seconds the eyes stop staring dead ahead
+        var still = LupyRig()
+        still.movePointer(to: 600, 300)
+        t2 = 0
+        while t2 < 6.0 { still.step(dt: LupyClock.step); t2 += LupyClock.step }
+        ok(abs(still.gazeX.value) < 0.9, "long stillness relaxes the gaze (\(still.gazeX.value))")
+        // breathing is subtle but present, and never changes the silhouette materially
+        var br = LupyRig()
+        t2 = 0
+        var lo = 9.0, hi = -9.0
+        while t2 < 5.0 {
+            br.step(dt: LupyClock.step)
+            let s2 = br.bodyScale.y
+            if s2 < lo { lo = s2 }
+            if s2 > hi { hi = s2 }
+            t2 += LupyClock.step
+        }
+        ok(hi - lo > 0.010, "breathing moves the body (range \(hi - lo))")
+        ok(hi - 1 < 0.012, "breathing stays subtle (max +2%)")
+        // eyes must stay fully inside the real dome, at every gaze, not just a box
+        var worstOverhang = -9.0
+        var worstAt = (0.0, 0.0)
+        var yy = -1.0
+        while yy <= 1.0001 {
+            var xx = -1.0
+            while xx <= 1.0001 {
+                let fs = LupyEyes.frames(yaw: xx, pitch: yy, rx: 0.5,
+                                         ry: 0.5 * LupyGeometry.bodyAspect, bodyWidth: 1)
+                for f in fs {
+                    let halfW = f.w * f.fx * 0.5
+                    let halfH = f.h * f.fy * 0.5
+                    // check both the eye's centre line and its top/bottom edges
+                    var edges = [f.y]
+                    edges.append(f.y + halfH * 0.85)
+                    edges.append(f.y - halfH * 0.85)
+                    for ey in edges {
+                        let room = LupyBody.halfWidth(atY: ey)
+                        let over = (abs(f.x) + halfW) - room
+                        if over > worstOverhang {
+                            worstOverhang = over
+                            worstAt = (xx, yy)
+                        }
+                    }
+                }
+                xx += 0.05
+            }
+            yy += 0.05
+        }
+        ok(worstOverhang < 0.0,
+           "eyes stay inside the silhouette at every gaze (worst overhang \(worstOverhang) at \(worstAt))")
+
+        print("\n-------------------------------------------")
+        if failures == 0 {
+            print("RIGTESTS PASSED (\(checks) checks)")
+        } else {
+            print("RIGTESTS FAILED (\(failures) of \(checks))")
+        }
+    }
+}
+
+@main
+struct Entry {
+    static func main() {
+        RigTests().main()
+    }
+}
