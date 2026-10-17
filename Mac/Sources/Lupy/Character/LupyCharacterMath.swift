@@ -562,8 +562,15 @@ struct LupyRig {
     /// placement are both derived from it, so nothing is size-dependent.
     var bodyWidth: Double = 200
 
-    /// Drives the eyes, the light and the badge. Never the silhouette.
-    var state: LupyState = .idle
+    /// What the task wants the character to show.
+    var requestedState: LupyState = .idle
+    /// Set from real memory pressure: an overloaded Mac overrides the task's state.
+    var machineOverloaded = false
+    /// What is actually drawn. Drives the eyes, the colour, the light and the badge.
+    /// Never the silhouette.
+    var state: LupyState {
+        LupyState.resolved(requested: requestedState, overloaded: machineOverloaded)
+    }
 
     /// How the machine feels. Eased towards `moodTarget` so nothing snaps.
     var mood = LupyMood()
@@ -617,6 +624,13 @@ struct LupyRig {
         return state.eyeStyle
     }
 
+    /// Feed a fresh system reading in. Called at most every three seconds; the rig
+    /// eases towards it, so the character never snaps between two moods.
+    mutating func apply(vitals: LupyVitals, busySamples: Int) {
+        moodTarget = vitals.mood(busySamples: busySamples)
+        machineOverloaded = vitals.overloaded()
+    }
+
     /// One fixed step (LupyFrameClock.step).
     mutating func step(dt: Double) {
         time += dt
@@ -660,6 +674,10 @@ struct LupyRig {
         gazeY.step(dt: dt)
         blink.step(dt: dt)
     }
+
+    /// The openness to *draw*. A fully closed blink would erase the eyes and leave a
+    /// blank face; a real blink leaves a thin line of ink. Never draw nothing.
+    var drawnBlinkOpen: Double { max(0.12, blink.open) }
 
     /// Breathing: a slow, tiny vertical swell. A pinned processor makes it faster —
     /// the character is panting, which is the whole point of the mood system.
@@ -831,6 +849,15 @@ enum LupyState: Int, CaseIterable {
         }
     }
 
+    /// What the bubble above the head says. A working character trails off, because
+    /// it is still going; a finished one states the fact.
+    var bubbleText: String {
+        switch self {
+        case .working, .thinking, .searching: return label + "…"
+        default: return label
+        }
+    }
+
     /// The single small overlay allowed per state.
     var badge: LupyBadge? {
         switch self {
@@ -898,6 +925,27 @@ extension LupyState {
         case .approval, .question, .error: return requested   // never hide a question
         default: return .dizzy
         }
+    }
+}
+
+extension LupyVitals {
+    /// The line under the bubble: the most telling fact first, at most two facts.
+    func describe(_ mood: LupyMood, top: [String]) -> String? {
+        var parts: [String] = []
+        if mood.busy > 0 {
+            let pct = Int((cpu * 100).rounded())
+            parts.append(top.isEmpty
+                ? "CPU \(pct) %"
+                : "CPU \(pct) % · " + top.prefix(2).joined(separator: ", "))
+        }
+        if mood.hot >= 0.8 { parts.append("hot") }
+        else if mood.hot > 0 { parts.append("warm") }
+        if mood.full >= 1 { parts.append("memory full") }
+        else if mood.full > 0 { parts.append("memory short") }
+        if let battery = batteryPercent, mood.tired > 0 || mood.asleep {
+            parts.append("battery \(battery) %")
+        }
+        return parts.isEmpty ? nil : parts.prefix(2).joined(separator: " · ")
     }
 }
 

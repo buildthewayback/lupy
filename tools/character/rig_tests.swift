@@ -290,6 +290,33 @@ final class RigTests {
         while mm < 90 { sleepRig.step(dt: LupyFrameClock.step); mm += 1 }
         ok(sleepRig.effectiveEyeStyle == .arch, "an empty battery closes his eyes")
 
+        print("\n== the words match the face ==")
+        ok(LupyState.working.bubbleText == "Working…", "working reads Working…")
+        ok(LupyState.thinking.bubbleText == "Thinking…", "thinking reads Thinking…")
+        ok(LupyState.searching.bubbleText == "Searching…", "searching reads Searching…")
+        ok(!LupyState.finished.bubbleText.contains("…"), "a finished job does not trail off")
+        var quiet = LupyVitals()
+        ok(quiet.describe(quiet.mood(busySamples: 0), top: []) == nil,
+           "a calm Mac has nothing to report")
+        var pinnedRun = LupyVitals(); pinnedRun.cpu = 0.91
+        let line = pinnedRun.describe(pinnedRun.mood(busySamples: 2), top: ["Xcode", "node"])
+        ok(line == "CPU 91 % · Xcode, node", "the hover line names the processors (\(line ?? "nil"))")
+        var hotRun = LupyVitals(); hotRun.thermal = 3
+        ok(hotRun.describe(hotRun.mood(busySamples: 0), top: []) == "hot", "heat is reported")
+
+        print("\n== the rig believes the machine ==")
+        var fed = LupyRig()
+        fed.requestedState = .working
+        var critical = LupyVitals(); critical.memoryPressure = 2
+        fed.apply(vitals: critical, busySamples: 0)
+        ok(fed.state == .dizzy, "a memory-critical Mac overrides working with dizzy")
+        var calmFeed = LupyVitals()
+        fed.apply(vitals: calmFeed, busySamples: 0)
+        ok(fed.state == .working, "when memory recovers, the task state returns")
+        fed.requestedState = .approval
+        fed.apply(vitals: critical, busySamples: 0)
+        ok(fed.state == .approval, "a waiting question is never overridden")
+
         print("\n-------------------------------------------")
         if failures == 0 {
             print("RIGTESTS PASSED (\(checks) checks)")

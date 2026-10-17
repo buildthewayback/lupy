@@ -35,3 +35,7 @@ private/
 # CI verification outputs (scripts/verify-mac-download.sh)
 verify-out/
 downloaded/
+
+# Python bytecode from the character tooling
+__pycache__/
+*.pyc

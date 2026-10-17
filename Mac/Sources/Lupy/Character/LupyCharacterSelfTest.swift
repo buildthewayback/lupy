@@ -17,6 +17,9 @@ enum LupyCharacterSelfTest {
         var ink = 0
         var total = 0
         var widestInkRow = 0
+        var bodyRGB = (r: 0.0, g: 0.0, b: 0.0)
+        /// Ink in the upper-left quadrant, where a badge lives (and the body does not).
+        var badgeInk = false
     }
 
     static func run(arguments: [String]) -> Int32 {
@@ -28,7 +31,7 @@ enum LupyCharacterSelfTest {
         ]
 
         for (name, size) in sizes {
-            guard let stats = render(size: size) else {
+            guard let stats = render(size: size, state: .idle) else {
                 lines.append("FAIL \(name): renderer produced no image")
                 failures += 1
                 continue
@@ -40,6 +43,32 @@ enum LupyCharacterSelfTest {
                 format: "%@ %@: %dpx, body %.1f%%, eyes %.1f%% (widest ink row %d)",
                 ok ? "PASS" : "FAIL", name, Int(size), whitePct, inkPct, stats.widestInkRow))
             if !ok { failures += 1 }
+        }
+
+        // Colour is the message: the idle body must be white and a working body must
+        // not be. If this fails, a state is invisible at a glance no matter what the
+        // data says.
+        let idleColour = render(size: 64, state: .idle)?.bodyRGB
+        let workColour = render(size: 64, state: .working)?.bodyRGB
+        if let idleColour, let workColour {
+            let white = idleColour.r > 0.99 && idleColour.g > 0.99 && idleColour.b > 0.99
+            let differs = abs(workColour.b - idleColour.b) > 0.12
+                && (workColour.r < 0.90 || workColour.g < 0.90)
+            lines.append("\(white ? "PASS" : "FAIL") idle body is pure white "
+                + String(format: "(%.2f %.2f %.2f)", idleColour.r, idleColour.g, idleColour.b))
+            lines.append("\(differs ? "PASS" : "FAIL") working body is coloured "
+                + String(format: "(%.2f %.2f %.2f)", workColour.r, workColour.g, workColour.b))
+            if !white || !differs { failures += 1 }
+        } else {
+            lines.append("FAIL could not sample the drawn body colour")
+            failures += 1
+        }
+
+        // The badge must exist for a state that has one, and must sit clear of the
+        // body: a badge touching the shoulder reads as an ear (we shipped that once).
+        if let badge = render(size: 128, state: .approval)?.badgeInk {
+            lines.append("\(badge ? "PASS" : "FAIL") approval draws its badge")
+            if !badge { failures += 1 }
         }
 
         lines.append(failures == 0 ? "CHARACTER SELF-TEST PASSED"
@@ -54,19 +83,27 @@ enum LupyCharacterSelfTest {
     }
 
     /// Draw one frame of the shipping renderer into a bitmap and count pixels.
-    private static func render(size: CGFloat) -> Stats? {
+    private static func render(size: CGFloat, state: LupyState) -> Stats? {
         let bounds = LupyBody.bounds()
         let unit = min(Double(size) * 0.94 / bounds.w, Double(size) * 0.94 / bounds.h)
-        let eyes = LupyEyes.frames(yaw: 0.28, pitch: -0.12,
-                                   rx: 0.5, ry: 0.5 * LupyGeometry.bodyAspect,
-                                   bodyWidth: 1.0).filter { $0.visible }
+        var rig = LupyRig()
+        rig.requestedState = state
+        rig.movePointer(to: 0, 0)
+        var i = 0
+        while i < 90 { rig.step(dt: LupyFrameClock.step); i += 1 }
+        let scale = rig.bodyScale
+        let body = state.bodyColour
+        let tint = state.tint
         let frame = LupyFrameSnapshot(
             beziers: LupyBody.beziers(),
-            eyes: eyes,
-            scaleX: 1, scaleY: 1, blink: 1,
+            eyes: rig.eyes(bodyWidth: 1.0).filter { $0.visible },
+            scaleX: scale.x, scaleY: scale.y, blink: rig.blink.open,
             unit: unit,
             centreX: Double(size) * 0.5,
-            centreY: Double(size) * 0.5
+            centreY: Double(size) * 0.5,
+            bodyRed: body.r, bodyGreen: body.g, bodyBlue: body.b,
+            badge: state.badge,
+            tintRed: tint.r, tintGreen: tint.g, tintBlue: tint.b
         )
 
         // Render at 4x so a 24 pt character still has enough pixels to inspect.
@@ -112,6 +149,29 @@ enum LupyCharacterSelfTest {
             y += 1
         }
         stats.widestInkRow = rowInk
+
+        // The body colour, sampled a little above the centre line where no eye sits.
+        let sx = w / 2, sy = Int(Double(h) * 0.30)
+        let si = (sy * w + sx) * 4
+        stats.bodyRGB = (Double(pixels[si]) / 255, Double(pixels[si + 1]) / 255,
+                         Double(pixels[si + 2]) / 255)
+
+        // Badge: ink or pale ink well above-left of the body. The body occupies the
+        // centre, so ink in this corner can only be the badge.
+        var corner = 0
+        var cy = 0
+        while cy < Int(Double(h) * 0.26) {
+            var cx = 0
+            while cx < Int(Double(w) * 0.30) {
+                let i = (cy * w + cx) * 4
+                let lum = (Int(pixels[i]) * 299 + Int(pixels[i + 1]) * 587
+                           + Int(pixels[i + 2]) * 114) / 1000
+                if lum > 40 { corner += 1 }
+                cx += 1
+            }
+            cy += 1
+        }
+        stats.badgeInk = corner > 12
         return stats
     }
 }
