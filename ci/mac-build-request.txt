@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T15:10Z
-Reason: blush removed; the character window photo should now show a pure white body
+Build requested: 2026-10-17T15:55Z
+Reason: self-test run budget; blush already removed
