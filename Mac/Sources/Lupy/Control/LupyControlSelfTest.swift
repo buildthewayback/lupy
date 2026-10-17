@@ -98,6 +98,9 @@ enum LupyControlSelfTest {
             .read(ElementQuery([], role: .textInput)),
         ])
         let typed = run1?.steps.last?.detail.contains(String(line.prefix(30))) == true
+        if run1 == nil {
+            lines.append("INFO run 1 never reported a result; TextEdit may still have been opening (stdout above has the detail)")
+        }
         check("typing into TextEdit with the result read back", run1?.state == .finished && typed,
               run1.map { "\($0.summary); read-back: \($0.steps.last?.detail ?? "")" } ?? "no run")
         if let r = run1, let engine = LupyModel.shared.engine {
@@ -202,13 +205,21 @@ enum LupyControlSelfTest {
             note("INFO could not start “\(title)”: \(why)")
             return nil
         }
+        let before = control.lastRun
         guard control.start(title: title, steps: steps, byFounder: true) else { return nil }
-        for _ in 0..<600 {
+        // 90 s, not 60: opening a file in TextEdit plus its own 25 s wait can exceed a
+        // minute on a cold runner, and the old limit then reported "no run" — which
+        // blamed the feature for the harness giving up.
+        for _ in 0..<900 {
             if !control.isActive { break }
             try? await Task.sleep(nanoseconds: 100_000_000)
         }
-        if control.isActive { control.stop(reason: "self-test timeout") }
-        try? await Task.sleep(nanoseconds: 300_000_000)
+        if control.isActive { control.stop(reason: "self-test timeout after 90 s") }
+        // Give the stop a real chance to land before reading the result.
+        for _ in 0..<50 {
+            if let r = control.lastRun, r.id != before?.id { break }
+            try? await Task.sleep(nanoseconds: 100_000_000)
+        }
         return control.lastRun
     }
 
