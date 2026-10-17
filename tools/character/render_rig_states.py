@@ -7,6 +7,8 @@ from the shipping Swift rig.
 import sys
 from PIL import Image, ImageDraw, ImageFilter
 
+from status_bubble import draw_status_bubble
+
 SS = 3
 BODY = (255, 255, 255)
 INK = (0, 0, 0)
@@ -22,7 +24,7 @@ def parse(path):
             continue
         if p[0] == "FRAME":
             cur = {"name": p[1], "body": [], "eyes": [], "tint": (1, 1, 1),
-                   "amount": 0.0, "badge": "none", "label": p[1],
+                   "amount": 0.0, "icon": "none", "label": p[1],
                    "hot": 0.0, "busy": 0.0, "full": 0.0, "tired": 0.0, "asleep": False}
             states.append(cur)
         elif p[0] == "MOOD":
@@ -32,7 +34,7 @@ def parse(path):
         elif p[0] == "STATE":
             cur["tint"] = tuple(float(v) for v in p[2:5])
             cur["amount"] = float(p[5]) if len(p) > 5 else 0.0
-            cur["badge"] = p[6] if len(p) > 6 else "none"
+            cur["icon"] = p[6] if len(p) > 6 else "none"
             cur["label"] = " ".join(p[7:]) if len(p) > 7 else p[1]
         elif p[0] == "BODY":
             cur["body"] = [tuple(map(float, q.split(","))) for q in p[1:]]
@@ -147,10 +149,10 @@ def render(state, size, pad=0.20):
     # to nothing — no hard edge, no offset "shadow".
     mask = Image.new("L", img.size, 0)
     ImageDraw.Draw(mask).polygon(body_pts, fill=255)
-    glow = mask.filter(ImageFilter.GaussianBlur(s * 0.085))
+    glow = mask.filter(ImageFilter.GaussianBlur(s * 0.075))
     tint_rgb = tuple(int(c * 255) for c in tint)
     glow_layer = Image.new("RGB", img.size, tint_rgb)
-    strength = 0.46 if state["name"] != "idle" else 0.26
+    strength = min(0.92, state.get("amount", 0.3))
     scaled = glow.point(lambda v: min(255, int(v * strength)))
     img = Image.composite(glow_layer, img, scaled)
 
@@ -158,11 +160,9 @@ def render(state, size, pad=0.20):
 
     # body: white at rest, reaching the state colour as the state gets louder.
     # A quarter-second read, without losing the white LUPY at idle.
-    a = state.get("amount", 0.0)
-    if a > 0:
-        body_col = tuple(int(255 * (1 - a) + 255 * tint[i] * a) for i in range(3))
-    else:
-        body_col = BODY
+    # brand law: the body is pure white in every state. The state speaks through the
+    # light behind it and through the bubble.
+    body_col = BODY
     hot = state.get("hot", 0.0)
     if hot > 0.01:
         flush = (255, 138, 112)
@@ -185,8 +185,11 @@ def render(state, size, pad=0.20):
         else:
             draw_arc_eye(d, ex_p, ey_p, rx * s, style, s, INK)
 
-    draw_badge(d, state["badge"], s, cx, cy)
-    return img.resize((W, W), Image.LANCZOS)
+    img = img.resize((W, W), Image.LANCZOS)
+    # The bubble is laid out in final-image pixels, where the body is `size` wide.
+    draw_status_bubble(ImageDraw.Draw(img), state["label"], state.get("icon", "none"),
+                       tint, float(size), W / 2, float(W) * 0.035, phase=3)
+    return img
 
 
 def _offset(pts, grow):
@@ -204,7 +207,7 @@ def _offset(pts, grow):
 def sheet(states, out, size, cols, labels=True):
     tiles = [render(s, size) for s in states]
     tw, th = tiles[0].size
-    lab = 34 if labels else 0
+    lab = 0
     rows = (len(tiles) + cols - 1) // cols
     canvas = Image.new("RGB", (tw * cols, (th + lab) * rows), BG)
     d = ImageDraw.Draw(canvas)
@@ -212,7 +215,7 @@ def sheet(states, out, size, cols, labels=True):
         x, y = (i % cols) * tw, (i // cols) * (th + lab)
         canvas.paste(t, (x, y))
         if labels:
-            d.text((x + 12, y + th + 8), s["label"], fill=(214, 216, 228))
+            pass
     canvas.save(out)
     print(f"wrote {out} {canvas.size[0]}x{canvas.size[1]}")
 
@@ -226,10 +229,14 @@ def main():
     real = [t for t in states if not t["name"].startswith(("mood_", "cpu_", "ram_", "too_"))]
     moods = [t for t in states if t["name"] not in [r["name"] for r in real]]
 
-    names = {"mood_calm": "Calm", "cpu_pinned": "CPU pinned",
-             "ram_critical": "RAM critical", "too_hot": "Too hot"}
+    names = {"mood_calm": ("Calm", "none"),
+             "cpu_pinned": ("Working", "gear"),
+             "ram_critical": ("Overloaded", "spiral"),
+             "too_hot": ("Working", "gear")}
     for t in moods:
-        t["label"] = names.get(t["name"], t["name"])
+        label, icon = names.get(t["name"], (t["name"], "none"))
+        t["label"] = label
+        t["icon"] = t.get("icon", "none") if icon == "none" else icon
 
     if moods:
         sheet(moods, out.replace(".png", "-machine.png"), size, len(moods))

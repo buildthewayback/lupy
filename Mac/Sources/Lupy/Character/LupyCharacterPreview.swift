@@ -48,9 +48,9 @@ struct LupyPreviewView: View {
     @FocusState private var keysFocused: Bool
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 4) {
             LupyLabelBubble(state: model.state, detail: model.detail)
-                .padding(.top, 14)
+                .padding(.top, 10)
 
             LupyCanvasView(state: model.state,
                            vitals: model.vitals,

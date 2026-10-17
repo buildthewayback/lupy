@@ -21,7 +21,7 @@ struct StateEmitter {
 
         LupyConsole.line("FRAME \(label) \(rig.gazeX.value) \(rig.gazeY.value) \(rig.drawnBlinkOpen)")
         LupyConsole.line("MOOD \(rig.mood.hot) \(rig.mood.busy) \(rig.mood.full) \(rig.mood.tired) \(rig.mood.asleep ? 1 : 0)")
-        LupyConsole.line("STATE \(label) \(t.r) \(t.g) \(t.b) \(state.bodyTintAmount) \(state.badge?.name ?? "none") \(state.label)")
+        LupyConsole.line("STATE \(label) \(t.r) \(t.g) \(t.b) \(state.glowStrength) \(state.icon?.name ?? "none") \(state.label)")
         LupyConsole.line("BODY " + LupyBody.polygon().map {
             "\($0.0 * bs.x),\($0.1 * bs.y)"
         }.joined(separator: " "))

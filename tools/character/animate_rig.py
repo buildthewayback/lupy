@@ -11,8 +11,8 @@ import subprocess
 import sys
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-from render_rig_states import (BG, INK, SS, draw_badge, draw_spiral_eye,
-                               draw_arc_eye, rounded)
+from render_rig_states import (BG, BODY, INK, SS, draw_spiral_eye, draw_arc_eye, rounded)
+from status_bubble import draw_status_bubble
 
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
@@ -27,7 +27,7 @@ def parse(path):
         if p[0] == "FRAME":
             cur = {"i": int(p[1]), "gx": float(p[2]), "gy": float(p[3]),
                    "body": [], "eyes": [], "cursor": None, "amount": 0.0,
-                   "tint": (1, 1, 1), "badge": "none", "label": ""}
+                   "tint": (1, 1, 1), "badge": "none", "icon": "none", "label": ""}
             frames.append(cur)
         elif p[0] == "BODY":
             cur["body"] = [tuple(map(float, q.split(","))) for q in p[1:]]
@@ -37,7 +37,7 @@ def parse(path):
         elif p[0] == "STATE":
             cur["amount"] = float(p[1])
             cur["tint"] = (float(p[2]), float(p[3]), float(p[4]))
-            cur["badge"] = p[5]
+            cur["icon"] = p[5]
             cur["label"] = " ".join(p[6:])
         elif p[0] == "CURSOR":
             cur["cursor"] = (float(p[1]), float(p[2]))
@@ -88,16 +88,15 @@ def render_frame(f, size, body_px):
     # light: the state colour, behind the body, blurred into the background
     mask = Image.new("L", img.size, 0)
     ImageDraw.Draw(mask).polygon(body_pts, fill=255)
-    glow = mask.filter(ImageFilter.GaussianBlur(s * SS * 0.085))
-    strength = 0.46 if f["amount"] > 0 else 0.26
+    glow = mask.filter(ImageFilter.GaussianBlur(s * SS * 0.075))
+    strength = min(0.92, f["amount"])
     glow = glow.point(lambda v: min(255, int(v * strength)))
     layer = Image.new("RGB", img.size, tuple(int(c * 255) for c in f["tint"]))
     img = Image.composite(layer, img, glow)
     d = ImageDraw.Draw(img)
 
-    a = f["amount"]
-    body_col = tuple(int(255 * (1 - a) + 255 * f["tint"][i] * a) for i in range(3))
-    d.polygon(body_pts, fill=body_col)
+    # brand law: pure white body in every state; the light carries the colour
+    d.polygon(body_pts, fill=BODY)
 
     for cx, cy, rx, ry, style in f["eyes"]:
         if ry < 0.002:
@@ -112,13 +111,14 @@ def render_frame(f, size, body_px):
         else:
             draw_arc_eye(d, ex, ey, rx * s * SS, style, s * SS, INK)
 
-    draw_badge(d, f["badge"], s * SS, cxp, cyp)
-
     if f["cursor"]:
         draw_cursor(d, *px(*f["cursor"]), size * SS / 460.0)
 
     img = img.resize((size, size), Image.LANCZOS)
-    draw_label(ImageDraw.Draw(img), f["label"], f["tint"], size, size)
+    phase = (f["i"] // 8) % 4
+    # the bubble is sized by the *body* width, exactly as the app sizes it
+    draw_status_bubble(ImageDraw.Draw(img), f["label"], f["icon"], f["tint"],
+                       float(body_px), size / 2, size * 0.035, phase=phase)
     return img
 
 
@@ -129,7 +129,7 @@ def main():
     fps = int(sys.argv[4]) if len(sys.argv) > 4 else 25
 
     frames = parse(src)
-    body_px = int(size * 0.62)
+    body_px = int(size * 0.56)
     print(f"{len(frames)} frames at {size}px")
 
     imgs = [render_frame(f, size, body_px) for f in frames]

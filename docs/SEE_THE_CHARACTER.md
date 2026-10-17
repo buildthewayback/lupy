@@ -18,30 +18,45 @@ Watch the little bubble above his head: it always says what he is doing.
 
 ## 2. Every state, with colour
 
-https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-coloured.png
+https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-vivid.png
 
-Eleven states, six per row. The colour is the first thing you see — that is the
-point. You should be able to tell "working" from "broken" from across the room
-without reading a word:
+Eleven states, six per row. **The body is pure white in every one of them** — the
+colour lives in the light around him, vivid and saturated, never pastel. The bubble
+above his head says what he is doing, and the icon on its right is that state's own
+symbol:
 
-- white — ready
-- blue — working
+- ⚙️ Working… — machinery doing work
+- 💡 Thinking… — an idea forming
+- 🔍 Searching… — looking for something
+- 🔔 Waiting for your OK — someone needs you
+- ? Has a question — it needs an answer
+- ! Something broke — something is wrong
+- ✓ Done — finished
+- 🕐 Rate limited — wait, then try again
+- Z Asleep — nothing is happening
+- ⊙ Overloaded — the Mac is out of memory
+
+The eleven colours, strongest first:
+
+- white light — ready
+- electric blue — working
 - violet — thinking
 - indigo — searching
 - amber — waiting for your OK
 - cyan — has a question
 - red — something broke
-- mint — done
+- green — done
 - orange — rate limited
-- grey-blue — asleep
-- pink — overloaded
+- deep blue — asleep
+- magenta — overloaded
 
 The eyes are always solid black capsules. A state can reshape them (a slit, a
-dash, a smile, a spiral) but never gives them pupils, highlights or gloss.
+dash, a smile, a spiral) but never gives them pupils, highlights or gloss, and the
+body never changes colour.
 
 ## 3. When the Mac itself is struggling
 
-https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-coloured-machine.png
+https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-vivid-machine.png
 
 Four states driven by real system readings, not by a task:
 

@@ -18,8 +18,8 @@ enum LupyCharacterSelfTest {
         var total = 0
         var widestInkRow = 0
         var bodyRGB = (r: 0.0, g: 0.0, b: 0.0)
-        /// Ink in the upper-left quadrant, where a badge lives (and the body does not).
-        var badgeInk = false
+        /// The light just outside the left edge of the body.
+        var glowRGB = (r: 0.0, g: 0.0, b: 0.0)
     }
 
     static func run(arguments: [String]) -> Int32 {
@@ -65,11 +65,22 @@ enum LupyCharacterSelfTest {
             failures += 1
         }
 
-        // The badge must exist for a state that has one, and must sit clear of the
-        // body: a badge touching the shoulder reads as an ear (we shipped that once).
-        if let badge = render(size: 128, state: .approval)?.badgeInk {
-            lines.append("\(badge ? "PASS" : "FAIL") approval draws its badge")
-            if !badge { failures += 1 }
+        // The light must actually be the state's colour: sample the pixels just outside
+        // the silhouette and compare two states. If the glow is missing, the only thing
+        // telling them apart at a glance is gone.
+        let errorGlow = render(size: 96, state: .error)?.glowRGB
+        let doneGlow = render(size: 96, state: .finished)?.glowRGB
+        if let errorGlow, let doneGlow {
+            let redder = errorGlow.r > errorGlow.g + 0.10
+            let greener = doneGlow.g > doneGlow.r + 0.10
+            lines.append("\(redder ? "PASS" : "FAIL") an error glows red "
+                + String(format: "(%.2f %.2f %.2f)", errorGlow.r, errorGlow.g, errorGlow.b))
+            lines.append("\(greener ? "PASS" : "FAIL") done glows green "
+                + String(format: "(%.2f %.2f %.2f)", doneGlow.r, doneGlow.g, doneGlow.b))
+            if !redder || !greener { failures += 1 }
+        } else {
+            lines.append("FAIL could not sample the glow colour")
+            failures += 1
         }
 
         lines.append(failures == 0 ? "CHARACTER SELF-TEST PASSED"
@@ -162,22 +173,12 @@ enum LupyCharacterSelfTest {
         stats.bodyRGB = (Double(pixels[si]) / 255, Double(pixels[si + 1]) / 255,
                          Double(pixels[si + 2]) / 255)
 
-        // Badge: ink or pale ink well above-left of the body. The body occupies the
-        // centre, so ink in this corner can only be the badge.
-        var corner = 0
-        var cy = 0
-        while cy < Int(Double(h) * 0.26) {
-            var cx = 0
-            while cx < Int(Double(w) * 0.30) {
-                let i = (cy * w + cx) * 4
-                let lum = (Int(pixels[i]) * 299 + Int(pixels[i + 1]) * 587
-                           + Int(pixels[i + 2]) * 114) / 1000
-                if lum > 40 { corner += 1 }
-                cx += 1
-            }
-            cy += 1
-        }
-        stats.badgeInk = corner > 12
+        // Glow: a pixel outside the left edge of the body, half way up.
+        let gx = max(0, Int(Double(w) * 0.5 - unit * 2 * 0.60))
+        let gy = h / 2
+        let gi = (gy * w + gx) * 4
+        stats.glowRGB = (Double(pixels[gi]) / 255, Double(pixels[gi + 1]) / 255,
+                         Double(pixels[gi + 2]) / 255)
         return stats
     }
 }

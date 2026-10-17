@@ -291,15 +291,17 @@ enum LupyEyes {
 
 /// How the character is placed in a square-ish frame.
 ///
-/// The body is not the whole picture: a state's badge floats to the upper-left,
-/// 0.545 body-widths out, and it must never be clipped by the window edge. That is
-/// why the body is drawn at 72 % of the smaller side, not 94 %. One number, used by
-/// the app and by the self-test, so what the test sees is what ships.
+/// The body is not the whole picture: its light bleeds past the silhouette, and the
+/// light is the message. Drawing the body at 94 % of the frame clipped the glow at the
+/// edge. 82 % leaves room for a strong light on every side, and gives the status bubble
+/// above the head somewhere to live.
 enum LupyComposition {
-    static let unitFraction: Double = 0.72
-    /// How far left the badge reaches, in body widths (origin 0.545 + bubble 0.048×1.75).
-    static let badgeReach: Double = 0.545 + 0.084
-    /// Half the frame, in body widths. The badge must fit inside this.
+    static let unitFraction: Double = 0.74
+    /// Blur radius of the light, in body widths.
+    static let glowBlur: Double = 0.075
+    /// How far the light reaches, in body widths: half a body plus two blur radii.
+    static var glowReach: Double { 0.5 + 2 * glowBlur }
+    /// Half the frame, in body widths. The light must fit inside this.
     static var frameHalf: Double { 0.5 / unitFraction }
 
     static func unit(width: Double, height: Double) -> Double {
@@ -586,7 +588,7 @@ struct LupyRig {
     var requestedState: LupyCharacterState = .idle
     /// Set from real memory pressure: an overloaded Mac overrides the task's state.
     var machineOverloaded = false
-    /// What is actually drawn. Drives the eyes, the colour, the light and the badge.
+    /// What is actually drawn. Drives the eyes, the light and the status bubble.
     /// Never the silhouette.
     var state: LupyCharacterState {
         LupyCharacterState.resolved(requested: requestedState, overloaded: machineOverloaded)
@@ -818,41 +820,51 @@ enum LupyCharacterState: Int, CaseIterable {
         }
     }
 
-    /// The body colour actually drawn: pure white at rest, easing into the state
-    /// colour as the state gets louder. Idle must stay #FFFFFF — that is brand law.
-    var bodyColour: (r: Double, g: Double, b: Double) {
-        let a = bodyTintAmount
-        guard a > 0 else { return (1, 1, 1) }
+    /// Black ink on a bright circle, white ink on a deep one. A glyph that cannot be
+    /// read is worse than no glyph.
+    var iconInkIsDark: Bool {
         let t = tint
-        return (1 + (t.r - 1) * a, 1 + (t.g - 1) * a, 1 + (t.b - 1) * a)
+        let luminance = 0.2126 * t.r + 0.7152 * t.g + 0.0722 * t.b
+        return luminance > 0.52
     }
 
-    /// Colour of the light around Lupy. The body itself stays pure white.
+    /// The body is #FFFFFF in every single state. Not a tint, not a shade.
+    var bodyColour: (r: Double, g: Double, b: Double) { (1, 1, 1) }
+
+    /// Colour of the light around Lupy — vivid RGB, full saturation, never pastel.
+    ///
+    /// These are deliberately loud: a glow that has to be recognised in a quarter of
+    /// a second from across a desk cannot be a tint. Each one is a distinct hue, so
+    /// no two states can be confused even at a glance.
     var tint: (r: Double, g: Double, b: Double) {
         switch self {
-        case .idle:     return (1.000, 1.000, 1.000)
-        case .working:  return (0.231, 0.620, 1.000)   // #3B9EFF
-        case .thinking: return (0.545, 0.361, 0.965)   // #8B5CF6
-        case .searching:return (0.388, 0.373, 0.949)   // #635FF2
-        case .approval: return (0.961, 0.647, 0.137)   // #F5A523
-        case .question: return (0.133, 0.827, 0.933)   // #22D3EE
-        case .error:    return (0.957, 0.314, 0.369)   // #F4505E
-        case .finished: return (0.204, 0.827, 0.600)   // #34D399
-        case .rateLimit:return (0.941, 0.573, 0.235)   // #F0923C
-        case .sleeping: return (0.580, 0.635, 0.722)   // #94A2B8
-        case .dizzy:    return (0.957, 0.447, 0.714)   // #F472B6
+        case .idle:     return (1.000, 1.000, 1.000)   // #FFFFFF  white light
+        case .working:  return (0.039, 0.518, 1.000)   // #0A84FF  electric blue
+        case .thinking: return (0.608, 0.188, 1.000)   // #9B30FF  violet
+        case .searching:return (0.231, 0.306, 1.000)   // #3B4EFF  indigo
+        case .approval: return (1.000, 0.702, 0.000)   // #FFB300  amber
+        case .question: return (0.000, 0.835, 1.000)   // #00D5FF  cyan
+        case .error:    return (1.000, 0.122, 0.122)   // #FF1F1F  red
+        case .finished: return (0.000, 1.000, 0.353)   // #00FF5A  green
+        case .rateLimit:return (1.000, 0.478, 0.000)   // #FF7A00  orange
+        case .sleeping: return (0.310, 0.357, 1.000)   // #4F5BFF  deep blue
+        case .dizzy:    return (1.000, 0.180, 0.604)   // #FF2E9A  magenta
         }
     }
 
-    /// How strongly the state colour reaches the body. Idle stays pure white (brand);
-    /// anything that wants your attention is coloured enough to read at a glance.
-    var bodyTintAmount: Double {
+    /// How hard the state's light burns behind him.
+    ///
+    /// The body is **pure white in every state** — that is brand law, and it is the
+    /// reason the character reads as one thing everywhere. The state speaks through
+    /// the light around him, and through how much of it there is: a sleeping character
+    /// glows faintly, a character that needs you burns.
+    var glowStrength: Double {
         switch self {
-        case .idle: return 0.0
-        case .sleeping: return 0.18
-        case .working, .thinking, .searching: return 0.34
-        case .finished: return 0.30
-        case .approval, .question, .error, .rateLimit, .dizzy: return 0.46
+        case .idle: return 0.24
+        case .sleeping: return 0.34
+        case .working, .thinking, .searching: return 0.60
+        case .finished: return 0.60
+        case .approval, .question, .error, .rateLimit, .dizzy: return 0.80
         }
     }
 
@@ -883,15 +895,21 @@ enum LupyCharacterState: Int, CaseIterable {
     }
 
     /// The single small overlay allowed per state.
-    var badge: LupyBadge? {
+    /// The icon that represents this state, in the circle on the right of the
+    /// status bubble. Every state has its own; none of them is decoration.
+    var icon: LupyStateIcon? {
         switch self {
-        case .idle, .dizzy: return nil
-        case .working, .thinking, .searching: return .dots
-        case .approval: return .exclamation
-        case .question: return .questionMark
-        case .error: return .ring
-        case .finished, .rateLimit: return .dot
-        case .sleeping: return .zzz
+        case .idle:      return .standby
+        case .working:   return .gear        // machinery doing work
+        case .thinking:  return .bulb        // an idea forming
+        case .searching: return .magnifier   // looking for something
+        case .approval:  return .bell        // someone is waiting for you
+        case .question:  return .question    // it needs an answer
+        case .error:     return .exclamation // something is wrong
+        case .finished:  return .check       // it is done
+        case .rateLimit: return .clock       // wait, then try again
+        case .sleeping:  return .zzz         // nothing is happening
+        case .dizzy:     return .spiral      // the machine is overloaded
         }
     }
 }
@@ -974,17 +992,26 @@ extension LupyVitals {
 }
 
 /// Small overlay, always upper-LEFT of the body (brand rule).
-enum LupyBadge {
-    case dots, exclamation, questionMark, ring, dot, zzz
+/// One glyph per state, drawn as vector paths — never a font, never an emoji, so it
+/// looks identical in the app, in the debug sheet and at any size.
+enum LupyStateIcon {
+    case standby, gear, bulb, magnifier, bell, question, exclamation, check, clock, zzz, spiral
 
     var name: String {
         switch self {
-        case .dots: return "dots"
+        case .standby: return "standby"
+        case .gear: return "gear"
+        case .bulb: return "bulb"
+        case .magnifier: return "magnifier"
+        case .bell: return "bell"
+        case .question: return "question"
         case .exclamation: return "exclamation"
-        case .questionMark: return "question"
-        case .ring: return "ring"
-        case .dot: return "dot"
+        case .check: return "check"
+        case .clock: return "clock"
         case .zzz: return "zzz"
+        case .spiral: return "spiral"
         }
     }
 }
+
+typealias LupyBadge = LupyStateIcon

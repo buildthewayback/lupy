@@ -26,8 +26,8 @@ struct AnimEmitter {
             Beat(start: 0.0, state: .idle, cpu: 0.12, memory: 0),
             Beat(start: 0.8, state: .working, cpu: 0.35, memory: 0),
             Beat(start: 2.4, state: .working, cpu: 0.96, memory: 0),
-            Beat(start: 3.9, state: .working, cpu: 0.55, memory: 2),
-            Beat(start: 5.2, state: .working, cpu: 0.40, memory: 0),
+            Beat(start: 3.7, state: .working, cpu: 0.55, memory: 2),
+            Beat(start: 5.5, state: .working, cpu: 0.40, memory: 0),
             Beat(start: 6.0, state: .finished, cpu: 0.20, memory: 0),
         ]
 
@@ -65,7 +65,7 @@ struct AnimEmitter {
 
             print("FRAME \(i) \(rig.gazeX.value) \(rig.gazeY.value) \(rig.drawnBlinkOpen)")
             print("MOOD \(rig.mood.hot) \(rig.mood.busy) \(rig.mood.full) \(rig.mood.tired) \(rig.mood.asleep ? 1 : 0)")
-            print("STATE \(state.bodyTintAmount) \(tint.r) \(tint.g) \(tint.b) \(state.badge?.name ?? "none") \(state.bubbleText)")
+            print("STATE \(state.glowStrength) \(tint.r) \(tint.g) \(tint.b) \(state.icon?.name ?? "none") \(state.bubbleText)")
             print("BODY " + LupyBody.polygon().map {
                 "\($0.0 * bs.x),\($0.1 * bs.y)"
             }.joined(separator: " "))

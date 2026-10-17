@@ -34,6 +34,7 @@ struct LupyFrameSnapshot: Sendable {
     var tintRed: Double
     var tintGreen: Double
     var tintBlue: Double
+    var glowStrength: Double
 }
 
 @MainActor
@@ -91,7 +92,8 @@ final class LupyCharacterDriver: ObservableObject {
             centreY: Double(size.height) * 0.5,
             bodyRed: body.r, bodyGreen: body.g, bodyBlue: body.b,
             badge: state.badge,
-            tintRed: tint.r, tintGreen: tint.g, tintBlue: tint.b
+            tintRed: tint.r, tintGreen: tint.g, tintBlue: tint.b,
+            glowStrength: state.glowStrength
         )
     }
 
@@ -137,8 +139,8 @@ enum LupyRenderer {
         // The light is the state's colour, drawn behind the body and blurred into the
         // background. It hugs the silhouette — never an offset shadow, never a halo blob.
         var light = context
-        light.addFilter(.blur(radius: max(2, unit * 0.085)))
-        light.opacity = 0.46
+        light.addFilter(.blur(radius: max(2, unit * LupyComposition.glowBlur)))
+        light.opacity = frame.glowStrength
         light.fill(body, with: .color(Color(red: frame.tintRed,
                                             green: frame.tintGreen,
                                             blue: frame.tintBlue)))
@@ -213,11 +215,6 @@ enum LupyRenderer {
                 context.fill(Path(roundedRect: rect, cornerRadius: min(w, h) * 0.5),
                              with: .color(.black))
             }
-        }
-
-        // MARK: badge
-        if let badge = frame.badge {
-            drawBadge(badge, in: &context, frame: frame)
         }
     }
 

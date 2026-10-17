@@ -260,10 +260,42 @@ final class RigTests {
         ok(!plugged.mood(busySamples: 0).asleep, "plugged in never sleeps")
 
         print("\n== states tell the truth ==")
-        ok(LupyCharacterState.idle.bodyTintAmount == 0, "idle body stays pure white")
-        ok(LupyCharacterState.working.bodyTintAmount > 0.2, "working is coloured enough to read")
-        ok(LupyCharacterState.error.bodyTintAmount > LupyCharacterState.working.bodyTintAmount,
-           "errors are louder than normal work")
+        let white = LupyCharacterState.working.bodyColour
+        ok(white.r == 1 && white.g == 1 && white.b == 1,
+           "the body is pure white while working — colour lives in the light")
+        var tight = LupyCharacterState.idle
+        for st in LupyCharacterState.allCases where st.glowStrength > tight.glowStrength { tight = st }
+        ok(LupyCharacterState.idle.glowStrength < LupyCharacterState.working.glowStrength,
+           "working glows harder than idle")
+        ok(LupyCharacterState.error.glowStrength > LupyCharacterState.working.glowStrength,
+           "errors burn brighter than normal work")
+        ok(LupyCharacterState.sleeping.glowStrength < LupyCharacterState.working.glowStrength,
+           "a sleeping character is quiet")
+        // vivid, not pastel: every state that carries a message is strongly saturated
+        for st in LupyCharacterState.allCases where st != .idle && st != .sleeping {
+            let t = st.tint
+            let hi = max(t.r, t.g, t.b), lo = min(t.r, t.g, t.b)
+            ok(hi > 0.95 && hi - lo > 0.45, "\(st.name) is a vivid RGB colour, not pastel")
+        }
+        var hues = Set<Int>()
+        for st in LupyCharacterState.allCases where st != .idle {
+            let t = st.tint
+            let hi = max(t.r, t.g, t.b), lo = min(t.r, t.g, t.b)
+            let d = hi - lo
+            guard d > 0 else { hues.insert(0); continue }
+            var h = 0.0
+            if hi == t.r { h = (t.g - t.b) / d }
+            else if hi == t.g { h = 2 + (t.b - t.r) / d }
+            else { h = 4 + (t.r - t.g) / d }
+            hues.insert(Int(((h * 60) + 360).truncatingRemainder(dividingBy: 360) / 12))
+        }
+        ok(hues.count >= 8, "\(hues.count) distinct hue families — states cannot be confused")
+        var icons = Set<String>()
+        for st in LupyCharacterState.allCases {
+            if let icon = st.icon { icons.insert(icon.name) }
+        }
+        ok(icons.count == LupyCharacterState.allCases.count,
+           "every state has its own icon, idle included")
         ok(LupyCharacterState.resolved(requested: .working, overloaded: true) == .dizzy,
            "an overloaded Mac makes Lupy dizzy while working")
         ok(LupyCharacterState.resolved(requested: .approval, overloaded: true) == .approval,
@@ -291,10 +323,10 @@ final class RigTests {
         ok(sleepRig.effectiveEyeStyle == .arch, "an empty battery closes his eyes")
 
         print("\n== composition ==")
-        ok(LupyComposition.badgeReach <= LupyComposition.frameHalf,
-           "the badge fits inside the frame at the shipped size")
-        near(LupyComposition.unit(width: 200, height: 200), 144, 1e-9,
-             "a 200 pt frame draws the body at 144 pt")
+        ok(LupyComposition.glowReach <= LupyComposition.frameHalf,
+           "the strongest glow still fits inside the frame")
+        near(LupyComposition.unit(width: 200, height: 200), 148, 1e-9,
+             "a 200 pt frame draws the body at 148 pt")
         ok(LupyComposition.unit(width: 24, height: 24) > 16,
            "the 24 pt menu-bar body is still bigger than half the frame")
 
