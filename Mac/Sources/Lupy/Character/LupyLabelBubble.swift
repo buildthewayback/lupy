@@ -24,9 +24,11 @@ import SwiftUI
 //  * Reduce Motion is honoured: the wave stops, the text stays, nothing is lost.
 
 struct LupyStatusBubble: View {
-    /// Everything is measured in body widths, from the founder's sketch: the capsule
-    /// is 0.136 tall, its capital letters are 0.072 (≈ a 0.100 font), and it sits at
-    /// the top of his head on the LEFT, its right edge just touching his rim.
+    /// Measured off the sketch in pixels: the label box is 0.323 of the body's width
+    /// tall with capitals 0.117 (≈ a 0.163 font), and its right end is 0.141 left of
+    /// the body's centre. The sketch's box is white on a white body, so its overhang
+    /// is invisible there; ours has a dark fill, which is why the anchor is a number
+    /// in the kernel and not a hand-placed offset.
     private let bodyWidth: CGFloat
 
     init(state: LupyCharacterState, bodyWidth: CGFloat, detail: String? = nil,
@@ -44,9 +46,9 @@ struct LupyStatusBubble: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    private var fontSize: CGFloat { max(8, bodyWidth * 0.100) }
-    private var height: CGFloat { max(16, bodyWidth * 0.136) }
-    private var horizontalPadding: CGFloat { bodyWidth * 0.042 }
+    private var fontSize: CGFloat { max(8, bodyWidth * 0.163) }
+    private var height: CGFloat { max(16, bodyWidth * 0.323) }
+    private var horizontalPadding: CGFloat { bodyWidth * 0.075 }
 
     private var tint: Color {
         let t = state.tint
@@ -77,8 +79,8 @@ struct LupyStatusBubble: View {
                 .fixedSize()
 
             if state.isOngoing {
-                LupyThreeDots(tint: tint, size: max(2.5, bodyWidth * 0.021),
-                              gap: max(1.5, bodyWidth * 0.012))
+                LupyThreeDots(tint: tint, size: max(2.5, bodyWidth * 0.036),
+                              gap: max(1.5, bodyWidth * 0.032))
                     .padding(.leading, bodyWidth * 0.012)
                     .opacity(0.95)
             }

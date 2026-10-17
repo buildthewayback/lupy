@@ -18,7 +18,7 @@ Watch the little bubble above his head: it always says what he is doing.
 
 ## 2. Every state, with colour
 
-https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-final.png
+https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-sketch.png
 
 Eleven states. **The body is pure white in every one of them** — the colour lives in
 the light around him, vivid and saturated, never pastel. A small badge rides the
@@ -56,7 +56,7 @@ body never changes colour.
 
 ## 3. When the Mac itself is struggling
 
-https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-final-machine.png
+https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-sketch-machine.png
 
 Four states driven by real system readings, not by a task:
 

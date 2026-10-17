@@ -71,28 +71,23 @@ def trim(img, margin):
 
 
 def sheet(states, out, body_px, cols):
-    # every tile gets the same cell, sized by the widest bubble, so the bodies all
-    # come out the same size on the page
-    widest = max(measure_bubble(s, float(body_px), 1)[0] for s in states)
-    cell_w = int(round(widest + body_px * 1.30))
-    cell_h = int(round(body_px * 1.34))
+    # Render first, then size the cell from what actually came out. Guessing the
+    # cell from the body width is what cropped the last sheet.
+    tiles = [render_scene(s, body_px) for s in states]
+    cell_w = max(t.size[0] for t in tiles) + 8
+    cell_h = max(t.size[1] for t in tiles) + 8
 
     def place(tile):
         cell = Image.new("RGB", (cell_w, cell_h), BG)
-        h = min(tile.size[1], cell_h)
-        w = min(tile.size[0], cell_w)
         # flush right, so the badge never sits near the cell's edge
-        cell.paste(tile.crop((0, 0, w, h)), (cell_w - w, 0))
+        cell.paste(tile, (cell_w - tile.size[0], 0))
         return cell
 
-        return cell
-
-    tiles = [place(render_scene(s, body_px)) for s in states]
-    tw, th = cell_w, cell_h
+    cols = min(cols, len(tiles))
     rows = (len(tiles) + cols - 1) // cols
-    canvas = Image.new("RGB", (tw * cols, th * rows), BG)
+    canvas = Image.new("RGB", (cell_w * cols, cell_h * rows), BG)
     for i, t in enumerate(tiles):
-        canvas.paste(t, ((i % cols) * tw, (i // cols) * th))
+        canvas.paste(place(t), ((i % cols) * cell_w, (i // cols) * cell_h))
     canvas.save(out)
     print(f"wrote {out} {canvas.size[0]}x{canvas.size[1]}")
 

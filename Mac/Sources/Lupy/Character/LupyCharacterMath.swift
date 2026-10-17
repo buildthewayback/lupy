@@ -302,16 +302,18 @@ enum LupyComposition {
     /// pins it to the shoulder: the dark ring just kisses the silhouette, so the badge
     /// is attached to him rather than stuck on his face.
     ///
-    /// Measured from that sketch, in body widths: the disc is 0.121 across, the ring
-    /// 0.165, the ring is 0.023 thick, and the badge's centre sits 0.129 below the top
-    /// of the body, 0.087 beyond the rim at that height.
-    static let badgeRadius: Double = 0.0605        // the coloured disc
-    static let badgeRing: Double = 0.0225          // the dark ring around it
+    /// Measured off the sketch in pixels and divided by the body's width. His blob is
+    /// 402 x 318 px and ours is drawn at the same 0.80 proportion, so the sketch's
+    /// ratios carry over directly: the disc is 0.197 across, the ring 0.035 thick.
+    static let badgeRadius: Double = 0.0985        // the coloured disc
+    static let badgeRing: Double = 0.035           // the dark ring around it
     /// How far below the top of the body the badge's centre sits, as a fraction of
     /// body height. 0.129 measured off the sketch.
     static let badgeDrop: Double = 0.129
-    /// How much the ring overlaps the silhouette, in body widths.
-    static let badgeOverlap: Double = 0.004
+    /// How much the ring overlaps the silhouette, in body widths. Half the ring, so
+    /// the ring straddles the rim: half its ink on white, half in the air. He asked
+    /// for "half in character inside and half out".
+    static let badgeOverlap: Double = 0.0175
 
     /// The badge's centre, on the right rim of whatever silhouette we ship. Computed
     /// from the real body path, so it stays on the shoulder at every body shape.
@@ -323,6 +325,24 @@ enum LupyComposition {
         let x = rim + badgeRing + badgeRadius - badgeOverlap
         return (x, y)
     }
+
+    // MARK: The status bubble, off his top-left.
+    //
+    // Measured from the same sketch. Its *right edge* is what is fixed — it sits just
+    // proud of the body's centre line, above the head — so a long label grows to the
+    // left instead of creeping over his face. The bubble's own size decides where its
+    // centre lands; never hard-code that.
+
+    /// The bubble's right edge, in body widths, left of the body's centre.
+    ///
+    /// The sketch draws the label's right end at 0.141, but it also draws the label
+    /// white on a white body: its overhang is invisible there. A dark label would sit
+    /// *on* his shoulder at 0.141. 0.37 is the first offset where the label's
+    /// bottom-right corner clears the real silhouette (plus 0.03 of air) at the
+    /// sketch's text size — the same "measure the actual body" discipline as the badge.
+    static let bubbleTrailingInset: Double = 0.37
+    /// The bubble's centre, in body widths, above the body's centre.
+    static let bubbleRise: Double = 0.34
 
     /// How far right the badge reaches, in body widths.
     static var badgeReach: Double {

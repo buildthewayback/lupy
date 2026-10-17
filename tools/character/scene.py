@@ -22,19 +22,21 @@ BODY = (255, 255, 255)
 # mirrors LupyComposition in LupyCharacterMath.swift, all measured off the
 # founder's sketch and expressed in body widths
 UNIT_FRACTION = 0.72
-BADGE_R = 0.0605          # the coloured disc
-RING_W = 0.0225           # the dark ring around it
+BADGE_R = 0.0985          # the coloured disc
+RING_W = 0.035           # the dark ring around it
 BADGE_DROP = 0.129        # centre, as a fraction of body height below the apex
-BADGE_OVERLAP = 0.004     # how much the ring overlaps the silhouette
+BADGE_OVERLAP = 0.0175     # how much the ring overlaps the silhouette
 RING = (11, 12, 14)
 GLOW_BLUR = 0.09
 
 # the bubble, also from the sketch
-BUBBLE_HEIGHT = 0.136
-BUBBLE_FONT = 0.100
-BUBBLE_PAD = 0.042
-DOT_R = 0.0105
-DOT_GAP = 0.012
+BUBBLE_HEIGHT = 0.323
+BUBBLE_FONT = 0.163
+BUBBLE_PAD = 0.075
+BUBBLE_TRAILING_INSET = 0.37   # right edge, from the body's centre
+BUBBLE_RISE = 0.34            # centre, above the body's centre
+DOT_R = 0.018
+DOT_GAP = 0.016
 
 
 def stroke(d, pts, width, ink):
@@ -321,7 +323,7 @@ def compose(state, u, ss=1, phase=0.15, generous=1.0, canvas=None):
         state = dict(state)
         state["tint"] = tuple(tint[i] * (1 - h) + warm[i] * h for i in range(3))
 
-    bubble_right = cx - u * 0.023 * ss
+    bubble_right = cx - u * BUBBLE_TRAILING_INSET * ss
     draw_bubble(img, state, u, bubble_right - bw / 2,
-                cy - u * 0.329 * ss, ss=ss, phase=phase)
+                cy - u * BUBBLE_RISE * ss, ss=ss, phase=phase)
     return img

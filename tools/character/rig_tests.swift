@@ -335,9 +335,19 @@ final class RigTests {
            "the badge sits on the rim, not on his face")
         ok(bc.y > 0.2 && bc.y < 0.4,
            "the badge sits on the upper shoulder")
-        // The sketch's proportions, to the body width.
-        near(LupyComposition.badgeRadius * 2, 0.121, 0.006,
+        // The sketch's proportions, normalised by the body's height (his blob is
+        // 0.79 as tall as it is wide, ours 0.56 — width ratios over-scale his parts),
+        // then converted back to body widths for our silhouette.
+        near(LupyComposition.badgeRadius * 2, 0.197, 0.004,
              "the badge disc is the size measured off the sketch")
+        near(LupyComposition.badgeRing, 0.035, 0.002,
+             "the badge ring is as thick as the sketch's")
+        // "half in character inside and half out": the ring's middle sits on the rim.
+        near(bc.x - rimAtBadge,
+             LupyComposition.badgeRadius + LupyComposition.badgeRing / 2, 1e-9,
+             "the badge ring straddles the rim, half in and half out")
+        ok(LupyComposition.badgeRadius < 0.105,
+           "the badge is still small enough not to shout")
         // The spiral must have the same ink mass as the capsule it replaces.
         ok(LupyEyeStyle.spiral.spiralStroke >= 0.18,
            "the dizzy spiral is drawn with real ink, not a hairline")

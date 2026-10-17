@@ -46,6 +46,7 @@ final class LupyPreviewModel: ObservableObject {
 struct LupyPreviewView: View {
     @StateObject private var model = LupyPreviewModel()
     @FocusState private var keysFocused: Bool
+    @State private var bubbleWidth: CGFloat = 0
 
     var body: some View {
         VStack(spacing: 6) {
@@ -60,11 +61,18 @@ struct LupyPreviewView: View {
                                    busySamples: model.busySamples)
                     LupyStatusBubble(state: model.state, bodyWidth: body, detail: model.detail)
                         .fixedSize()
+                        // Measure the bubble, then hang it by its trailing edge. A
+                        // fixed offset would be right for exactly one label length.
+                        .background(GeometryReader { b in
+                            Color.clear
+                                .onAppear { bubbleWidth = b.size.width }
+                                .onChange(of: b.size.width) { _, w in bubbleWidth = w }
+                        })
                         .position(
-                            // measured off the sketch: bubble centre (-0.262, +0.329)
-                            // body-widths from the body's centre
-                            x: geo.size.width * 0.5 - body * 0.262,
-                            y: geo.size.height * 0.5 - body * 0.329
+                            x: geo.size.width * 0.5
+                                - body * LupyComposition.bubbleTrailingInset
+                                - bubbleWidth / 2,
+                            y: geo.size.height * 0.5 - body * LupyComposition.bubbleRise
                         )
                 }
             }
