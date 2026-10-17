@@ -18,8 +18,9 @@ enum LupyCharacterSelfTest {
         var total = 0
         var widestInkRow = 0
         var bodyRGB = (r: 0.0, g: 0.0, b: 0.0)
-        /// The light just outside the left edge of the body.
+        /// The strongest tint found just outside the left edge of the body.
         var glowRGB = (r: 0.0, g: 0.0, b: 0.0)
+        var glowSpread = 0.0
     }
 
     static func run(arguments: [String]) -> Int32 {
@@ -63,8 +64,8 @@ enum LupyCharacterSelfTest {
         let errorGlow = render(size: 96, state: .error)?.glowRGB
         let doneGlow = render(size: 96, state: .finished)?.glowRGB
         if let errorGlow, let doneGlow {
-            let redder = errorGlow.r > errorGlow.g + 0.10
-            let greener = doneGlow.g > doneGlow.r + 0.10
+            let redder = errorGlow.r > max(0.02, errorGlow.g * 2) && errorGlow.r > errorGlow.b * 1.5
+            let greener = doneGlow.g > max(0.02, doneGlow.r * 2) && doneGlow.g > doneGlow.b * 1.2
             lines.append("\(redder ? "PASS" : "FAIL") an error glows red "
                 + String(format: "(%.2f %.2f %.2f)", errorGlow.r, errorGlow.g, errorGlow.b))
             lines.append("\(greener ? "PASS" : "FAIL") done glows green "
@@ -167,13 +168,24 @@ enum LupyCharacterSelfTest {
         stats.bodyRGB = (Double(pixels[si]) / 255, Double(pixels[si + 1]) / 255,
                          Double(pixels[si + 2]) / 255)
 
-        // Glow: a pixel just outside the left edge of the body, half way up. Close
-        // enough to be inside the light, far enough to be outside the white body.
-        let gx = max(0, Int(Double(w) * 0.5 - Double(pointsPerUnit) * 0.56))
+        // Glow: scan a short strip just outside the left edge and keep the most
+        // strongly tinted pixel. A single sample can land on the dim tail of a blur
+        // and report "no colour" for a glow a person can plainly see.
         let gy = h / 2
-        let gi = (gy * w + gx) * 4
-        stats.glowRGB = (Double(pixels[gi]) / 255, Double(pixels[gi + 1]) / 255,
-                         Double(pixels[gi + 2]) / 255)
+        var best = (r: 0.0, g: 0.0, b: 0.0)
+        var bestSpread = 0.0
+        let startX = Int(Double(w) * 0.5 - Double(pointsPerUnit) * 0.66)
+        let endX = Int(Double(w) * 0.5 - Double(pointsPerUnit) * 0.52)
+        for gx in max(0, startX)...min(w - 1, endX) {
+            let gi = (gy * w + gx) * 4
+            let r = Double(pixels[gi]) / 255
+            let g = Double(pixels[gi + 1]) / 255
+            let b = Double(pixels[gi + 2]) / 255
+            let spread = max(r, g, b) - min(r, g, b)
+            if spread > bestSpread { bestSpread = spread; best = (r, g, b) }
+        }
+        stats.glowRGB = best
+        stats.glowSpread = bestSpread
         return stats
     }
 }

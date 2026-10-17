@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T10:15Z
-Reason: one glow number for app and sheets; self-test samples the light where it is
+Build requested: 2026-10-17T10:30Z
+Reason: self-test samples the strongest tint in the glow band instead of one dim pixel
