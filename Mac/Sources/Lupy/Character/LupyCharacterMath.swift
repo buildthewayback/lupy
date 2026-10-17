@@ -184,6 +184,7 @@ struct LupyEyeFrame: Equatable {
     var visible: Bool
     var w: Double
     var h: Double
+    var style: LupyEyeStyle = .capsule
 }
 
 enum LupyEyes {
@@ -231,7 +232,8 @@ enum LupyEyes {
     ///   - ry: body half-height in points
     ///   - bodyWidth: full body width in points (eye size basis)
     static func frames(yaw: Double, pitch: Double,
-                       rx: Double, ry: Double, bodyWidth: Double) -> [LupyEyeFrame] {
+                       rx: Double, ry: Double, bodyWidth: Double,
+                       style: LupyEyeStyle = .capsule) -> [LupyEyeFrame] {
         var out: [LupyEyeFrame] = []
         for side in [-1.0, 1.0] {
             // Look direction rotates both eyes on the sphere. The eyes are below the
@@ -277,7 +279,8 @@ enum LupyEyes {
                 fy: fy,
                 visible: visible,
                 w: LupyGeometry.eyeW,
-                h: LupyGeometry.eyeH
+                h: LupyGeometry.eyeH,
+                style: style
             ))
         }
         return out
@@ -559,6 +562,9 @@ struct LupyRig {
     /// placement are both derived from it, so nothing is size-dependent.
     var bodyWidth: Double = 200
 
+    /// Drives the eyes, the light and the badge. Never the silhouette.
+    var state: LupyState = .idle
+
     var blink = LupyBlink()
     var time: Double = 0
     var pointerActive = true
@@ -649,6 +655,109 @@ struct LupyRig {
         let rx = bodyWidth * 0.5
         let ry = bodyWidth * 0.5 * LupyGeometry.bodyAspect
         return LupyEyes.frames(yaw: gazeX.value, pitch: gazeY.value,
-                               rx: rx, ry: ry, bodyWidth: bodyWidth)
+                               rx: rx, ry: ry, bodyWidth: bodyWidth,
+                               style: state.eyeStyle)
+    }
+}
+
+// MARK: - States
+
+/// How the eye is deformed for a state. The silhouette and the eye *colour law*
+/// (solid black, no pupil, no highlight) never change — only the capsule's shape.
+enum LupyEyeStyle {
+    /// The signature: tall solid-black capsule.
+    case capsule
+    /// Slightly taller and wider — attention, approval, surprise.
+    case wide
+    /// Flattened dash — error, annoyance.
+    case dash
+    /// Lid down to a slit — rate limit, sleepy.
+    case halfLid
+    /// Wide arc bowing UP (∩∩) — sleeping, closed.
+    case arch
+    /// Wide arc bowing DOWN (∪∪) — finished, happy.
+    case cup
+    /// Thin spiral — dizzy. Still solid ink, still no pupil.
+    case spiral
+}
+
+/// The 11 states from the reference sheet. A state changes the eyes, the hue of the
+/// light around the body, and one small badge. It never changes the body.
+enum LupyState: Int, CaseIterable {
+    case idle, working, thinking, searching, approval, question
+    case error, finished, rateLimit, sleeping, dizzy
+
+    var eyeStyle: LupyEyeStyle {
+        switch self {
+        case .idle, .working, .thinking, .searching, .question: return .capsule
+        case .approval: return .wide
+        case .error: return .dash
+        case .rateLimit: return .halfLid
+        case .sleeping: return .arch
+        case .finished: return .cup
+        case .dizzy: return .spiral
+        }
+    }
+
+    var name: String {
+        switch self {
+        case .idle: return "idle"
+        case .working: return "working"
+        case .thinking: return "thinking"
+        case .searching: return "searching"
+        case .approval: return "approval"
+        case .question: return "question"
+        case .error: return "error"
+        case .finished: return "finished"
+        case .rateLimit: return "rate_limit"
+        case .sleeping: return "sleeping"
+        case .dizzy: return "dizzy"
+        }
+    }
+
+    /// Colour of the light around Lupy. The body itself stays pure white.
+    var tint: (r: Double, g: Double, b: Double) {
+        switch self {
+        case .idle:     return (1.000, 1.000, 1.000)
+        case .working:  return (0.231, 0.620, 1.000)   // #3B9EFF
+        case .thinking: return (0.545, 0.361, 0.965)   // #8B5CF6
+        case .searching:return (0.388, 0.373, 0.949)   // #635FF2
+        case .approval: return (0.961, 0.647, 0.137)   // #F5A523
+        case .question: return (0.133, 0.827, 0.933)   // #22D3EE
+        case .error:    return (0.957, 0.314, 0.369)   // #F4505E
+        case .finished: return (0.204, 0.827, 0.600)   // #34D399
+        case .rateLimit:return (0.941, 0.573, 0.235)   // #F0923C
+        case .sleeping: return (0.580, 0.635, 0.722)   // #94A2B8
+        case .dizzy:    return (0.957, 0.447, 0.714)   // #F472B6
+        }
+    }
+
+    /// The single small overlay allowed per state.
+    var badge: LupyBadge? {
+        switch self {
+        case .idle, .dizzy: return nil
+        case .working, .thinking, .searching: return .dots
+        case .approval: return .exclamation
+        case .question: return .questionMark
+        case .error: return .ring
+        case .finished, .rateLimit: return .dot
+        case .sleeping: return .zzz
+        }
+    }
+}
+
+/// Small overlay, always upper-LEFT of the body (brand rule).
+enum LupyBadge {
+    case dots, exclamation, questionMark, ring, dot, zzz
+
+    var name: String {
+        switch self {
+        case .dots: return "dots"
+        case .exclamation: return "exclamation"
+        case .questionMark: return "question"
+        case .ring: return "ring"
+        case .dot: return "dot"
+        case .zzz: return "zzz"
+        }
     }
 }

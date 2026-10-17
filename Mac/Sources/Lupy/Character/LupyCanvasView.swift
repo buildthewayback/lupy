@@ -125,15 +125,49 @@ enum LupyRenderer {
         }
 
         // MARK: eyes
-        // Signature law: tall solid-black capsules. No pupil, no highlight, no gloss.
+        // Signature law: solid black, no pupil, no highlight, no gloss. A state may
+        // reshape the capsule (lid, dash, arc) but never adds specular detail.
         for eye in frame.eyes {
-            let w = eye.w * eye.fx * unit * frame.scaleX
-            let h = eye.h * eye.fy * frame.blink * unit * frame.scaleY
+            let baseW = eye.w * eye.fx * unit * frame.scaleX
+            let baseH = eye.h * eye.fy * frame.blink * unit * frame.scaleY
             let cx = frame.centreX + eye.x * unit * frame.scaleX
             let cy = frame.centreY - eye.y * unit * frame.scaleY
-            let rect = CGRect(x: cx - w * 0.5, y: cy - h * 0.5, width: w, height: h)
-            context.fill(Path(roundedRect: rect, cornerRadius: min(w, h) * 0.5),
-                         with: .color(.black))
+
+            switch eye.style {
+            case .spiral:
+                var spiral = Path()
+                var a = 0.0
+                var first = true
+                while a < 5.4 {
+                    let r = unit * (0.010 + 0.0082 * a)
+                    let p = CGPoint(x: cx + r * LM.cos(a), y: cy - r * LM.sin(a) * 0.86)
+                    if first { spiral.move(to: p); first = false } else { spiral.addLine(to: p) }
+                    a += 0.16
+                }
+                context.stroke(spiral, with: .color(.black),
+                               style: StrokeStyle(lineWidth: max(1, unit * 0.013),
+                                                  lineCap: .round, lineJoin: .round))
+            case .arch, .cup:
+                // A wide arc stroked with round caps: the same ink, bent.
+                let w = baseW * 1.32
+                let bow = unit * 0.052 * (eye.style == .arch ? -1 : 1)
+                var arc = Path()
+                arc.move(to: CGPoint(x: cx - w * 0.5, y: cy))
+                arc.addQuadCurve(to: CGPoint(x: cx + w * 0.5, y: cy),
+                                 control: CGPoint(x: cx, y: cy + bow))
+                context.stroke(arc, with: .color(.black),
+                               style: StrokeStyle(lineWidth: max(1, baseW * 0.46),
+                                                  lineCap: .round, lineJoin: .round))
+            case .capsule, .wide, .dash, .halfLid:
+                let kx: Double = eye.style == .wide ? 1.16 : (eye.style == .dash ? 1.12 : 1.0)
+                let ky: Double = eye.style == .wide ? 1.06
+                    : (eye.style == .dash ? 0.20 : (eye.style == .halfLid ? 0.40 : 1.0))
+                let w = baseW * kx
+                let h = baseH * ky
+                let rect = CGRect(x: cx - w * 0.5, y: cy - h * 0.5, width: w, height: h)
+                context.fill(Path(roundedRect: rect, cornerRadius: min(w, h) * 0.5),
+                             with: .color(.black))
+            }
         }
     }
 }
