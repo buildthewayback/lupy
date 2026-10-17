@@ -261,16 +261,18 @@ enum LupyRenderer {
                                            width: r * 2, height: r * 2))
         context.fill(inner, with: .color(colour))
 
-        // The glyph, at 62 % of the disc, in the ink that can be read on this colour.
+        // The glyph, at 62 % of the disc, stroked in the ink that can be read on this
+        // colour. Built at its final rect rather than translated, so its stroke weight
+        // never depends on the transform.
         let glyphSize = r * 2 * 0.62
-        var glyph = context
-        glyph.translateBy(x: centre.x - glyphSize / 2, y: centre.y - glyphSize / 2)
+        let glyphRect = CGRect(x: centre.x - glyphSize / 2,
+                               y: centre.y - glyphSize / 2,
+                               width: glyphSize, height: glyphSize)
+        let glyph = LupyStateIconShape(icon: icon).path(in: glyphRect)
         let ink: Color = state.iconInkIsDark ? .black : .white
-        let shape = LupyStateIconShape(icon: icon)
-            .strokedPath(StrokeStyle(lineWidth: glyphSize * 0.115,
-                                     lineCap: .round, lineJoin: .round))
-        glyph.fill(shape, in: CGRect(x: 0, y: 0, width: glyphSize, height: glyphSize),
-                   with: .color(ink))
+        context.stroke(glyph, with: .color(ink),
+                       style: StrokeStyle(lineWidth: glyphSize * 0.115,
+                                          lineCap: .round, lineJoin: .round))
     }
 }
 

@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T11:25Z
-Reason: restore LupyStateIconShape as its own file; pass spiralPhase in the self-test snapshot
+Build requested: 2026-10-17T11:40Z
+Reason: stroke the badge glyph from its final path rect instead of Shape.strokedPath (not a Shape member)
