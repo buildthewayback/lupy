@@ -2,53 +2,86 @@
 
 Everything below is a click. No tools, no terminal, unless you want to run the app.
 
-## 1. Watch him move (animated)
+## 1. Watch him work (animated, 7 seconds)
 
-https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-rig-interaction.gif
+https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-rig-story.gif
 
-GitHub plays the GIF right in the page. This is the **real Swift rig** — the exact
-geometry the app draws — driven along a mouse path at 60 frames a second.
+GitHub plays the GIF right in the page. This is the **real Swift rig** — the same
+code the app draws with — stepped frame by frame while a mouse moves across him:
 
-## 2. The 11 states
+1. **Ready** — white. Nothing is happening.
+2. **Working…** — blue. The eyes follow the pointer.
+3. **Overloaded** — pink, spiral eyes. The Mac ran out of memory.
+4. **Done** — mint, closed happy eyes.
 
-https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-rig-states.png
+Watch the little bubble above his head: it always says what he is doing.
 
-idle · working · thinking · searching · approval · question · error · finished ·
-rate_limit · sleeping · dizzy
+## 2. Every state, with colour
 
-Each state changes **only** three things: the eye shape, the colour of the light
-around him, and one small badge. The body never changes. It stays pure white.
+https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-coloured.png
 
-## 3. How he looks small (notch sizes)
+Eleven states, six per row. The colour is the first thing you see — that is the
+point. You should be able to tell "working" from "broken" from across the room
+without reading a word:
+
+- white — ready
+- blue — working
+- violet — thinking
+- indigo — searching
+- amber — waiting for your OK
+- cyan — has a question
+- red — something broke
+- mint — done
+- orange — rate limited
+- grey-blue — asleep
+- pink — overloaded
+
+The eyes are always solid black capsules. A state can reshape them (a slit, a
+dash, a smile, a spiral) but never gives them pupils, highlights or gloss.
+
+## 3. When the Mac itself is struggling
+
+https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-coloured-machine.png
+
+Four states driven by real system readings, not by a task:
+
+- **Calm** — nothing is wrong.
+- **CPU pinned** — the processor has been above 80 % for two readings in a row.
+  He breathes faster and trembles.
+- **RAM critical** — memory pressure hit critical. He goes pink with spiral
+  eyes, exactly as you asked.
+- **Too hot** — the Mac is thermally throttled. A warm flush.
+
+## 4. How he looks small (menu bar)
 
 https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/rig-notch-legibility.png
 
-Shown at **actual size**: 24 px, 32 px, 64 px, 128 px. Both eyes are still readable
-at 24 px, which is what the menu bar needs.
+Shown at **actual size**: 24 px, 32 px, 64 px, 128 px. Both eyes are still
+readable at 24 px, which is what the menu bar needs.
 
-## 4. Get the Mac app
+## 5. Run it on your Mac
 
-1. Open https://github.com/buildthewayback/lupy/actions/runs/39013132829
-2. Scroll to the bottom, section **Artifacts**
-3. Click **Lupy-0.2.0-7f93a64d77-macOS-arm64.zip** (GitHub downloads it)
-4. Double-click the zip, then drag **Lupy.app** to Applications
-5. First launch: **right-click → Open** (the app is ad-hoc signed, not notarised)
+1. Open this page and download the newest build:
+   https://github.com/buildthewayback/lupy/actions/workflows/mac-build.yml
+2. Unzip it, then drag **Lupy.app** into Applications.
+3. Open Terminal (⌘-Space, type "Terminal"), paste this line, press Return:
 
-## 5. See the character on its own (best way to judge him)
+   ```
+   /Applications/Lupy.app/Contents/MacOS/Lupy --character-preview
+   ```
 
-In Terminal:
+A window opens with the character, a bubble above his head, and a row of chips
+at the bottom.
 
-```
-/Applications/Lupy.app/Contents/MacOS/Lupy --character-preview
-```
+- **Click any chip** to see that state.
+- **← →** arrow keys walk through all eleven.
+- **Live** hands him over to your actual Mac: you will see the real processor,
+  memory pressure and battery change his mood.
 
-A window opens with only LUPY. **Move your mouse around it** — the eyes follow you.
-Resize the window from tiny to huge: he stays sharp, because he is drawn from
-curves, not pixels.
+Resize the window from tiny to huge — the shape is vector geometry, so it stays
+sharp at every size.
 
-## What is not done yet
+## 6. What is not built yet
 
-- The emotes (love, wink, surprised, proud, annoyed, yawn, listening, happy) are
-  designed but not wired into the app.
-- The island UI (the horizontal smart canvas) is still Coucou's.
-- Dizzy's spiral turns are static — no rotation yet.
+Outfits, and the island itself. The character comes first, then the island, then
+the assistant behind it.
