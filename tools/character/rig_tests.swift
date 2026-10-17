@@ -260,17 +260,17 @@ final class RigTests {
         ok(!plugged.mood(busySamples: 0).asleep, "plugged in never sleeps")
 
         print("\n== states tell the truth ==")
-        ok(LupyState.idle.bodyTintAmount == 0, "idle body stays pure white")
-        ok(LupyState.working.bodyTintAmount > 0.2, "working is coloured enough to read")
-        ok(LupyState.error.bodyTintAmount > LupyState.working.bodyTintAmount,
+        ok(LupyCharacterState.idle.bodyTintAmount == 0, "idle body stays pure white")
+        ok(LupyCharacterState.working.bodyTintAmount > 0.2, "working is coloured enough to read")
+        ok(LupyCharacterState.error.bodyTintAmount > LupyCharacterState.working.bodyTintAmount,
            "errors are louder than normal work")
-        ok(LupyState.resolved(requested: .working, overloaded: true) == .dizzy,
+        ok(LupyCharacterState.resolved(requested: .working, overloaded: true) == .dizzy,
            "an overloaded Mac makes Lupy dizzy while working")
-        ok(LupyState.resolved(requested: .approval, overloaded: true) == .approval,
+        ok(LupyCharacterState.resolved(requested: .approval, overloaded: true) == .approval,
            "a question is never hidden by the machine's mood")
         var seen = Set<String>()
-        for st in LupyState.allCases { seen.insert(st.label) }
-        ok(seen.count == LupyState.allCases.count, "every state has its own sentence")
+        for st in LupyCharacterState.allCases { seen.insert(st.label) }
+        ok(seen.count == LupyCharacterState.allCases.count, "every state has its own sentence")
 
         print("\n== mood changes the body ==")
         var rigM = LupyRig()
@@ -291,10 +291,10 @@ final class RigTests {
         ok(sleepRig.effectiveEyeStyle == .arch, "an empty battery closes his eyes")
 
         print("\n== the words match the face ==")
-        ok(LupyState.working.bubbleText == "Working…", "working reads Working…")
-        ok(LupyState.thinking.bubbleText == "Thinking…", "thinking reads Thinking…")
-        ok(LupyState.searching.bubbleText == "Searching…", "searching reads Searching…")
-        ok(!LupyState.finished.bubbleText.contains("…"), "a finished job does not trail off")
+        ok(LupyCharacterState.working.bubbleText == "Working…", "working reads Working…")
+        ok(LupyCharacterState.thinking.bubbleText == "Thinking…", "thinking reads Thinking…")
+        ok(LupyCharacterState.searching.bubbleText == "Searching…", "searching reads Searching…")
+        ok(!LupyCharacterState.finished.bubbleText.contains("…"), "a finished job does not trail off")
         var quiet = LupyVitals()
         ok(quiet.describe(quiet.mood(busySamples: 0), top: []) == nil,
            "a calm Mac has nothing to report")

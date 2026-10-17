@@ -44,12 +44,12 @@ final class LupyCharacterDriver: ObservableObject {
     /// Points per body-width unit for the current view size.
     private(set) var unit: Double = 200
 
-    var state: LupyState { rig.state }
+    var state: LupyCharacterState { rig.state }
     var label: String { rig.state.bubbleText }
     var mood: LupyMood { rig.mood }
 
     /// What the task wants shown. The machine can override this with memory pressure.
-    func set(state: LupyState) {
+    func set(state: LupyCharacterState) {
         rig.requestedState = state
     }
 
@@ -309,7 +309,7 @@ enum LupyRenderer {
 
 struct LupyCanvasView: View {
     /// What the task wants the character to show.
-    var state: LupyState = .idle
+    var state: LupyCharacterState = .idle
     /// Real system readings, or nil when nothing is sampling.
     var vitals: LupyVitals? = nil
     /// Consecutive busy samples, so one spike cannot make him panic.

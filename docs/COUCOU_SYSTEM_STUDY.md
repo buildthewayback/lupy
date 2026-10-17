@@ -122,7 +122,7 @@ brand, and our silhouette is measured from the founder's own reference.
 
 ## 9. What this means for the next build
 
-1. `LupyState` carries **body colour + glow colour + label**, not just eyes.
+1. `LupyCharacterState` carries **body colour + glow colour + label**, not just eyes.
 2. `LupyMood` (busy/hot/full/tired/asleep) drives **body language**, sampled from real
    system signals, with Coucou's thresholds.
 3. RAM critical → **dizzy** (spiral eyes, pink, no glow) — the founder's example.

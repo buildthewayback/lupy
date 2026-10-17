@@ -563,13 +563,13 @@ struct LupyRig {
     var bodyWidth: Double = 200
 
     /// What the task wants the character to show.
-    var requestedState: LupyState = .idle
+    var requestedState: LupyCharacterState = .idle
     /// Set from real memory pressure: an overloaded Mac overrides the task's state.
     var machineOverloaded = false
     /// What is actually drawn. Drives the eyes, the colour, the light and the badge.
     /// Never the silhouette.
-    var state: LupyState {
-        LupyState.resolved(requested: requestedState, overloaded: machineOverloaded)
+    var state: LupyCharacterState {
+        LupyCharacterState.resolved(requested: requestedState, overloaded: machineOverloaded)
     }
 
     /// How the machine feels. Eased towards `moodTarget` so nothing snaps.
@@ -760,9 +760,13 @@ extension LupyEyeStyle {
     var arcStroke: Double { 0.46 }
 }
 
-/// The 11 states from the reference sheet. A state changes the eyes, the hue of the
+/// The 11 states from the reference sheet.
+///
+/// Named `LupyCharacterState`, not `LupyState`: LupyCore already exports a `LupyState`
+/// (the assistant's whole-app state). Two types with one name in one module silently
+/// broke the Control pages at build time — the same class of bug as `LupyClock`. A state changes the eyes, the hue of the
 /// light around the body, and one small badge. It never changes the body.
-enum LupyState: Int, CaseIterable {
+enum LupyCharacterState: Int, CaseIterable {
     case idle, working, thinking, searching, approval, question
     case error, finished, rateLimit, sleeping, dizzy
 
@@ -916,10 +920,10 @@ struct LupyVitals: Equatable {
     func overloaded() -> Bool { memoryPressure >= 2 }
 }
 
-extension LupyState {
+extension LupyCharacterState {
     /// What is actually drawn. A machine in memory-critical state is dizzy whatever
     /// the task thinks it is doing — the body language tells the truth about the Mac.
-    static func resolved(requested: LupyState, overloaded: Bool) -> LupyState {
+    static func resolved(requested: LupyCharacterState, overloaded: Bool) -> LupyCharacterState {
         guard overloaded else { return requested }
         switch requested {
         case .approval, .question, .error: return requested   // never hide a question

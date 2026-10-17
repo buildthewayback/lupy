@@ -15,7 +15,7 @@ import SwiftUI
 
 @MainActor
 final class LupyPreviewModel: ObservableObject {
-    @Published var state: LupyState = .idle
+    @Published var state: LupyCharacterState = .idle
     @Published var live = false
     let sampler = LupyVitalsSampler()
 
@@ -30,7 +30,7 @@ final class LupyPreviewModel: ObservableObject {
     }
 
     func step(_ direction: Int) {
-        let all = LupyState.allCases
+        let all = LupyCharacterState.allCases
         guard let index = all.firstIndex(of: state) else { return }
         let next = (index + direction + all.count) % all.count
         state = all[next]
@@ -69,7 +69,7 @@ struct LupyPreviewView: View {
 
     private var chips: some View {
         HStack(spacing: 6) {
-            ForEach(LupyState.allCases, id: \.self) { state in
+            ForEach(LupyCharacterState.allCases, id: \.self) { state in
                 chip(state.name, tint: state.tint, selected: model.state == state && !model.live) {
                     model.live = false
                     model.state = state

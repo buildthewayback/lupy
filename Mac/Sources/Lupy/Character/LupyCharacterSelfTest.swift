@@ -83,7 +83,7 @@ enum LupyCharacterSelfTest {
     }
 
     /// Draw one frame of the shipping renderer into a bitmap and count pixels.
-    private static func render(size: CGFloat, state: LupyState) -> Stats? {
+    private static func render(size: CGFloat, state: LupyCharacterState) -> Stats? {
         let bounds = LupyBody.bounds()
         let unit = min(Double(size) * 0.94 / bounds.w, Double(size) * 0.94 / bounds.h)
         var rig = LupyRig()

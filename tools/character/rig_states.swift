@@ -3,7 +3,7 @@
 //   * every task state, driven through the real rig
 //   * the machine-mood states (calm, CPU pinned, RAM critical, too hot)
 //
-// Every number comes from LupyBody / LupyRig / LupyState — the same code the app
+// Every number comes from LupyBody / LupyRig / LupyCharacterState — the same code the app
 // draws with. The renderer only fills shapes. If a pixel is wrong, the rig is wrong.
 //
 //   swiftc LupyGeometry.swift LupyCharacterMath.swift rig_states.swift -o /tmp/states
@@ -47,7 +47,7 @@ struct StateEmitter {
     }
 
     /// A tile driven by the machine rather than by a task.
-    func emitMood(_ name: String, requested: LupyState, vitals: LupyVitals, busySamples: Int) {
+    func emitMood(_ name: String, requested: LupyCharacterState, vitals: LupyVitals, busySamples: Int) {
         var rig = LupyRig()
         rig.requestedState = requested
         rig.apply(vitals: vitals, busySamples: busySamples)
@@ -58,7 +58,7 @@ struct StateEmitter {
     }
 
     func run() {
-        for state in LupyState.allCases {
+        for state in LupyCharacterState.allCases {
             var rig = LupyRig()
             rig.requestedState = state
             rig.movePointer(to: 0, 0)

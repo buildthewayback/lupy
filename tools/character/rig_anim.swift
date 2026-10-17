@@ -13,7 +13,7 @@
 struct AnimEmitter {
     struct Beat {
         var start: Double
-        var state: LupyState
+        var state: LupyCharacterState
         var cpu: Double
         var memory: Int
     }

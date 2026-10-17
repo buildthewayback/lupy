@@ -8,7 +8,7 @@ import SwiftUI
 //  which is the question this character exists to answer.
 
 struct LupyLabelBubble: View {
-    var state: LupyState
+    var state: LupyCharacterState
     /// The machine's own facts, shown under the bubble while hovering.
     var detail: String? = nil
 
