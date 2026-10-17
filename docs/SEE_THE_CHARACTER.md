@@ -18,12 +18,12 @@ Watch the little bubble above his head: it always says what he is doing.
 
 ## 2. Every state, with colour
 
-https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-vivid.png
+https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-final.png
 
-Eleven states, six per row. **The body is pure white in every one of them** — the
-colour lives in the light around him, vivid and saturated, never pastel. The bubble
-above his head says what he is doing, and the icon on its right is that state's own
-symbol:
+Eleven states. **The body is pure white in every one of them** — the colour lives in
+the light around him, vivid and saturated, never pastel. A small badge rides the
+right edge of his body, half on him and half off, with that state's own icon. Beside
+him, never on his head, a bubble says what he is doing:
 
 - ⚙️ Working… — machinery doing work
 - 💡 Thinking… — an idea forming
@@ -56,7 +56,7 @@ body never changes colour.
 
 ## 3. When the Mac itself is struggling
 
-https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-vivid-machine.png
+https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-final-machine.png
 
 Four states driven by real system readings, not by a task:
 
@@ -77,7 +77,7 @@ readable at 24 px, which is what the menu bar needs.
 ## 5. Run it on your Mac
 
 1. Open this page and download the newest build:
-   https://github.com/buildthewayback/lupy/actions/runs/39021173966
+   https://github.com/buildthewayback/lupy/actions/runs/39022963413
 2. Unzip it, then drag **Lupy.app** into Applications.
 3. Open Terminal (⌘-Space, type "Terminal"), paste this line, press Return:
 
