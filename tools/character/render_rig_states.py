@@ -10,10 +10,9 @@ The founder's note was that the character looked pixelated, so every scene is dr
 shown on a retina screen is a blurry sheet, however good the vector maths is.
 """
 import sys
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageChops
 
-from scene import (BG, BODY, INK, draw_character, draw_bubble, draw_icon,
-                   rounded, BADGE_X, BADGE_Y, BADGE_R)
+from scene import BG, BODY, INK, compose, measure_bubble
 
 SS = 4                      # supersample factor for every scene
 
@@ -50,39 +49,46 @@ def parse(path):
 
 
 def render_scene(state, body_px=280, pad=0.30):
-    """One scene: character on the left, badge on his edge, bubble beside him.
-
-    Canvas (final pixels):
-      body width          = body_px
-      character centre    = body_px * 0.62 from the left
-      bubble              = starts at body_px * 1.30, vertically centred
-    """
+    """One scene, from the same layout the app uses. Cropped to its content."""
     u = float(body_px)
-    W = int(round(u * 2.45))
-    H = int(round(u * 1.42))
-    img = Image.new("RGB", (W * SS, H * SS), BG)
+    img = compose(state, u, ss=SS, phase=0.15)
+    return trim(img, pad * u * SS)
 
-    cx = u * 0.64 * SS
-    cy = H * SS * 0.52
 
-    # a state that is hot flushes warmer; the body stays white, the light shifts
-    draw_character(img, state, u, cx, cy, ss=SS)
-    if state.get("hot", 0) > 0.01:
-        tint = state["tint"]
-        warm = (1.0, 0.42, 0.20)
-        h = min(0.35, 0.35 * state["hot"])
-        state = dict(state)
-        state["tint"] = tuple(tint[i] * (1 - h) + warm[i] * h for i in range(3))
-
-    draw_bubble(img, state, u, u * 1.20 * SS, cy, ss=SS, phase=0.15)
-
-    out = img.resize((W, H), Image.LANCZOS)
-    return out
+def trim(img, margin):
+    """Crop to the drawn content, then put a uniform margin back around it."""
+    from PIL import ImageChops
+    px = img.convert("RGB")
+    bg = Image.new("RGB", px.size, BG)
+    box = ImageChops.difference(px, bg).getbbox()
+    if not box:
+        return px
+    l, t, r, b = box
+    l = max(0, int(l - margin)); t = max(0, int(t - margin))
+    r = min(px.size[0], int(r + margin)); b = min(px.size[1], int(b + margin))
+    out = px.crop((l, t, r, b))
+    return out.resize((out.size[0] // SS, out.size[1] // SS), Image.LANCZOS)
 
 
 def sheet(states, out, body_px, cols):
-    tiles = [render_scene(s, body_px) for s in states]
-    tw, th = tiles[0].size
+    # every tile gets the same cell, sized by the widest bubble, so the bodies all
+    # come out the same size on the page
+    widest = max(measure_bubble(s, float(body_px), 1)[0] for s in states)
+    cell_w = int(round(widest + body_px * 1.30))
+    cell_h = int(round(body_px * 1.34))
+
+    def place(tile):
+        cell = Image.new("RGB", (cell_w, cell_h), BG)
+        h = min(tile.size[1], cell_h)
+        w = min(tile.size[0], cell_w)
+        # flush right, so the badge never sits near the cell's edge
+        cell.paste(tile.crop((0, 0, w, h)), (cell_w - w, 0))
+        return cell
+
+        return cell
+
+    tiles = [place(render_scene(s, body_px)) for s in states]
+    tw, th = cell_w, cell_h
     rows = (len(tiles) + cols - 1) // cols
     canvas = Image.new("RGB", (tw * cols, th * rows), BG)
     for i, t in enumerate(tiles):

@@ -49,19 +49,25 @@ struct LupyPreviewView: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            // The character on the left, his status bubble beside him — never on top
-            // of his head. The badge rides his right edge, between the two.
-            HStack(alignment: .center, spacing: 2) {
-                LupyCanvasView(state: model.state,
-                               vitals: model.vitals,
-                               busySamples: model.busySamples)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                LupyStatusBubble(state: model.state, detail: model.detail)
-                    .padding(.trailing, 18)
-                    .frame(width: 250, alignment: .leading)
+            // The founder's layout: the bubble on the LEFT, level with the top of his
+            // head, its right edge just touching his rim; the state badge on his right
+            // rim. Everything is sized from the drawn body width, as in the sketch.
+            GeometryReader { geo in
+                let body = min(geo.size.width, geo.size.height) * LupyComposition.unitFraction
+                ZStack {
+                    LupyCanvasView(state: model.state,
+                                   vitals: model.vitals,
+                                   busySamples: model.busySamples)
+                    LupyStatusBubble(state: model.state, bodyWidth: body, detail: model.detail)
+                        .fixedSize()
+                        .position(
+                            // measured off the sketch: bubble centre (-0.262, +0.329)
+                            // body-widths from the body's centre
+                            x: geo.size.width * 0.5 - body * 0.262,
+                            y: geo.size.height * 0.5 - body * 0.329
+                        )
+                }
             }
-            .padding(.top, 4)
 
             chips
         }

@@ -243,12 +243,14 @@ enum LupyRenderer {
                                   in context: inout GraphicsContext,
                                   frame: LupyFrameSnapshot) {
         let unit = frame.unit
+        // Computed from the real silhouette, so the ring always kisses the rim.
+        let anchor = LupyComposition.badgeCentre()
         let centre = CGPoint(
-            x: frame.centreX + LupyComposition.badgeCentreX * unit * frame.scaleX,
-            y: frame.centreY - LupyComposition.badgeCentreY * unit * frame.scaleY
+            x: frame.centreX + anchor.x * unit * frame.scaleX,
+            y: frame.centreY - anchor.y * unit * frame.scaleY
         )
         let r = LupyComposition.badgeRadius * unit
-        let ring = LupyBadgeStyle.ringWidth * unit
+        let ring = LupyComposition.badgeRing * unit
         let tint = state.tint
         let colour = Color(red: tint.r, green: tint.g, blue: tint.b)
 

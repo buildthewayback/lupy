@@ -325,11 +325,19 @@ final class RigTests {
         print("\n== composition ==")
         ok(LupyComposition.glowReach <= LupyComposition.frameHalf,
            "the strongest glow still fits inside the frame")
-        // The badge rides the right edge: it must fit in the frame too, with the ring.
-        ok(LupyComposition.badgeReach + LupyBadgeStyle.ringWidth <= LupyComposition.frameHalf,
+        // The badge rides the right rim: it must fit in the frame too, with the ring,
+        // and it must actually touch the silhouette it is pinned to.
+        ok(LupyComposition.badgeReach <= LupyComposition.frameHalf,
            "the state badge fits inside the frame, ring included")
-        ok(LupyComposition.badgeCentreX < 0.5 && LupyComposition.badgeCentreY > 0,
-           "the badge sits on the character's right edge, above his middle")
+        let bc = LupyComposition.badgeCentre()
+        let rimAtBadge = LupyBody.halfWidth(atY: bc.y)
+        ok(abs(bc.x - rimAtBadge) < 0.12,
+           "the badge sits on the rim, not on his face")
+        ok(bc.y > 0.2 && bc.y < 0.4,
+           "the badge sits on the upper shoulder")
+        // The sketch's proportions, to the body width.
+        near(LupyComposition.badgeRadius * 2, 0.121, 0.006,
+             "the badge disc is the size measured off the sketch")
         // The spiral must have the same ink mass as the capsule it replaces.
         ok(LupyEyeStyle.spiral.spiralStroke >= 0.18,
            "the dizzy spiral is drawn with real ink, not a hairline")
@@ -341,10 +349,16 @@ final class RigTests {
            "the 24 pt menu-bar body is still bigger than half the frame")
 
         print("\n== the words match the face ==")
-        ok(LupyCharacterState.working.bubbleText == "Working…", "working reads Working…")
-        ok(LupyCharacterState.thinking.bubbleText == "Thinking…", "thinking reads Thinking…")
-        ok(LupyCharacterState.searching.bubbleText == "Searching…", "searching reads Searching…")
-        ok(!LupyCharacterState.finished.bubbleText.contains("…"), "a finished job does not trail off")
+        // The dots are drawn by the bubble, not typed into the label: one ellipsis only.
+        ok(LupyCharacterState.working.bubbleText == "Working", "working reads Working")
+        ok(LupyCharacterState.thinking.bubbleText == "Thinking", "thinking reads Thinking")
+        ok(LupyCharacterState.searching.bubbleText == "Searching", "searching reads Searching")
+        for st in LupyCharacterState.allCases {
+            ok(!st.bubbleText.contains("…"),
+               "\(st.name) carries no hard-coded ellipsis")
+        }
+        ok(LupyCharacterState.working.isOngoing && !LupyCharacterState.finished.isOngoing,
+           "only a going concern animates its dots")
         var quiet = LupyVitals()
         ok(quiet.describe(quiet.mood(busySamples: 0), top: []) == nil,
            "a calm Mac has nothing to report")

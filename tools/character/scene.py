@@ -19,14 +19,22 @@ BG = (16, 16, 19)
 INK = (0, 0, 0)
 BODY = (255, 255, 255)
 
-# mirrors LupyComposition in LupyCharacterMath.swift
+# mirrors LupyComposition in LupyCharacterMath.swift, all measured off the
+# founder's sketch and expressed in body widths
 UNIT_FRACTION = 0.72
-BADGE_X = 0.497
-BADGE_Y = 0.085
-BADGE_R = 0.082
-RING_W = 0.020
+BADGE_R = 0.0605          # the coloured disc
+RING_W = 0.0225           # the dark ring around it
+BADGE_DROP = 0.129        # centre, as a fraction of body height below the apex
+BADGE_OVERLAP = 0.004     # how much the ring overlaps the silhouette
 RING = (11, 12, 14)
 GLOW_BLUR = 0.09
+
+# the bubble, also from the sketch
+BUBBLE_HEIGHT = 0.136
+BUBBLE_FONT = 0.100
+BUBBLE_PAD = 0.042
+DOT_R = 0.0105
+DOT_GAP = 0.012
 
 
 def stroke(d, pts, width, ink):
@@ -128,6 +136,20 @@ def draw_icon(d, icon, s, cx, cy, width, ink):
             d.ellipse([c[0] - r, c[1] - r, c[0] + r, c[1] + r], fill=ink)
 
 
+def half_width_at(body, y):
+    """Half the silhouette's width at height y, from the emitted polygon."""
+    xs = []
+    for i in range(len(body)):
+        x0, y0 = body[i]
+        x1, y1 = body[(i + 1) % len(body)]
+        if (y0 - y) * (y1 - y) <= 0 and y0 != y1:
+            t = (y - y0) / (y1 - y0)
+            xs.append(x0 + (x1 - x0) * t)
+    if not xs:
+        return max(abs(x) for x, _ in body)
+    return max(abs(x) for x in xs)
+
+
 # ---------------------------------------------------------------- character
 
 def draw_character(img, state, u, cx, cy, ss=1):
@@ -183,10 +205,14 @@ def draw_character(img, state, u, cx, cy, ss=1):
                 pts.append((x, y))
             stroke(d, pts, max(1.0, w * 0.46), INK)
 
-    # badge: on the character's right edge, half on him and half off
+    # badge: pinned to the right rim, ring kissing the silhouette
     icon = state.get("icon", "none")
     if icon != "none":
-        bx, by = px(BADGE_X, BADGE_Y)
+        apex = max(y for _, y in state["body"])
+        byy = apex - BADGE_DROP * (apex - min(y for _, y in state["body"]))
+        rim = half_width_at(state["body"], byy)
+        bxx = rim + (RING_W + BADGE_R - BADGE_OVERLAP)
+        bx, by = px(bxx, byy)
         r = BADGE_R * u * ss
         ring = RING_W * u * ss
         d.ellipse([bx - r - ring, by - r - ring, bx + r + ring, by + r + ring], fill=RING)
@@ -199,33 +225,53 @@ def draw_character(img, state, u, cx, cy, ss=1):
 
 # ---------------------------------------------------------------- bubble
 
-def draw_bubble(img, state, u, left, cy, ss=1, phase=0.0):
-    """The status bubble: glass capsule, the sentence, three travelling dots."""
+def measure_bubble(state, u, ss=1):
+    """The capsule's width, so a scene can be laid out before anything is drawn."""
+    h = u * BUBBLE_HEIGHT * ss
+    font = ImageFont.truetype(FONT_BOLD, max(9, int(u * BUBBLE_FONT * ss)))
+    probe = ImageDraw.Draw(Image.new("RGB", (8, 8)))
+    tw = probe.textlength(state["label"], font=font)
+    dot_r = u * DOT_R * ss
+    dot_gap = u * DOT_GAP * ss
+    dots_w = (dot_r * 2 * 3 + dot_gap * 2 + u * 0.020 * ss) if state.get("ongoing") else 0
+    return u * BUBBLE_PAD * ss * 2 + tw + dots_w, h
+
+
+def draw_bubble(img, state, u, centre_x, centre_y, ss=1, phase=0.0):
+    """The status bubble, placed by its centre: glass capsule, sentence, moving dots."""
     d = ImageDraw.Draw(img)
     tint = state["tint"]
     label = state["label"]
-    h = u * 0.200 * ss
-    font = ImageFont.truetype(FONT_BOLD, max(9, int(u * 0.078 * ss)))
+    h = u * BUBBLE_HEIGHT * ss
+    font = ImageFont.truetype(FONT_BOLD, max(9, int(u * BUBBLE_FONT * ss)))
 
     tw = d.textlength(label, font=font)
-    dot_r = u * 0.0135 * ss
-    dot_gap = u * 0.0110 * ss
-    dots_w = (dot_r * 2 * 3 + dot_gap * 2 + u * 0.024 * ss) if state.get("ongoing") else 0
-    pad_l = u * 0.085 * ss
-    pad_r = u * 0.090 * ss
+    dot_r = u * DOT_R * ss
+    dot_gap = u * DOT_GAP * ss
+    dots_w = (dot_r * 2 * 3 + dot_gap * 2 + u * 0.020 * ss) if state.get("ongoing") else 0
+    pad_l = u * BUBBLE_PAD * ss
+    pad_r = u * BUBBLE_PAD * ss
     w = pad_l + tw + dots_w + pad_r
-    top = cy - h / 2
+    left = centre_x - w / 2
+    top = centre_y - h / 2
 
-    # drop shadow, then the capsule's two greys
+    # drop shadow
     d.rounded_rectangle([left + u * 0.004 * ss, top + u * 0.010 * ss,
                          left + w + u * 0.004 * ss, top + h + u * 0.010 * ss],
                         radius=h / 2, fill=(10, 10, 12))
-    steps = 18
-    for i in range(steps):
-        t = i / (steps - 1)
+
+    # the capsule itself: a true vertical gradient, masked by the pill shape
+    pill = Image.new("L", (int(w) + 2, int(h) + 2), 0)
+    ImageDraw.Draw(pill).rounded_rectangle([0, 0, w, h], radius=h / 2, fill=255)
+    grad = Image.new("RGB", (int(w) + 2, int(h) + 2))
+    gd = ImageDraw.Draw(grad)
+    rows = max(1, int(h))
+    for i in range(rows):
+        t = i / max(1, rows - 1)
         shade = int(40 - 12 * t)
-        d.rounded_rectangle([left, top + h * t / 2, left + w, top + h - h * t / 2],
-                            radius=h / 2, fill=(shade, shade, shade + 3))
+        gd.line([(0, i), (w + 2, i)], fill=(shade, shade, shade + 3))
+    img.paste(grad, (int(left), int(top)), pill)
+    d = ImageDraw.Draw(img)
     d.rounded_rectangle([left, top, left + w, top + h], radius=h / 2,
                         outline=(66, 66, 76), width=max(1, int(ss)))
     d.rounded_rectangle([left, top, left + w, top + h], radius=h / 2,
@@ -235,7 +281,7 @@ def draw_bubble(img, state, u, left, cy, ss=1, phase=0.0):
     d.text((left + pad_l, ty), label, font=font, fill=(242, 243, 248), anchor="lm")
 
     if state.get("ongoing"):
-        x = left + pad_l + tw + u * 0.024 * ss
+        x = left + pad_l + tw + u * 0.020 * ss
         for i in range(3):
             lit = 1.0 - min(1.0, abs(((phase + i / 3.0) % 1.0) - 0.0) / 0.45)
             lit = max(0.0, 1.0 - (((phase + i / 3.0) % 1.0) / 0.45)) if ((phase + i / 3.0) % 1.0) < 0.45 else 0.0
@@ -245,3 +291,37 @@ def draw_bubble(img, state, u, left, cy, ss=1, phase=0.0):
             d.ellipse([x - r, ty - r, x + r, ty + r], fill=col)
             x += dot_r * 2 + dot_gap
     return w
+
+
+# ---------------------------------------------------------------- whole scene
+
+def compose(state, u, ss=1, phase=0.15, generous=1.0, canvas=None):
+    """The character, the badge on his rim and the bubble beside him — one function,
+    used by the state sheet and by the animation, so they cannot disagree.
+
+    `u` is the body width in final pixels. Returns the composed image at `ss` scale;
+    the caller crops/downsamples.
+    """
+    bw, _ = measure_bubble(state, u, ss)     # already in canvas pixels
+    W = int(round((bw + u * 1.7 * ss) * generous))
+    H = int(round(u * 1.9 * ss * generous))
+    if canvas:
+        W, H = canvas
+    img = Image.new("RGB", (W, H), BG)
+
+    cx = W - u * 0.62 * ss
+    cy = H * 0.55
+
+    draw_character(img, state, u, cx, cy, ss=ss)
+
+    if state.get("hot", 0) > 0.01:
+        tint = state["tint"]
+        warm = (1.0, 0.42, 0.20)
+        h = min(0.35, 0.35 * state["hot"])
+        state = dict(state)
+        state["tint"] = tuple(tint[i] * (1 - h) + warm[i] * h for i in range(3))
+
+    bubble_right = cx - u * 0.023 * ss
+    draw_bubble(img, state, u, bubble_right - bw / 2,
+                cy - u * 0.329 * ss, ss=ss, phase=phase)
+    return img

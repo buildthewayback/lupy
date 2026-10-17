@@ -24,12 +24,29 @@ import SwiftUI
 //  * Reduce Motion is honoured: the wave stops, the text stays, nothing is lost.
 
 struct LupyStatusBubble: View {
+    /// Everything is measured in body widths, from the founder's sketch: the capsule
+    /// is 0.136 tall, its capital letters are 0.072 (≈ a 0.100 font), and it sits at
+    /// the top of his head on the LEFT, its right edge just touching his rim.
+    private let bodyWidth: CGFloat
+
+    init(state: LupyCharacterState, bodyWidth: CGFloat, detail: String? = nil,
+         compact: Bool = false) {
+        self.state = state
+        self.bodyWidth = bodyWidth
+        self.detail = detail
+        self.compact = compact
+    }
+
     var state: LupyCharacterState
     /// The machine's own facts, shown under the bubble.
     var detail: String? = nil
     var compact = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var fontSize: CGFloat { max(8, bodyWidth * 0.100) }
+    private var height: CGFloat { max(16, bodyWidth * 0.136) }
+    private var horizontalPadding: CGFloat { bodyWidth * 0.042 }
 
     private var tint: Color {
         let t = state.tint
@@ -54,19 +71,20 @@ struct LupyStatusBubble: View {
     private var bubble: some View {
         HStack(spacing: 7) {
             Text(state.label)
-                .font(.system(size: compact ? 11.5 : 13, weight: .semibold))
+                .font(.system(size: fontSize, weight: .semibold))
                 .foregroundStyle(Color.white.opacity(0.95))
                 .tracking(0.1)
                 .fixedSize()
 
             if state.isOngoing {
-                LupyThreeDots(tint: tint, size: compact ? 3.4 : 4.0)
+                LupyThreeDots(tint: tint, size: max(2.5, bodyWidth * 0.021),
+                              gap: max(1.5, bodyWidth * 0.012))
+                    .padding(.leading, bodyWidth * 0.012)
                     .opacity(0.95)
             }
         }
-        .padding(.leading, compact ? 11 : 13)
-        .padding(.trailing, compact ? 11 : 13)
-        .frame(height: compact ? 26 : 30)
+        .padding(.horizontal, horizontalPadding)
+        .frame(height: height)
         .background(bubbleFill)
         .overlay(alignment: .leading) { tail }
         .contentShape(Capsule(style: .continuous))
@@ -119,14 +137,8 @@ struct LupyStatusBubble: View {
     private var tail: some View {
         Triangle()
             .fill(Color(white: 0.125))
-            .frame(width: 6, height: 9)
-            .offset(x: -5)
-            .overlay(
-                Triangle()
-                    .stroke(tint.opacity(0.30), lineWidth: 0.8)
-                    .frame(width: 6, height: 9)
-                    .offset(x: -5)
-            )
+            .frame(width: bodyWidth * 0.012, height: bodyWidth * 0.020)
+            .offset(x: -bodyWidth * 0.010)
     }
 
     private var bubbleRim: some View { EmptyView() }   // kept for symmetry; rim is in the fill
@@ -152,18 +164,19 @@ private struct Triangle: Shape {
 struct LupyThreeDots: View {
     var tint: Color
     var size: CGFloat = 4
+    var gap: CGFloat = 4.6
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let period: Double = 1.2
 
     var body: some View {
-        HStack(spacing: size * 1.15) {
+        HStack(spacing: gap) {
             ForEach(0..<3, id: \.self) { index in
                 dot(index)
             }
         }
-        .frame(width: size * 3 + size * 1.15 * 2, alignment: .center)
+        .frame(width: size * 3 + gap * 2, alignment: .center)
         .accessibilityHidden(true)
     }
 
@@ -187,18 +200,6 @@ struct LupyThreeDots: View {
                     .frame(width: size, height: size)
                     .scaleEffect(0.86 + 0.24 * eased)
             }
-        }
-    }
-}
-
-// MARK: - convenience
-
-extension LupyCharacterState {
-    /// True while the state is still going, so the bubble knows to animate.
-    var isOngoing: Bool {
-        switch self {
-        case .working, .thinking, .searching: return true
-        default: return false
         }
     }
 }

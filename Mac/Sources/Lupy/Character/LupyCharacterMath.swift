@@ -298,15 +298,36 @@ enum LupyEyes {
 enum LupyComposition {
     static let unitFraction: Double = 0.72
 
-    /// The state badge rides the character's right edge: half on the body, half off it.
-    /// Its centre is exactly on the silhouette, which is what makes it read as a badge
-    /// pinned to him rather than a sticker floating nearby.
-    static let badgeCentreX: Double = 0.497
-    static let badgeCentreY: Double = 0.085
-    static let badgeRadius: Double = 0.082
+    /// The state badge rides the character's right rim, the way the founder's sketch
+    /// pins it to the shoulder: the dark ring just kisses the silhouette, so the badge
+    /// is attached to him rather than stuck on his face.
+    ///
+    /// Measured from that sketch, in body widths: the disc is 0.121 across, the ring
+    /// 0.165, the ring is 0.023 thick, and the badge's centre sits 0.129 below the top
+    /// of the body, 0.087 beyond the rim at that height.
+    static let badgeRadius: Double = 0.0605        // the coloured disc
+    static let badgeRing: Double = 0.0225          // the dark ring around it
+    /// How far below the top of the body the badge's centre sits, as a fraction of
+    /// body height. 0.129 measured off the sketch.
+    static let badgeDrop: Double = 0.129
+    /// How much the ring overlaps the silhouette, in body widths.
+    static let badgeOverlap: Double = 0.004
+
+    /// The badge's centre, on the right rim of whatever silhouette we ship. Computed
+    /// from the real body path, so it stays on the shoulder at every body shape.
+    static func badgeCentre() -> (x: Double, y: Double) {
+        let bounds = LupyBody.bounds()
+        let top = bounds.minY + bounds.h          // the apex, in body coordinates
+        let y = top - badgeDrop * bounds.h
+        let rim = LupyBody.halfWidth(atY: y)
+        let x = rim + badgeRing + badgeRadius - badgeOverlap
+        return (x, y)
+    }
 
     /// How far right the badge reaches, in body widths.
-    static var badgeReach: Double { badgeCentreX + badgeRadius }
+    static var badgeReach: Double {
+        badgeCentre().x + badgeRadius + badgeRing
+    }
     /// Blur radius of the light, in body widths.
     static let glowBlur: Double = 0.09
     /// How far the light reaches, in body widths: half a body plus two blur radii.
@@ -911,14 +932,18 @@ enum LupyCharacterState: Int, CaseIterable {
         }
     }
 
-    /// What the bubble above the head says. A working character trails off, because
-    /// it is still going; a finished one states the fact.
-    var bubbleText: String {
+    /// True while the state is still going, so the bubble knows to animate its dots.
+    var isOngoing: Bool {
         switch self {
-        case .working, .thinking, .searching: return label + "…"
-        default: return label
+        case .working, .thinking, .searching: return true
+        default: return false
         }
     }
+
+    /// What the bubble says. **No ellipsis is baked in**: while a state is ongoing the
+    /// bubble appends three animated dots, so a literal "…" here would print
+    /// "Working… · · ·" — two ellipses fighting each other.
+    var bubbleText: String { label }
 
     /// The single small overlay allowed per state.
     /// The icon that represents this state, in the circle on the right of the
@@ -1022,7 +1047,6 @@ extension LupyVitals {
 /// The ring is what separates a bright disc from a white body — without it the badge
 /// dissolves into the character.
 enum LupyBadgeStyle {
-    static let ringWidth: Double = 0.020   // body widths
     static let ringColour: (r: Double, g: Double, b: Double) = (0.043, 0.047, 0.055)
 }
 

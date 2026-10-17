@@ -16,7 +16,7 @@ import sys
 
 from PIL import Image
 
-from scene import BG, draw_character, draw_bubble
+from scene import BG, compose
 
 SS = 2
 
@@ -50,18 +50,15 @@ def parse(path):
     return frames
 
 
-def render_frame(f, size, body_px):
-    """The scene at `size`, with the body `body_px` wide."""
-    W = int(round(body_px * 2.45))
-    H = int(round(body_px * 1.42))
-    img = Image.new("RGB", (W * SS, H * SS), BG)
-    cx = body_px * 0.64 * SS
-    cy = H * SS * 0.52
-    draw_character(img, f, body_px, cx, cy, ss=SS)
+def render_frame(f, size, body_px, canvas=None):
+    """One frame of the same scene the sheets draw, from the shipping rig's numbers."""
+    from PIL import ImageChops
     # the three dots travel with the animation clock, not with a fixed phase
     phase = (f["i"] / 25.0) / 1.2
-    draw_bubble(img, f, body_px, body_px * 1.20 * SS, cy, ss=SS, phase=phase)
-    return img.resize((W, H), Image.LANCZOS)
+    img = compose(f, float(body_px), ss=SS, phase=phase, canvas=canvas)
+    if canvas:
+        return img.resize((canvas[0] // SS, canvas[1] // SS), Image.LANCZOS)
+    return img
 
 
 def main():
@@ -73,7 +70,13 @@ def main():
     frames = parse(src)
     print(f"{len(frames)} frames, body {body_px}px")
 
-    imgs = [render_frame(f, body_px, body_px) for f in frames]
+    # Every frame shares one canvas: a per-frame crop would make the GIF breathe
+    # in and out as the labels change length.
+    from scene import measure_bubble
+    widest = max(measure_bubble(f, float(body_px), SS)[0] for f in frames)
+    canvas = (int(round(widest + body_px * 1.34 * SS)),
+              int(round(body_px * 1.20 * SS)))
+    imgs = [render_frame(f, body_px, body_px, canvas) for f in frames]
 
     if shutil.which("ffmpeg"):
         tmp = "/tmp/_rigframes"

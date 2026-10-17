@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T11:40Z
-Reason: stroke the badge glyph from its final path rect instead of Shape.strokedPath (not a Shape member)
+Build requested: 2026-10-17T12:10Z
+Reason: layout measured off the founder's sketch — bubble left of the head, badge pinned to the right rim, no double ellipsis
