@@ -48,32 +48,33 @@ def shade(hexcolour, amount):
 
 # ------------------------------------------------------------------ states ---
 STATES = [
-    ("idle",      "idle",      "#FFFFFF", "pill",     None,      0.20, None),
-    ("working",   "working",   "#3B9EFF", "pill",     "dots",    0.50, None),
-    ("thinking",  "thinking",  "#8B5CF6", "pill",     "dots",    0.46, None),
-    ("searching", "searching", "#635FF2", "pill",     "dots",    0.50, None),
-    ("approval",  "approval",  "#F5A523", "wide",     "bang",    0.55, None),
-    ("question",  "question",  "#22D3EE", "pill",     "question",0.50, None),
-    ("error",     "error",     "#F4505E", "flat",     "dot",     0.50, None),
-    ("finished",  "finished",  "#34D399", "happy",    "dot",     0.46, "sparkle"),
-    ("ratelimit", "ratelimit", "#F0923C", "tired",    "dot",     0.42, "sweat"),
-    ("sleeping",  "sleeping",  "#94A2B8", "closed",   None,      0.18, "zzz"),
-    ("dizzy",     "dizzy",     "#F472B6", "spiral",   None,      0.50, "bubbles"),
+    # key,        label,       body colour, eye,        badge,     halo, extra
+    # body colours sampled from the founder's reference tiles, then tuned to pastel
+    ("idle",      "idle",      "#FFFFFF", "pill",     None,      0.22, None),
+    ("working",   "working",   "#9FD8F5", "pill",     "dots",    0.50, None),
+    ("thinking",  "thinking",  "#C9AEEC", "pill",     "dots",    0.46, None),
+    ("searching", "searching", "#8F86DE", "pill",     "dots",    0.50, None),
+    ("approval",  "approval",  "#F9D49B", "wide",     "bang",    0.55, None),
+    ("question",  "question",  "#86E0EC", "pill",     "question",0.50, None),
+    ("error",     "error",     "#F98C86", "flat",     "ring",    0.50, None),
+    ("finished",  "finished",  "#A8E6C6", "happy",    "dot",     0.46, "sparkle"),
+    ("ratelimit", "ratelimit", "#F9AE77", "tired",    "dot",     0.42, "sweat"),
+    ("sleeping",  "sleeping",  "#F6E3CD", "closed",   None,      0.20, "zzz"),
+    ("dizzy",     "dizzy",     "#F3BDBF", "spiral",   None,      0.50, "bubbles"),
 ]
 
 EMOTES = [
-    ("love",      "love",      "#FF6B9D", "heart",   None, 0.42, None),
+    ("love",      "love",      "#FFC2D6", "heart",   None, 0.42, None),
     ("surprised", "surprised", "#FFFFFF", "wide",    None, 0.28, None),
     ("wink",      "wink",      "#FFFFFF", "wink",    None, 0.24, None),
     ("happy",     "happy",     "#FFFFFF", "happy",   None, 0.32, None),
-    ("annoyed",   "annoyed",   "#E8E8EF", "line",    None, 0.18, None),
+    ("annoyed",   "annoyed",   "#F2DCD8", "line",    None, 0.18, None),
     ("yawn",      "yawn",      "#FFFFFF", "closed",  None, 0.18, "zzz"),
-    ("proud",     "proud",     "#FFFFFF", "star",    None, 0.32, "sparkle"),
-    ("listening", "listening", "#5EEAD4", "wide",    None, 0.46, None),
+    ("proud",     "proud",     "#FFF0C4", "star",    None, 0.32, "sparkle"),
+    ("listening", "listening", "#A8E8DC", "wide",    None, 0.46, None),
 ]
 
 
-# ------------------------------------------------------------------ layers ---
 def alpha_layer(W, H, draws, stroke=None, fill="white", tmp=""):
     """Transparent RGBA canvas with shapes drawn on it."""
     out = os.path.join(tmp, "layer.png")
@@ -121,12 +122,12 @@ def eye_draws(shape, spec, scale, cx, base_y):
             w, h = ew * 1.20, eh * 0.36
             solid.append(rounded(ex, cy + eh * 0.14, w, h, h / 2))
         elif shape == "happy":
-            stroke.append(f"ellipse {ex:.1f},{cy + eh*0.16:.1f} {ew*0.98:.1f},{eh*0.46:.1f} 200,340")
+            stroke.append(f"ellipse {ex:.1f},{cy + eh*0.10:.1f} {ew*0.98:.1f},{eh*0.44:.1f} 200,340")
         elif shape == "closed":
-            stroke.append(f"ellipse {ex:.1f},{cy + eh*0.20:.1f} {ew*0.94:.1f},{eh*0.46:.1f} 200,340")
+            stroke.append(f"ellipse {ex:.1f},{cy - eh*0.12:.1f} {ew*0.98:.1f},{eh*0.42:.1f} 20,160")
         elif shape == "wink":
             if sgn < 0:
-                stroke.append(f"ellipse {ex:.1f},{cy + eh*0.18:.1f} {ew*0.9:.1f},{eh*0.44:.1f} 200,340")
+                stroke.append(f"ellipse {ex:.1f},{cy - eh*0.10:.1f} {ew*0.94:.1f},{eh*0.40:.1f} 20,160")
             else:
                 solid.append(rounded(ex, cy, ew, eh, ew / 2))
         elif shape == "spiral":
@@ -134,7 +135,7 @@ def eye_draws(shape, spec, scale, cx, base_y):
             turns = 2.6
             for i in range(96):
                 a = i / 95 * turns * 2 * math.pi
-                r = ew * 0.10 + (i / 95) * ew * 0.62
+                r = ew * 0.10 + (i / 95) * ew * 1.05
                 x_ = ex + math.cos(a) * r
                 y_ = cy - math.sin(a) * r
                 moves.append(("M" if i == 0 else "L") + f" {x_:.1f},{y_:.1f}")
@@ -158,35 +159,48 @@ def eye_draws(shape, spec, scale, cx, base_y):
 
 
 def badge_draws(kind, colour, scale, cx, base_y):
-    """Reference-style badge: a rounded speech bubble sitting on the upper-right edge."""
+    """Reference-style badge: sits on the body's UPPER-LEFT edge."""
     if not kind:
         return []
-    bx, by = cx + 0.315 * scale, base_y - 0.70 * scale
-    r = 0.115 * scale
-    bw, bh = r * 2.30, r * 1.85
-    tail = (f"polygon {bx-r*0.30:.1f},{by+bh*0.42:.1f} {bx+r*0.34:.1f},{by+bh*0.42:.1f} "
-            f"{bx-r*0.52:.1f},{by+bh*1.02:.1f}")
+    bx = cx - 0.360 * scale
+    by = base_y - 0.790 * scale
+    bw, bh = 0.262 * scale, 0.188 * scale
+    r = bh * 0.46
 
     if kind == "dots":
-        d = [(rounded(bx, by, bw, bh, r * 0.62), colour), (tail, colour)]
-        for o in (-r * 0.52, 0, r * 0.52):
-            d.append((f"circle {bx+o:.1f},{by-r*0.05:.1f} {bx+o+r*0.19:.1f},{by-r*0.05:.1f}", "white"))
+        # bubble body + tail in ONE draw (same layer), then white dots on top
+        tail = (f"polygon {bx+bw*0.02:.1f},{by+bh*0.22:.1f} {bx+bw*0.40:.1f},{by+bh*0.22:.1f} "
+                f"{bx+bw*0.14:.1f},{by+bh*0.92:.1f}")
+        d = [("GROUP", " ".join([rounded(bx, by, bw, bh, r), tail]), colour)]
+        for o in (-bw * 0.22, 0, bw * 0.22):
+            dr = bh * 0.135
+            d.append(("WHITE", f"circle {bx+o:.1f},{by:.1f} {bx+o+dr:.1f},{by:.1f}", "white"))
         return d
+
     if kind == "bang":
-        d = [(rounded(bx, by, bw, bh, r * 0.62), colour), (tail, colour)]
-        d.append((rounded(bx, by - r * 0.10, r * 0.26, r * 0.66, r * 0.13), "white"))
-        d.append((f"circle {bx:.1f},{by+r*0.52:.1f} {bx+r*0.15:.1f},{by+r*0.52:.1f}", "white"))
+        d = [("GROUP", f"circle {bx:.1f},{by:.1f} {bx+bh*0.52:.1f},{by:.1f}", colour)]
+        d.append(("WHITE", rounded(bx, by - bh * 0.10, bw * 0.115, bh * 0.42, bw * 0.058), "white"))
+        d.append(("WHITE", f"circle {bx:.1f},{by+bh*0.26:.1f} {bx+bh*0.062:.1f},{by+bh*0.26:.1f}", "white"))
         return d
+
     if kind == "question":
-        d = [(rounded(bx, by, bw, bh, r * 0.62), colour), (tail, colour)]
-        # simple question mark: hook arc + dot
-        d.append((f"ellipse {bx:.1f},{by-r*0.28:.1f} {r*0.30:.1f},{r*0.30:.1f} 200,20", "white"))
-        d.append((f"path 'M {bx-r*0.30:.1f},{by-r*0.05:.1f} L {bx:.1f},{by+r*0.22:.1f}'", "white"))
-        d.append((f"circle {bx:.1f},{by+r*0.48:.1f} {bx+r*0.13:.1f},{by+r*0.48:.1f}", "white"))
+        d = [("GROUP", f"circle {bx:.1f},{by:.1f} {bx+bh*0.52:.1f},{by:.1f}", colour)]
+        d.append(("ELLIPSE", f"{bx:.1f},{by-bh*0.16:.1f} {bw*0.10:.1f},{bh*0.13:.1f} 190,20", "white"))
+        d.append(("LINE", f"{bx+bw*0.095:.1f},{by-bh*0.02:.1f} {bx:.1f},{by+bh*0.12:.1f}", "white"))
+        d.append(("WHITE", f"circle {bx:.1f},{by+bh*0.27:.1f} {bx+bh*0.058:.1f},{by+bh*0.27:.1f}", "white"))
         return d
+
+    if kind == "ring":
+        return [("RING", f"{bx:.1f},{by:.1f} {bx+bh*0.42:.1f},{by:.1f}", "#8E2B2B")]
+
     if kind == "dot":
-        return [(f"circle {bx:.1f},{by:.1f} {bx+r*0.60:.1f},{by:.1f}", colour)]
+        return [(f"circle {bx:.1f},{by:.1f} {bx+bh*0.30:.1f},{by:.1f}", "#1F7A55")]
+
     return []
+
+
+def bh_stroke(scale):
+    return 0.016 * scale
 
 
 def extra_draws(extra, W, H, scale, cx, base_y):
@@ -211,8 +225,8 @@ def extra_draws(extra, W, H, scale, cx, base_y):
             d.append(f"polygon {x-s:.1f},{y-s:.1f} {x+s:.1f},{y-s:.1f} "
                      f"{x-s:.1f},{y+s:.1f} {x+s:.1f},{y+s:.1f}")
     if extra == "bubbles":
-        for (bx, by, br) in ((0.300, 0.300, 0.024), (0.362, 0.248, 0.017),
-                             (0.412, 0.196, 0.011)):
+        for (bx, by, br) in ((0.245, 0.255, 0.026), (0.170, 0.180, 0.018),
+                             (0.120, 0.115, 0.012)):
             x, y, r = bx * W, by * H, br * W
             d.append(f"circle {x:.1f},{y:.1f} {x+r:.1f},{y:.1f}")
     return d
@@ -262,8 +276,8 @@ def render_state(key, label, colour, eye, badge, halo, extra, spec, outdir, tile
                  f"{b['radius_x']*scale:.1f},{b['radius_y']*scale:.1f} 0,360",
         "-draw", f"ellipse {cx+b['centre_x']*scale:.1f},{base_y-b['centre_y_from_bottom']*scale:.1f} "
                  f"{b['radius_x']*scale:.1f},{b['radius_y']*scale:.1f} 0,360",
-        "-blur", f"0x{int(0.038*W)}",
-        "-evaluate", "multiply", str(b["opacity"]*1.5), blush)
+        "-blur", f"0x{int(0.030*W)}",
+        "-evaluate", "multiply", str(b["opacity"]*1.55), blush)
     blush_c = os.path.join(tmp, "blushc.png")
     run("convert", blush, mask, "-compose", "DstIn", "-composite", blush_c)
 
@@ -299,23 +313,35 @@ def render_state(key, label, colour, eye, badge, halo, extra, spec, outdir, tile
 
     # ---- badge ----
     badge_img = None
-    bd = badge_draws(badge, shade(colour, 0.0), scale, cx, base_y)
+    bd = badge_draws(badge, colour, scale, cx, base_y)
     if bd:
         badge_img = os.path.join(tmp, "badge.png")
         layers = []
-        for d, col in bd:
-            l = os.path.join(tmp, f"b{len(layers)}.png")
-            stroke = d.startswith("ellipse") or d.startswith("path 'M")
-            run("convert", "-size", f"{W}x{H}", "xc:none",
-                "-fill", "none" if stroke else col,
-                "-stroke", col if stroke else "none",
-                "-strokewidth", f"{max(2.0, 0.022*scale):.1f}",
-                "-draw", d, l)
+        for item in bd:
+            tag = item[0]
+            if tag in ("GROUP", "WHITE"):
+                d, col = item[1], item[2]
+                l = os.path.join(tmp, f"b{len(layers)}.png")
+                run("convert", "-size", f"{W}x{H}", "xc:none", "-fill", col,
+                    "-stroke", "none", "-draw", d, l)
+            elif tag in ("ELLIPSE", "LINE", "RING"):
+                d, col = item[1], item[2]
+                l = os.path.join(tmp, f"b{len(layers)}.png")
+                draw_cmd = {"ELLIPSE": f"ellipse {d}", "LINE": f"line {d}",
+                            "RING": f"circle {d}"}[tag]
+                run("convert", "-size", f"{W}x{H}", "xc:none", "-fill", "none",
+                    "-stroke", col, "-strokewidth", f"{max(2.0, bh_stroke(scale)):.1f}",
+                    "-draw", draw_cmd, l)
+            else:
+                d, col = item[0], item[1]
+                l = os.path.join(tmp, f"b{len(layers)}.png")
+                run("convert", "-size", f"{W}x{H}", "xc:none", "-fill", col,
+                    "-stroke", "none", "-draw", d, l)
             layers.append(l)
         if len(layers) == 1:
             shutil.copy(layers[0], badge_img)
         else:
-            run("convert", *layers, "-compose", "over", "-composite", badge_img)
+            run("convert", "-background", "none", *layers, "-layers", "flatten", badge_img)
 
     # ---- compose ----
     out = os.path.join(outdir, f"lupy-{key}.png")

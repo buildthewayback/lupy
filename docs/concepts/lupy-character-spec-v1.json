@@ -22,12 +22,12 @@
   "no_highlight": true
  },
  "blush": {
-  "colour": "#F78E86",
-  "opacity": 0.34,
+  "colour": "#F6A9A1",
+  "opacity": 0.42,
   "centre_x": 0.24,
   "centre_y_from_bottom": 0.192,
-  "radius_x": 0.075,
-  "radius_y": 0.058
+  "radius_x": 0.08,
+  "radius_y": 0.062
  },
  "body_colour": {
   "base": "#FFFFFF",
