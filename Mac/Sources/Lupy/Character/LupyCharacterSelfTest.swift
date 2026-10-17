@@ -118,7 +118,7 @@ enum LupyCharacterSelfTest {
         // Render at 4x so a 24 pt character still has enough pixels to inspect.
         let renderer = ImageRenderer(content:
             Canvas { context, _ in
-                LupyRenderer.draw(frame, in: &context)
+                LupyRenderer.draw(frame, state: state, in: &context)
             }
             .frame(width: size, height: size)
             .background(Color.black)

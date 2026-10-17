@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T10:30Z
-Reason: self-test samples the strongest tint in the glow band instead of one dim pixel
+Build requested: 2026-10-17T11:05Z
+Reason: badge pinned to the character's right edge, status bubble beside him with animated dots, heavier turning spiral, crisper sheets

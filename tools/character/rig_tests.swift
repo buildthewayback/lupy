@@ -325,6 +325,14 @@ final class RigTests {
         print("\n== composition ==")
         ok(LupyComposition.glowReach <= LupyComposition.frameHalf,
            "the strongest glow still fits inside the frame")
+        // The badge rides the right edge: it must fit in the frame too, with the ring.
+        ok(LupyComposition.badgeReach + LupyBadgeStyle.ringWidth <= LupyComposition.frameHalf,
+           "the state badge fits inside the frame, ring included")
+        ok(LupyComposition.badgeCentreX < 0.5 && LupyComposition.badgeCentreY > 0,
+           "the badge sits on the character's right edge, above his middle")
+        // The spiral must have the same ink mass as the capsule it replaces.
+        ok(LupyEyeStyle.spiral.spiralStroke >= 0.18,
+           "the dizzy spiral is drawn with real ink, not a hairline")
         near(LupyComposition.unit(width: 200, height: 200), 144, 1e-9,
              "a 200 pt frame draws the body at 144 pt")
         ok(abs(LupyComposition.glowBlur - 0.09) < 1e-9,

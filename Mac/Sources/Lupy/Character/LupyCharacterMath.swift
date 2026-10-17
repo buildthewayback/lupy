@@ -297,6 +297,16 @@ enum LupyEyes {
 /// above the head somewhere to live.
 enum LupyComposition {
     static let unitFraction: Double = 0.72
+
+    /// The state badge rides the character's right edge: half on the body, half off it.
+    /// Its centre is exactly on the silhouette, which is what makes it read as a badge
+    /// pinned to him rather than a sticker floating nearby.
+    static let badgeCentreX: Double = 0.497
+    static let badgeCentreY: Double = 0.085
+    static let badgeRadius: Double = 0.082
+
+    /// How far right the badge reaches, in body widths.
+    static var badgeReach: Double { badgeCentreX + badgeRadius }
     /// Blur radius of the light, in body widths.
     static let glowBlur: Double = 0.09
     /// How far the light reaches, in body widths: half a body plus two blur radii.
@@ -780,6 +790,22 @@ extension LupyEyeStyle {
     var arcBow: Double { 0.052 }
     /// Stroke weight, as a fraction of the eye's drawn width.
     var arcStroke: Double { 0.46 }
+
+    /// Spiral ink, as a fraction of the eye's width. Coucou draws its dizzy spiral at
+    /// 0.22 of the eye width; anything thinner reads as a hairline next to the fat
+    /// capsule eyes of every other state, and the character stops looking like itself.
+    var spiralStroke: Double { 0.20 }
+    /// How fast the dizzy spiral turns, in radians per second.
+    var spiralSpin: Double { 3.4 }
+
+    /// The spiral itself: two full turns growing from the centre, sized to fill the
+    /// same visual mass as a capsule eye.
+    static let spiralTurns: Double = 12.566   // 4π
+    static func spiralPoint(_ a: Double, centreX: Double, centreY: Double, unit: Double)
+        -> (x: Double, y: Double) {
+        let r = unit * (0.006 + 0.0094 * a)
+        return (centreX + r * LM.cos(a), centreY - r * LM.sin(a) * 0.92)
+    }
 }
 
 /// The 11 states from the reference sheet.
@@ -992,6 +1018,14 @@ extension LupyVitals {
 }
 
 /// Small overlay, always upper-LEFT of the body (brand rule).
+/// How the badge is drawn: a dark ring, the state's colour inside it, the glyph in ink.
+/// The ring is what separates a bright disc from a white body — without it the badge
+/// dissolves into the character.
+enum LupyBadgeStyle {
+    static let ringWidth: Double = 0.020   // body widths
+    static let ringColour: (r: Double, g: Double, b: Double) = (0.043, 0.047, 0.055)
+}
+
 /// One glyph per state, drawn as vector paths — never a font, never an emoji, so it
 /// looks identical in the app, in the debug sheet and at any size.
 enum LupyStateIcon {

@@ -34,6 +34,8 @@ struct LupyFrameSnapshot: Sendable {
     var tintGreen: Double
     var tintBlue: Double
     var glowStrength: Double
+    /// Radians the dizzy spiral has turned. Coucou spins it; a still spiral reads dead.
+    var spiralPhase: Double
 }
 
 @MainActor
@@ -91,7 +93,8 @@ final class LupyCharacterDriver: ObservableObject {
             centreY: Double(size.height) * 0.5,
             bodyRed: body.r, bodyGreen: body.g, bodyBlue: body.b,
             tintRed: tint.r, tintGreen: tint.g, tintBlue: tint.b,
-            glowStrength: state.glowStrength
+            glowStrength: state.glowStrength,
+            spiralPhase: rig.time * LupyEyeStyle.spiral.spiralSpin
         )
     }
 
@@ -112,7 +115,9 @@ final class LupyCharacterDriver: ObservableObject {
 }
 
 enum LupyRenderer {
-    static func draw(_ frame: LupyFrameSnapshot, in context: inout GraphicsContext) {
+    static func draw(_ frame: LupyFrameSnapshot,
+                     state drawnState: LupyCharacterState? = nil,
+                     in context: inout GraphicsContext) {
         let unit = frame.unit
 
         func point(_ x: Double, _ y: Double) -> CGPoint {
@@ -181,18 +186,26 @@ enum LupyRenderer {
 
             switch eye.style {
             case .spiral:
+                // A thick, turning spiral: same ink mass as the capsule eyes, so the
+                // dizzy character is still visibly the same character.
                 var spiral = Path()
                 var a = 0.0
                 var first = true
-                while a < 5.4 {
-                    let r = unit * (0.010 + 0.0082 * a)
-                    let p = CGPoint(x: cx + r * LM.cos(a), y: cy - r * LM.sin(a) * 0.86)
+                let centres = (x: frame.centreX + eye.x * unit * frame.scaleX,
+                               y: frame.centreY - eye.y * unit * frame.scaleY)
+                while a < LupyEyeStyle.spiralTurns {
+                    let pt = LupyEyeStyle.spiralPoint(a + frame.spiralPhase,
+                                                      centreX: centres.x,
+                                                      centreY: centres.y,
+                                                      unit: unit)
+                    let p = CGPoint(x: pt.x, y: pt.y)
                     if first { spiral.move(to: p); first = false } else { spiral.addLine(to: p) }
-                    a += 0.16
+                    a += 0.10
                 }
                 context.stroke(spiral, with: .color(.black),
-                               style: StrokeStyle(lineWidth: max(1, unit * 0.013),
-                                                  lineCap: .round, lineJoin: .round))
+                               style: StrokeStyle(
+                                   lineWidth: max(1, baseW * LupyEyeStyle.spiral.spiralStroke),
+                                   lineCap: .round, lineJoin: .round))
             case .arch, .cup:
                 // A wide arc stroked with round caps: the same ink, bent. The span and
                 // the bow come from the kernel, so the app and the sheet cannot drift.
@@ -214,8 +227,51 @@ enum LupyRenderer {
                              with: .color(.black))
             }
         }
+
+        // MARK: state badge
+        // Pinned to the character's right edge, half on him and half off: a dark ring
+        // separates the bright disc from the white body, and this state's own glyph
+        // sits inside it.
+        if let drawnState, let icon = drawnState.icon {
+            drawBadge(icon, state: drawnState, in: &context, frame: frame)
+        }
     }
 
+    /// The badge: dark ring, coloured disc, glyph.
+    private static func drawBadge(_ icon: LupyStateIcon,
+                                  state: LupyCharacterState,
+                                  in context: inout GraphicsContext,
+                                  frame: LupyFrameSnapshot) {
+        let unit = frame.unit
+        let centre = CGPoint(
+            x: frame.centreX + LupyComposition.badgeCentreX * unit * frame.scaleX,
+            y: frame.centreY - LupyComposition.badgeCentreY * unit * frame.scaleY
+        )
+        let r = LupyComposition.badgeRadius * unit
+        let ring = LupyBadgeStyle.ringWidth * unit
+        let tint = state.tint
+        let colour = Color(red: tint.r, green: tint.g, blue: tint.b)
+
+        let outer = Path(ellipseIn: CGRect(x: centre.x - r - ring, y: centre.y - r - ring,
+                                           width: (r + ring) * 2, height: (r + ring) * 2))
+        context.fill(outer, with: .color(Color(red: LupyBadgeStyle.ringColour.r,
+                                              green: LupyBadgeStyle.ringColour.g,
+                                              blue: LupyBadgeStyle.ringColour.b)))
+        let inner = Path(ellipseIn: CGRect(x: centre.x - r, y: centre.y - r,
+                                           width: r * 2, height: r * 2))
+        context.fill(inner, with: .color(colour))
+
+        // The glyph, at 62 % of the disc, in the ink that can be read on this colour.
+        let glyphSize = r * 2 * 0.62
+        var glyph = context
+        glyph.translateBy(x: centre.x - glyphSize / 2, y: centre.y - glyphSize / 2)
+        let ink: Color = state.iconInkIsDark ? .black : .white
+        let shape = LupyStateIconShape(icon: icon)
+            .strokedPath(StrokeStyle(lineWidth: glyphSize * 0.115,
+                                     lineCap: .round, lineJoin: .round))
+        glyph.fill(shape, in: CGRect(x: 0, y: 0, width: glyphSize, height: glyphSize),
+                   with: .color(ink))
+    }
 }
 
 struct LupyCanvasView: View {
@@ -235,7 +291,7 @@ struct LupyCanvasView: View {
                 // must stay a pure function of the snapshot it receives.
                 let frame = driver.snapshot(at: timeline.date, size: geo.size)
                 Canvas { context, _ in
-                    LupyRenderer.draw(frame, in: &context)
+                    LupyRenderer.draw(frame, state: driver.state, in: &context)
                 }
             }
             .onContinuousHover(coordinateSpace: .local) { phase in

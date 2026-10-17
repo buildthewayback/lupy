@@ -48,14 +48,20 @@ struct LupyPreviewView: View {
     @FocusState private var keysFocused: Bool
 
     var body: some View {
-        VStack(spacing: 4) {
-            LupyLabelBubble(state: model.state, detail: model.detail)
-                .padding(.top, 10)
+        VStack(spacing: 6) {
+            // The character on the left, his status bubble beside him — never on top
+            // of his head. The badge rides his right edge, between the two.
+            HStack(alignment: .center, spacing: 2) {
+                LupyCanvasView(state: model.state,
+                               vitals: model.vitals,
+                               busySamples: model.busySamples)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            LupyCanvasView(state: model.state,
-                           vitals: model.vitals,
-                           busySamples: model.busySamples)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                LupyStatusBubble(state: model.state, detail: model.detail)
+                    .padding(.trailing, 18)
+                    .frame(width: 250, alignment: .leading)
+            }
+            .padding(.top, 4)
 
             chips
         }
