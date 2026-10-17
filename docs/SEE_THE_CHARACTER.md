@@ -9,21 +9,28 @@ https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/l
 GitHub plays the GIF right in the page. This is the **real Swift rig** — the same
 code the app draws with — stepped frame by frame while a mouse moves across him:
 
-1. **Ready** — white. Nothing is happening.
-2. **Working…** — blue. The eyes follow the pointer.
+1. **Ready** — white, calm ∪∪ lids. Nothing is happening.
+2. **Working** — blue. Still the ∪∪ face; the three dots after the word are what move.
 3. **Overloaded** — pink, spiral eyes. The Mac ran out of memory.
-4. **Done** — mint, closed happy eyes.
+4. **Done** — mint, the same happy lids.
 
-Watch the little bubble above his head: it always says what he is doing.
+His eyes open only when he needs something from you — **Waiting for your OK**,
+**Has a question**, **Something broke**. Everything else runs with the closed lids
+from the founder's sketch: the state is carried by the light and the badge, not by
+staring. The bubble beside his head always says what he is doing.
 
 ## 2. Every state, with colour
 
 https://github.com/buildthewayback/lupy/blob/arena/47c739ab-lupy/docs/concepts/lupy-states-sketch.png
 
 Eleven states. **The body is pure white in every one of them** — the colour lives in
-the light around him, vivid and saturated, never pastel. A small badge rides the
-right edge of his body, half on him and half off, with that state's own icon. Beside
-him, never on his head, a bubble says what he is doing:
+the light around him, vivid and saturated, never pastel. No blush, no tint, no
+shading: it is the founder's sketch, and his law.
+
+A badge rides the right shoulder, half on him and half in the air, with that state's
+own icon. Beside him, floating off his top-left with clear air between, a bubble
+says what he is doing. Its size and its distance are measured off the sketch: the
+label's short corner is the first position that does not sit on his body.
 
 - ⚙️ Working… — machinery doing work
 - 💡 Thinking… — an idea forming
