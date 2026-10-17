@@ -188,7 +188,20 @@ enum LupyControlSelfTest {
     }
 
     /// Starts a founder-style run and waits until it is over (60 s at most).
-    private static func runToEnd(_ control: LupyControlCenter, title: String, steps: [ControlStep]) async -> ControlRun? {
+    private static func runToEnd(_ control: LupyControlCenter, title: String, steps: [ControlStep],
+                                 note: @escaping (String) -> Void = { print($0) }) async -> ControlRun? {
+        // The previous run's finish handler may still be running its last frame. On a
+        // slow runner start() then refuses with "already using your Mac", and the test
+        // reported "no run" — which blames the feature for the harness's impatience.
+        var waited = 0
+        while control.isActive && waited < 50 {
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            waited += 1
+        }
+        if let why = control.blocker() {
+            note("INFO could not start “\(title)”: \(why)")
+            return nil
+        }
         guard control.start(title: title, steps: steps, byFounder: true) else { return nil }
         for _ in 0..<600 {
             if !control.isActive { break }
