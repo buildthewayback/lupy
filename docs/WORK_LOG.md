@@ -134,3 +134,20 @@ profile, priorities, dead ends). Preparing Drive folder "Lupy LUPY3 Handoff" wit
 LUPY3_*.md docs + WORK_LOG + founder-ref-20261017.jpg + 00_READ_ME_FIRST.md +
 lupy3-local-commits.bundle (git bundle of the local-only commits 8493846..HEAD so the new
 session can restore the exact git history). HANDOFF updated with the Drive restore path.
+
+## 2026-10-17 (LUPY 3, session 3 — vision) — memory restored, vision proven, character base v1
+New session on arena/47c739ab-lupy. Drive folder "Lupy LUPY3 Handoff" read in prescribed
+order (00_NEW_SESSION_START_HERE supersedes 00_READ_ME_FIRST). `docs/` had NO LUPY3 files
+(LUPY 3 commits never reached GitHub) → all 10 LUPY3 docs + founder-ref-20261017.jpg copied
+from Drive, image md5 029995c9… verified identical, WORK_LOG entries merged (commit 19de740).
+**Vision check PASSED**: founder-ref-20261017.jpg opened and described back — TRI-TRI MOCHI
+sprite sheet, 11 states, plump rounded-triangle mochi, no limbs, cream body, tall solid-black
+capsule eyes with no pupils, blush cheeks, cream halo over near-black. Added
+docs/concepts/ref-idle-crop.jpg (idle tile crop, no pixel edits) as the generation anchor.
+**Character base v1 generated** (founder chose: 3 candidates + both tones):
+char-base-A-classic (wide gumdrop — eyes rendered glossy, violates the flat-black-eyes rule),
+char-base-B-tall (triangular dome — apex too pointy vs reference; eyes clean),
+char-base-C-pebble (closest silhouette to the reference; eyes clean),
+char-base-B-pure-white (pure #FFFFFF tone test on B).
+Contact sheet docs/concepts/lupy3-character-candidates-v1.png. Awaiting founder pick/patches
+before locking the persistent reference. No code touched.
