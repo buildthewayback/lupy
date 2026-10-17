@@ -290,6 +290,14 @@ final class RigTests {
         while mm < 90 { sleepRig.step(dt: LupyFrameClock.step); mm += 1 }
         ok(sleepRig.effectiveEyeStyle == .arch, "an empty battery closes his eyes")
 
+        print("\n== composition ==")
+        ok(LupyComposition.badgeReach <= LupyComposition.frameHalf,
+           "the badge fits inside the frame at the shipped size")
+        near(LupyComposition.unit(width: 200, height: 200), 144, 1e-9,
+             "a 200 pt frame draws the body at 144 pt")
+        ok(LupyComposition.unit(width: 24, height: 24) > 16,
+           "the 24 pt menu-bar body is still bigger than half the frame")
+
         print("\n== the words match the face ==")
         ok(LupyCharacterState.working.bubbleText == "Working…", "working reads Working…")
         ok(LupyCharacterState.thinking.bubbleText == "Thinking…", "thinking reads Thinking…")

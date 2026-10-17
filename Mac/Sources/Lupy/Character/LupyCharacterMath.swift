@@ -287,6 +287,26 @@ enum LupyEyes {
     }
 }
 
+// MARK: - Composition
+
+/// How the character is placed in a square-ish frame.
+///
+/// The body is not the whole picture: a state's badge floats to the upper-left,
+/// 0.545 body-widths out, and it must never be clipped by the window edge. That is
+/// why the body is drawn at 72 % of the smaller side, not 94 %. One number, used by
+/// the app and by the self-test, so what the test sees is what ships.
+enum LupyComposition {
+    static let unitFraction: Double = 0.72
+    /// How far left the badge reaches, in body widths (origin 0.545 + bubble 0.048×1.75).
+    static let badgeReach: Double = 0.545 + 0.084
+    /// Half the frame, in body widths. The badge must fit inside this.
+    static var frameHalf: Double { 0.5 / unitFraction }
+
+    static func unit(width: Double, height: Double) -> Double {
+        min(width, height) * unitFraction
+    }
+}
+
 // MARK: - Body path
 
 /// One cubic Bézier segment of the silhouette, in local units (y up).

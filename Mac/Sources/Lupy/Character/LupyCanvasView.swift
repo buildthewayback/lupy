@@ -68,9 +68,9 @@ final class LupyCharacterDriver: ObservableObject {
         lastTick = date
         clock.advance(dt: dt) { rig.step(dt: LupyFrameClock.step) }
 
-        let bounds = LupyBody.bounds()
-        let fit = min(size.width * 0.94 / bounds.w, size.height * 0.94 / bounds.h)
-        unit = max(1, fit)
+        // Room for the badge, not just the body: see LupyComposition.
+        unit = max(1, LupyComposition.unit(width: Double(size.width),
+                                           height: Double(size.height)))
         rig.bodyWidth = unit
 
         let scale = rig.bodyScale

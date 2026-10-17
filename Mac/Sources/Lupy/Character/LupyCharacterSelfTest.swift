@@ -84,8 +84,7 @@ enum LupyCharacterSelfTest {
 
     /// Draw one frame of the shipping renderer into a bitmap and count pixels.
     private static func render(size: CGFloat, state: LupyCharacterState) -> Stats? {
-        let bounds = LupyBody.bounds()
-        let unit = min(Double(size) * 0.94 / bounds.w, Double(size) * 0.94 / bounds.h)
+        let unit = LupyComposition.unit(width: Double(size), height: Double(size))
         var rig = LupyRig()
         rig.requestedState = state
         rig.movePointer(to: 0, 0)
@@ -150,8 +149,9 @@ enum LupyCharacterSelfTest {
         }
         stats.widestInkRow = rowInk
 
-        // The body colour, sampled a little above the centre line where no eye sits.
-        let sx = w / 2, sy = Int(Double(h) * 0.30)
+        // The body colour, sampled well below the eyes but still inside the body.
+        let sx = w / 2
+        let sy = min(h - 1, Int(Double(h) * 0.5 + 0.30 * unit * 4))
         let si = (sy * w + sx) * 4
         stats.bodyRGB = (Double(pixels[si]) / 255, Double(pixels[si + 1]) / 255,
                          Double(pixels[si + 2]) / 255)
