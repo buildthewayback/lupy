@@ -77,7 +77,7 @@ readable at 24 px, which is what the menu bar needs.
 ## 5. Run it on your Mac
 
 1. Open this page and download the newest build:
-   https://github.com/buildthewayback/lupy/actions/runs/39016407562
+   https://github.com/buildthewayback/lupy/actions/runs/39021173966
 2. Unzip it, then drag **Lupy.app** into Applications.
 3. Open Terminal (⌘-Space, type "Terminal"), paste this line, press Return:
 
