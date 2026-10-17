@@ -5,14 +5,14 @@ import SwiftUI
 //
 //  Rendering: a TimelineView at display refresh rate drives a Canvas that draws the
 //  cubic-Bézier silhouette from LupyBody, the projected eye capsules and the one
-//  small badge. No image assets anywhere, so it is crisp at 24 px in the menu bar
+//  status bubble. No image assets anywhere, so it is crisp at 24 px in the menu bar
 //  and at 400 px on the desktop — the same path data.
 //
 //  Motion: LupyCharacterDriver steps the rig on a fixed 60 Hz clock regardless of the
 //  display refresh rate. On a 120 Hz ProMotion panel the character must not animate
 //  twice as fast.
 //
-//  Meaning: colour, eyes and badge all come from `rig.state`, and the state is derived
+//  Meaning: colour, eyes and light all come from `rig.state`, and the state is derived
 //  from what the task asked for *and* what the machine is doing. A memory-critical Mac
 //  makes Lupy dizzy; it cannot make him quiet.
 
@@ -30,7 +30,6 @@ struct LupyFrameSnapshot: Sendable {
     var bodyRed: Double
     var bodyGreen: Double
     var bodyBlue: Double
-    var badge: LupyBadge?
     var tintRed: Double
     var tintGreen: Double
     var tintBlue: Double
@@ -69,7 +68,7 @@ final class LupyCharacterDriver: ObservableObject {
         lastTick = date
         clock.advance(dt: dt) { rig.step(dt: LupyFrameClock.step) }
 
-        // Room for the badge, not just the body: see LupyComposition.
+        // Room for the light, not just the body: see LupyComposition.
         unit = max(1, LupyComposition.unit(width: Double(size.width),
                                            height: Double(size.height)))
         rig.bodyWidth = unit
@@ -91,7 +90,6 @@ final class LupyCharacterDriver: ObservableObject {
             centreX: Double(size.width) * 0.5,
             centreY: Double(size.height) * 0.5,
             bodyRed: body.r, bodyGreen: body.g, bodyBlue: body.b,
-            badge: state.badge,
             tintRed: tint.r, tintGreen: tint.g, tintBlue: tint.b,
             glowStrength: state.glowStrength
         )
@@ -218,90 +216,6 @@ enum LupyRenderer {
         }
     }
 
-    /// The one small overlay a state gets. Upper-LEFT and fully detached: if it touches
-    /// the shoulder it reads as an ear, which is a brand breach (we shipped that once).
-    private static func drawBadge(_ badge: LupyBadge,
-                                  in context: inout GraphicsContext,
-                                  frame: LupyFrameSnapshot) {
-        let unit = frame.unit
-        let originX = frame.centreX - 0.545 * unit * frame.scaleX
-        let originY = frame.centreY - 0.395 * unit * frame.scaleY
-        let s = unit * 0.048
-
-        func point(_ dx: Double, _ dy: Double) -> CGPoint {
-            CGPoint(x: originX + dx * s, y: originY + dy * s)
-        }
-        func circle(_ centre: CGPoint, _ r: Double) -> Path {
-            Path(ellipseIn: CGRect(x: centre.x - r * s, y: centre.y - r * s,
-                                   width: r * s * 2, height: r * s * 2))
-        }
-        func roundedBox(_ a: CGPoint, _ b: CGPoint, _ radius: Double) -> Path {
-            Path(roundedRect: CGRect(x: min(a.x, b.x), y: min(a.y, b.y),
-                                     width: abs(b.x - a.x), height: abs(b.y - a.y)),
-                 cornerRadius: radius * s)
-        }
-
-        let ink = Color(red: 26 / 255, green: 20 / 255, blue: 24 / 255)
-        let bubble = Color.white
-
-        switch badge {
-        case .dots:
-            let pw = 3.4, ph = 1.9
-            context.fill(roundedBox(point(-pw, -ph), point(pw, ph), ph), with: .color(bubble.opacity(0.92)))
-            for i in [-1.0, 0.0, 1.0] {
-                context.fill(circle(point(i * 0.95, 0), 0.30), with: .color(ink))
-            }
-
-        case .exclamation:
-            context.fill(circle(point(0, 0), 1.75), with: .color(bubble.opacity(0.94)))
-            context.fill(roundedBox(point(-0.26, -1.05), point(0.26, 0.28), 0.26), with: .color(ink))
-            context.fill(circle(point(0, 0.92), 0.30), with: .color(ink))
-
-        case .questionMark:
-            context.fill(circle(point(0, 0), 1.75), with: .color(bubble.opacity(0.94)))
-            // A drawn hook, not a font glyph: the badge must look the same everywhere.
-            var hook = Path()
-            var a = -2.55
-            var first = true
-            while a < 0.80 {
-                let p = point(0.62 * LM.cos(a), -0.30 + 0.62 * LM.sin(a))
-                if first { hook.move(to: p); first = false } else { hook.addLine(to: p) }
-                a += 3.35 / 18
-            }
-            context.stroke(hook, with: .color(ink),
-                           style: StrokeStyle(lineWidth: max(1, 0.42 * s), lineCap: .round,
-                                              lineJoin: .round))
-            var stem = Path()
-            stem.move(to: point(0, 0.02))
-            stem.addLine(to: point(0, 0.42))
-            context.stroke(stem, with: .color(ink),
-                           style: StrokeStyle(lineWidth: max(1, 0.42 * s), lineCap: .round))
-            context.fill(circle(point(0, 1.02), 0.22), with: .color(ink))
-
-        case .ring:
-            context.stroke(circle(point(0, 0), 0.75), with: .color(ink),
-                           style: StrokeStyle(lineWidth: max(1, 0.42 * s)))
-
-        case .dot:
-            context.fill(circle(point(0, 0), 0.62), with: .color(ink))
-
-        case .zzz:
-            let pale = Color(red: 236 / 255, green: 240 / 255, blue: 248 / 255)
-            for (i, k) in [(1.0, 1.0), (1.55, 1.55)] {
-                let dx = i * 1.5
-                let dy = -i * 1.15
-                let z = 0.85 * k
-                var path = Path()
-                path.move(to: point(dx - z / 2, dy - z / 2))
-                path.addLine(to: point(dx + z / 2, dy - z / 2))
-                path.addLine(to: point(dx - z / 2, dy + z / 2))
-                path.addLine(to: point(dx + z / 2, dy + z / 2))
-                context.stroke(path, with: .color(pale),
-                               style: StrokeStyle(lineWidth: max(1, 0.30 * s),
-                                                  lineCap: .round, lineJoin: .round))
-            }
-        }
-    }
 }
 
 struct LupyCanvasView: View {

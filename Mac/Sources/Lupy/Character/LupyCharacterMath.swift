@@ -787,7 +787,7 @@ extension LupyEyeStyle {
 /// Named `LupyCharacterState`, not `LupyState`: LupyCore already exports a `LupyState`
 /// (the assistant's whole-app state). Two types with one name in one module silently
 /// broke the Control pages at build time — the same class of bug as `LupyClock`. A state changes the eyes, the hue of the
-/// light around the body, and one small badge. It never changes the body.
+/// light around the body, and the icon in the status bubble. It never changes the body.
 enum LupyCharacterState: Int, CaseIterable {
     case idle, working, thinking, searching, approval, question
     case error, finished, rateLimit, sleeping, dizzy

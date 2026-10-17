@@ -45,29 +45,21 @@ enum LupyCharacterSelfTest {
             if !ok { failures += 1 }
         }
 
-        // Colour is the message: the idle body must be white and a working body must
-        // not be. If this fails, a state is invisible at a glance no matter what the
-        // data says.
-        let idleColour = render(size: 64, state: .idle)?.bodyRGB
-        let workColour = render(size: 64, state: .working)?.bodyRGB
-        if let idleColour, let workColour {
-            let white = idleColour.r > 0.985 && idleColour.g > 0.985 && idleColour.b > 0.985
-            let distance = abs(workColour.r - idleColour.r)
-                + abs(workColour.g - idleColour.g) + abs(workColour.b - idleColour.b)
-            let differs = distance > 0.25
-            lines.append("\(white ? "PASS" : "FAIL") idle body is pure white "
-                + String(format: "(%.2f %.2f %.2f)", idleColour.r, idleColour.g, idleColour.b))
-            lines.append("\(differs ? "PASS" : "FAIL") working body is coloured "
-                + String(format: "(%.2f %.2f %.2f)", workColour.r, workColour.g, workColour.b))
-            if !white || !differs { failures += 1 }
-        } else {
-            lines.append("FAIL could not sample the drawn body colour")
-            failures += 1
+        // The body is #FFFFFF in every state — brand law — and the light is the state's
+        // colour. Both halves are checked, because either one failing means the
+        // character has stopped communicating.
+        for state in [LupyCharacterState.working, .error, .finished, .dizzy] {
+            guard let colour = render(size: 96, state: state)?.bodyRGB else {
+                lines.append("FAIL \(state.name): renderer produced no image")
+                failures += 1
+                continue
+            }
+            let white = colour.r > 0.985 && colour.g > 0.985 && colour.b > 0.985
+            lines.append("\(white ? "PASS" : "FAIL") \(state.name) body is pure white "
+                + String(format: "(%.2f %.2f %.2f)", colour.r, colour.g, colour.b))
+            if !white { failures += 1 }
         }
 
-        // The light must actually be the state's colour: sample the pixels just outside
-        // the silhouette and compare two states. If the glow is missing, the only thing
-        // telling them apart at a glance is gone.
         let errorGlow = render(size: 96, state: .error)?.glowRGB
         let doneGlow = render(size: 96, state: .finished)?.glowRGB
         if let errorGlow, let doneGlow {
@@ -118,8 +110,8 @@ enum LupyCharacterSelfTest {
             centreX: Double(size) * 0.5,
             centreY: Double(size) * 0.5,
             bodyRed: body.r, bodyGreen: body.g, bodyBlue: body.b,
-            badge: state.badge,
-            tintRed: tint.r, tintGreen: tint.g, tintBlue: tint.b
+            tintRed: tint.r, tintGreen: tint.g, tintBlue: tint.b,
+            glowStrength: state.glowStrength
         )
 
         // Render at 4x so a 24 pt character still has enough pixels to inspect.
@@ -167,14 +159,16 @@ enum LupyCharacterSelfTest {
         stats.widestInkRow = rowInk
 
         // The body colour, sampled well below the eyes but still inside the body.
+        // `pointsPerUnit` is the 4x-scaled body width in pixels.
+        let pointsPerUnit = CGFloat(unit) * 4
         let sx = w / 2
-        let sy = min(h - 1, Int(Double(h) * 0.5 + 0.30 * unit * 4))
+        let sy = min(h - 1, Int(Double(h) * 0.5 + 0.30 * Double(pointsPerUnit)))
         let si = (sy * w + sx) * 4
         stats.bodyRGB = (Double(pixels[si]) / 255, Double(pixels[si + 1]) / 255,
                          Double(pixels[si + 2]) / 255)
 
         // Glow: a pixel outside the left edge of the body, half way up.
-        let gx = max(0, Int(Double(w) * 0.5 - unit * 2 * 0.60))
+        let gx = max(0, Int(Double(w) * 0.5 - Double(pointsPerUnit) * 0.60))
         let gy = h / 2
         let gi = (gy * w + gx) * 4
         stats.glowRGB = (Double(pixels[gi]) / 255, Double(pixels[gi + 1]) / 255,
