@@ -151,3 +151,33 @@ char-base-C-pebble (closest silhouette to the reference; eyes clean),
 char-base-B-pure-white (pure #FFFFFF tone test on B).
 Contact sheet docs/concepts/lupy3-character-candidates-v1.png. Awaiting founder pick/patches
 before locking the persistent reference. No code touched.
+
+## 2026-10-17 (LUPY 3, session 3 — vision) — FOUNDER CORRECTION: character is LUPY, this is V3
+Founder ruling (verbatim gist): no more "Coucou"/"Mochi"; the character is **Lupy**; this is
+**LUPY 3**, our own character; Coucou is only the engineering/anchor reference; the 4th
+image (pure-white tall dome) is the valid character; eyes can never be anything but his
+example — tall solid-black capsules, no pupils, no highlights; body colours and overlays are
+free to change but the EYES are the expression; character must be consistent everywhere;
+"there is no chance for character error is branding"; and the eventual animation/interaction
+system must match Coucou's repo quality.
+→ Wrote **docs/LUPY_BRAND_CHARACTER.md** (brand + character law: names, exact geometry,
+eye law, 11 states + 8 emotes, animation rules, production pipeline).
+→ Researched Coucou properly: the character is NOT a sprite sheet — it is a procedural
+SwiftUI/Canvas engine (`CoucouKit/BotEngine.swift`, 1,901 lines): superellipse `mochiPath`,
+`MochiConst.eyeW/eyeH/eyeSp/eyeP`, an `EyeShape` enum (pill/wide/dot/line/flat/happy/closed/
+spiral/heart/star/tired/wink/cup) and a `BotStates` table holding colour+tint+eye+badge+glow
++behaviour per state. LICENSE-ASSETS confirms the artwork/name "Mochi" is copyrighted to
+Louis Raillé — we must ship our own character, which is exactly what LUPY 3 does.
+→ **Measured the founder's reference numerically** (not eyeballed): body h/w = 0.8021, eye
+w = 0.139·bodyW, eye h = 0.2888·bodyW (ratio 2.08), eye centre ±0.1644·bodyW at 0.572 of
+body height from top, blush #F78E86 at ±0.24·bodyW. Found and documented that the source
+sheet's eyes sit 25px right of the body midline (slightly turned render, not design intent)
+→ the production rig is symmetrised from averaged half-widths.
+→ Assets: `docs/concepts/lupy-character-spec-v1.json` (geometry spec),
+`tools/character/render_states.py` (spec-driven state renderer, ImageMagick),
+`docs/concepts/states/` (19 PNGs), `docs/concepts/lupy-character-states.png` (contact sheet),
+`docs/concepts/lupy-master-M2-softapex.png` (locked white master).
+Debug: IM `copy_opacity` REPLACES alpha instead of multiplying (blush painted the whole
+body) → `DstIn` is the correct operator; a grayscale gradient silently drops the alpha
+channel → masks/gradients must be forced to `-type TrueColorAlpha`; `gradient:` is top-down.
+Awaiting founder sign-off on M2 + the 11-state sheet before locking the persistent reference.
