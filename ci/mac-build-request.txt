@@ -1,2 +1,2 @@
-Build requested: 2026-10-16T19:20Z
-Reason: build F11 — LUPY 2 final; control self-test approved-Send observation disambiguated (F10 macOS-26 flake)
+Build requested: 2026-10-17T07:12Z
+Reason: character rig F1 — first build of LupyCanvasView + --character-self-test (compiles the vector rig into the app)
