@@ -149,7 +149,7 @@ def render(state, size, pad=0.20):
     # to nothing — no hard edge, no offset "shadow".
     mask = Image.new("L", img.size, 0)
     ImageDraw.Draw(mask).polygon(body_pts, fill=255)
-    glow = mask.filter(ImageFilter.GaussianBlur(s * 0.075))
+    glow = mask.filter(ImageFilter.GaussianBlur(s * 0.09))
     tint_rgb = tuple(int(c * 255) for c in tint)
     glow_layer = Image.new("RGB", img.size, tint_rgb)
     strength = min(0.92, state.get("amount", 0.3))

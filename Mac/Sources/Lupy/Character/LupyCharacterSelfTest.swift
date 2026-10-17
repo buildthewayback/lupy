@@ -167,8 +167,9 @@ enum LupyCharacterSelfTest {
         stats.bodyRGB = (Double(pixels[si]) / 255, Double(pixels[si + 1]) / 255,
                          Double(pixels[si + 2]) / 255)
 
-        // Glow: a pixel outside the left edge of the body, half way up.
-        let gx = max(0, Int(Double(w) * 0.5 - Double(pointsPerUnit) * 0.60))
+        // Glow: a pixel just outside the left edge of the body, half way up. Close
+        // enough to be inside the light, far enough to be outside the white body.
+        let gx = max(0, Int(Double(w) * 0.5 - Double(pointsPerUnit) * 0.56))
         let gy = h / 2
         let gi = (gy * w + gx) * 4
         stats.glowRGB = (Double(pixels[gi]) / 255, Double(pixels[gi + 1]) / 255,

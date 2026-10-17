@@ -88,7 +88,7 @@ def render_frame(f, size, body_px):
     # light: the state colour, behind the body, blurred into the background
     mask = Image.new("L", img.size, 0)
     ImageDraw.Draw(mask).polygon(body_pts, fill=255)
-    glow = mask.filter(ImageFilter.GaussianBlur(s * SS * 0.075))
+    glow = mask.filter(ImageFilter.GaussianBlur(s * SS * 0.09))
     strength = min(0.92, f["amount"])
     glow = glow.point(lambda v: min(255, int(v * strength)))
     layer = Image.new("RGB", img.size, tuple(int(c * 255) for c in f["tint"]))

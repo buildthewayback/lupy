@@ -325,8 +325,10 @@ final class RigTests {
         print("\n== composition ==")
         ok(LupyComposition.glowReach <= LupyComposition.frameHalf,
            "the strongest glow still fits inside the frame")
-        near(LupyComposition.unit(width: 200, height: 200), 148, 1e-9,
-             "a 200 pt frame draws the body at 148 pt")
+        near(LupyComposition.unit(width: 200, height: 200), 144, 1e-9,
+             "a 200 pt frame draws the body at 144 pt")
+        ok(abs(LupyComposition.glowBlur - 0.09) < 1e-9,
+           "the glow blur is the one number the app and the sheets share")
         ok(LupyComposition.unit(width: 24, height: 24) > 16,
            "the 24 pt menu-bar body is still bigger than half the frame")
 

@@ -296,9 +296,9 @@ enum LupyEyes {
 /// edge. 82 % leaves room for a strong light on every side, and gives the status bubble
 /// above the head somewhere to live.
 enum LupyComposition {
-    static let unitFraction: Double = 0.74
+    static let unitFraction: Double = 0.72
     /// Blur radius of the light, in body widths.
-    static let glowBlur: Double = 0.075
+    static let glowBlur: Double = 0.09
     /// How far the light reaches, in body widths: half a body plus two blur radii.
     static var glowReach: Double { 0.5 + 2 * glowBlur }
     /// Half the frame, in body widths. The light must fit inside this.
