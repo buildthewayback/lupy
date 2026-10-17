@@ -31,7 +31,7 @@ struct LupyFrameSnapshot: Sendable {
 @MainActor
 final class LupyAnimator: ObservableObject {
     private var rig = LupyRig()
-    private var clock = LupyClock()
+    private var clock = LupyFrameClock()
     private var lastTick: Date?
     /// Points per body-width unit for the current view size.
     private(set) var unit: Double = 200
@@ -44,7 +44,7 @@ final class LupyAnimator: ObservableObject {
     func snapshot(at date: Date, size: CGSize) -> LupyFrameSnapshot {
         let dt = lastTick.map { min(date.timeIntervalSince($0), 0.25) } ?? (1.0 / 60.0)
         lastTick = date
-        clock.advance(dt: dt) { rig.step(dt: LupyClock.step) }
+        clock.advance(dt: dt) { rig.step(dt: LupyFrameClock.step) }
 
         let bounds = LupyBody.bounds()
         let fit = min(size.width * 0.94 / bounds.w, size.height * 0.94 / bounds.h)

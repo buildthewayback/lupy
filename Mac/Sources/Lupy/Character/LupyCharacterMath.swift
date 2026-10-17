@@ -477,16 +477,16 @@ struct LupySpring {
 /// One animation step per `step` seconds NO MATTER the display refresh rate. This is
 /// the fix for a real bug in the reference implementation: stepping once per frame
 /// makes the character run at double speed on a 120 Hz ProMotion panel.
-struct LupyClock {
+struct LupyFrameClock {
     static let step: Double = 1.0 / 60.0
     private var accumulator: Double = 0
     private(set) var ticks: Int = 0
 
     mutating func advance(dt: Double, body: () -> Void) {
         accumulator += min(dt, 0.25)      // never spiral after a stall
-        while accumulator >= LupyClock.step {
+        while accumulator >= LupyFrameClock.step {
             body()
-            accumulator -= LupyClock.step
+            accumulator -= LupyFrameClock.step
             ticks += 1
         }
     }
@@ -598,7 +598,7 @@ struct LupyRig {
         pointerActive = false
     }
 
-    /// One fixed step (LupyClock.step).
+    /// One fixed step (LupyFrameClock.step).
     mutating func step(dt: Double) {
         time += dt
         pointerIdleTime += dt

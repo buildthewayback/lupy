@@ -145,7 +145,7 @@ final class RigTests {
         ok(peak <= 1.001, "critically damped spring does not overshoot (peak \(peak))")
 
         print("\n== fixed timestep ==")
-        var clock = LupyClock()
+        var clock = LupyFrameClock()
         var steps = 0
         var i = 0
         while i < 120 {
@@ -154,7 +154,7 @@ final class RigTests {
         }
         ok(steps == 60, "120 Hz display yields 60 fixed steps (got \(steps))")
 
-        var clock2 = LupyClock()
+        var clock2 = LupyFrameClock()
         var steps2 = 0
         i = 0
         while i < 30 {
@@ -181,8 +181,8 @@ final class RigTests {
         var rigSteps = 0
         var t2 = 0.0
         while t2 < 1.0 {
-            rig.step(dt: LupyClock.step)
-            t2 += LupyClock.step
+            rig.step(dt: LupyFrameClock.step)
+            t2 += LupyFrameClock.step
             rigSteps += 1
         }
         ok(rigSteps == 60, "one second of rig time is 60 fixed steps (\(steps))")
@@ -193,18 +193,18 @@ final class RigTests {
         var still = LupyRig()
         still.movePointer(to: 600, 300)
         t2 = 0
-        while t2 < 6.0 { still.step(dt: LupyClock.step); t2 += LupyClock.step }
+        while t2 < 6.0 { still.step(dt: LupyFrameClock.step); t2 += LupyFrameClock.step }
         ok(abs(still.gazeX.value) < 0.9, "long stillness relaxes the gaze (\(still.gazeX.value))")
         // breathing is subtle but present, and never changes the silhouette materially
         var br = LupyRig()
         t2 = 0
         var lo = 9.0, hi = -9.0
         while t2 < 5.0 {
-            br.step(dt: LupyClock.step)
+            br.step(dt: LupyFrameClock.step)
             let s2 = br.bodyScale.y
             if s2 < lo { lo = s2 }
             if s2 > hi { hi = s2 }
-            t2 += LupyClock.step
+            t2 += LupyFrameClock.step
         }
         ok(hi - lo > 0.010, "breathing moves the body (range \(hi - lo))")
         ok(hi - 1 < 0.012, "breathing stays subtle (max +2%)")
