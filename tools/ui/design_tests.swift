@@ -468,12 +468,12 @@ final class DesignTests {
         let safe = LupyBox(x: 60, y: 7, width: 120, height: 18)
         ok(band.containsRounded(safe, corner: r),
            "the kernel's placement — inboard of the corner — survives the clip")
-        // In an open canvas the corner is 22 pt and the padding 20 pt, so content sits a
+        // In an open canvas the corner is 24 pt and the padding 16 pt, so content sits a
         // hair inside the arc. That has to be legal, or every card would fail.
         let openFrame = LupyBox(x: 0, y: 0, width: 640, height: 320)
-        ok(openFrame.containsRounded(LupyBox(x: 20, y: 20, width: 600, height: 280), corner: 22),
-           "a card at the 20 pt padding survives a 22 pt corner")
-        ok(!openFrame.containsRounded(LupyBox(x: 4, y: 4, width: 632, height: 312), corner: 22),
+        ok(openFrame.containsRounded(LupyBox(x: 16, y: 16, width: 600, height: 280), corner: 24),
+           "a card at the 16 pt padding survives a 24 pt corner")
+        ok(!openFrame.containsRounded(LupyBox(x: 4, y: 4, width: 632, height: 312), corner: 24),
            "…and one pushed into the corner does not")
 
         // (b) Two characters in one app: the island drew Coucou's orange while the approved

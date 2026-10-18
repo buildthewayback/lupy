@@ -394,7 +394,7 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
     # ---- the card
     if content and content[2] > 0:
         paste_glass(img, (side + content[0], oy + content[1], content[2], content[3]),
-                    16, doc["glass"]["card"], ss, shadow=False)
+                    m["cardCorner"], doc["glass"]["card"], ss, shadow=False)
         d = ImageDraw.Draw(img)
         # divider under the headline row: structure, in the decoration tone
         dy = (oy + status[1] + status[3]) * ss
@@ -461,25 +461,28 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
                 shortcut, rest = label[:2], label[2:]
             else:
                 shortcut, rest = "", label
+            padH, igap = m["chipPadH"], m["chipIconGap"]
             tw = d.textlength(rest, font=cf) / ss
             sw = 0.0
             if shortcut:
-                sw = d.textlength(shortcut, font=cf) / ss + 6
-            cw = tw + sw + 24
+                sw = 12 + igap          # ⌘ glyph box + gap; glyph drawn inside it
+            cw = tw + sw + 2 * padH
             if cx + cw > content[0] + content[2]:
                 break
             x0, y0 = P(cx, chip_y)
             rect = [x0, y0, x0 + cw * ss, y0 + m["chip"] * ss]
             if i == 0:
-                button(img, rect, ss, "", cf, "primary", accent, ink_text, body_text)
+                button(img, rect, ss, "", cf, "primary", accent, ink_text, body_text,
+                       radius=int(m["chipCorner"] * ss))
             else:
-                button(img, rect, ss, "", cf, "glass", accent, ink_text, body_text)
+                button(img, rect, ss, "", cf, "glass", accent, ink_text, body_text,
+                       radius=int(m["chipCorner"] * ss))
             d = ImageDraw.Draw(img)
-            tx = x0 + 12 * ss
+            tx = x0 + padH * ss
             if shortcut:
-                icon_command(d, tx + 5 * ss, y0 + m["chip"] * ss / 2, 11 * ss,
+                icon_command(d, tx + 6 * ss, y0 + m["chip"] * ss / 2, 11 * ss,
                              ink_text if i == 0 else rgb(col["icon"]))
-                tx += 12 * ss
+                tx += (12 + igap) * ss
                 d.text((tx, y0 + (m["chip"] * ss - cf.size) / 2), rest, font=cf,
                        fill=ink_text if i == 0 else body_text)
                 tx += d.textlength(rest, font=cf)
@@ -503,24 +506,24 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
         fw, fh = composer[2] * ss, composer[3] * ss
         field = (side + composer[0] + 1, oy + composer[1] + 1,
                  composer[2] - 2, composer[3] - 2)
-        paste_glass(img, field, composer[3] * 0.42, doc["glass"]["card"], ss, shadow=False)
+        paste_glass(img, field, m["fieldCorner"], doc["glass"]["card"], ss, shadow=False)
         d = ImageDraw.Draw(img)
         # mic in its own round glass button — the standard affordance
-        mx, my = fx + fh * 0.5, fy + fh * 0.5
-        mr = fh * 0.36
+        mx, my = fx + 8 * ss + fh * 0.3, fy + fh * 0.5
+        mr = fh * 0.3
         d.ellipse([mx - mr, my - mr, mx + mr, my + mr],
                   outline=rgb(col["line"]), width=max(1, int(ss * 0.6)))
         icon_mic(d, mx, my, mr * 1.15, rgb(col["icon"]))
         pf = ImageFont.truetype(REG, max(6, int(doc["type"]["body"] * ss)))
-        d.text((mx + mr + 10 * ss, fy + (fh - pf.size) / 2), "Ask LUPY anything…",
+        d.text((mx + mr + 12 * ss, fy + (fh - pf.size) / 2), "Ask LUPY anything…",
                font=pf, fill=body_text)
         # send: primary button at the right end
-        sw = 34 * ss
-        button(img, [fx + fw - sw - fh * 0.14, fy + fh * 0.14,
-                     fx + fw - fh * 0.14, fy + fh * 0.86], ss, "", pf, "primary",
-               col["accent"], ink_text, body_text, radius=int(fh * 0.34))
+        sw = 32 * ss
+        button(img, [fx + fw - 8 * ss - sw, fy + 4 * ss,
+                     fx + fw - 8 * ss, fy + fh - 4 * ss], ss, "", pf, "primary",
+               col["accent"], ink_text, body_text, radius=int(sw / 2))
         d = ImageDraw.Draw(img)
-        icon_return(d, fx + fw - fh * 0.14 - sw / 2, fy + fh * 0.5, fh * 0.42, ink_text)
+        icon_return(d, fx + fw - 8 * ss - sw / 2, fy + fh * 0.5, fh * 0.4, ink_text)
 
     # ---- LUPY, last: his light sits over the glass he stands on
     if avatar and avatar[2] > 0:

@@ -326,7 +326,7 @@ struct LupyGlass: Equatable {
         let base = panelBase
         let legal = minimumFillAlpha(base: base, text: strictestText)
         var g = LupyGlass(base: base,
-                          fillAlpha: LM.clamp(legal + 0.04, 0, 1),
+                          fillAlpha: LM.clamp(legal + 0.10, 0, 1),
                           blur: 28,
                           saturation: 1.55,
                           hairline: LupyColour(1, 1, 1, 0.16),
@@ -347,7 +347,7 @@ struct LupyGlass: Equatable {
         let base = panelBase.mixed(with: LupyPalette.dusk, lift)
         let legal = minimumFillAlpha(base: base, text: strictestText)
         var g = LupyGlass(base: base,
-                          fillAlpha: LM.clamp(legal + 0.06, 0, 1),
+                          fillAlpha: LM.clamp(legal + 0.12, 0, 1),
                           blur: 18,
                           saturation: 1.35,
                           hairline: LupyColour(1, 1, 1, 0.12),
@@ -371,13 +371,13 @@ struct LupyGlass: Equatable {
 enum LupyType {
     /// The status sentence in an open canvas. The largest text on the island, because it
     /// is the one thing that must be read at a glance.
-    static let headline: Double = 15
+    static let headline: Double = 16   // a grid multiple; bold, not bigger
     /// A whisper beside him in the compact band.
     static let peek: Double     = 13
     /// Card body.
     static let body: Double     = 13
     /// Quick-reply chips (⌘1/⌘2/⌘3).
-    static let chip: Double     = 12
+    static let chip: Double     = 13   // body size, medium weight: one family, two weights
     /// Provenance: "researched 4 sources · 2 agents · $0.11 · 3m".
     static let provenance: Double = 11
 
@@ -579,10 +579,10 @@ enum LupyIslandLayout {
     /// 16 pt at the edge: the standard floating-panel inset, and proven by
     /// `containsRounded` to clear a 22 pt corner with room to spare.
     static let padEdge: Double  = 16
-    /// 10 pt between rows. A 13 pt line wants a 22 pt row and a breath, not a gap as big
-    /// as the line itself — the first cut of this law used 14 and the cards looked empty,
-    /// which is exactly what the founder's eye caught.
-    static let padInner: Double = 10
+    /// 12 pt inside a card: the documented 4 pt half-step of the 8 pt grid (8 felt cramped
+    /// against a 16 pt edge pad, 16 made the card's own padding equal the panel's and
+    /// killed the proximity hierarchy edge > card > row).
+    static let padInner: Double = 12
 
     /// LUPY's column, in points of *frame*.
     ///
@@ -597,22 +597,35 @@ enum LupyIslandLayout {
     static let avatarRest: Double     = 20
     /// In the compact band, a little bigger.
     static let avatarWhisper: Double  = 26
-    static let avatarGap: Double      = 14
+    static let avatarGap: Double      = 12   // half-step: his column to the card
 
     /// The composer. Permanent whenever the canvas is open — the only control that is.
     /// 40 pt is a standard macOS field height; 44 was a phone number.
-    static let composerHeight: Double = 40
-    static let composerGap: Double    = 10
+    static let composerHeight: Double = 40   // 5 × 8
+    static let composerGap: Double    = 12   // half-step between card and composer
 
     /// Row metrics.
     /// The headline row is exactly as tall as LUPY, so he and the status sentence share a
     /// centre line and he reads as the one saying it. Its right half carries the card's
     /// meta (step count, queue, cost) so the row is never dead space.
     static let headlineRow: Double = avatarExpanded
-    /// A 13 pt line in a 22 pt row is how every well-set Mac list reads.
-    static let rowHeight: Double   = 22
-    /// A chip is a button you press with a pointer, not a row you read.
-    static let chipHeight: Double  = 26
+    /// A 13 pt line in a 20 pt line box (154 % — inside the 140–160 % body range) plus a
+    /// 4 pt related-row gap: pitch 24, a full grid step. Lists read as lists.
+    static let rowHeight: Double   = 24
+    /// A chip is a button you press with a pointer, not a row you read. 28 pt is the
+    /// modern macOS bordered control at .regular — on the 4 pt sub-grid, between the
+    /// small (24) and large (32) sizes, and 8 pt taller than the row it answers.
+    static let chipHeight: Double  = 28
+
+    // MARK: the control kit, on the same scale
+    /// Button horizontal padding: space-2, the default inside cards and buttons.
+    static let chipPadH: Double     = 16
+    /// Icon to label inside a button: the standard icon-text gap.
+    static let chipIconGap: Double  = 8
+    /// Radii come from one family — 8, 16, 24, capsule — never from a thumb:
+    static let chipCorner: Double   = 8    // a macOS button
+    static let cardCorner: Double   = 16   // a card, in the modern 8–16 range
+    static let fieldCorner: Double  = 8    // a macOS text field
 
     /// The narrowest card that can still hold a headline and a source line.
     static let headlineMin: Double = 240
@@ -645,7 +658,7 @@ enum LupyIslandLayout {
     static func corner(width: Double, height: Double) -> Double {
         let small = width < height ? width : height
         if small <= notchHeight + 2 { return small / 2 }     // a band is a capsule
-        return LM.clamp(22, 8, small / 2)
+        return LM.clamp(24, 8, small / 2)   // top of the 8/16/24 radius family
     }
 
     /// The whole answer. One call, no view code involved.
