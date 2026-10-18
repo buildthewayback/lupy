@@ -29,6 +29,9 @@ struct Sheet {
     let chips: [String]
     /// The provenance line, when the card earns one.
     let provenance: String
+    /// The card's meta, right-aligned in the headline row so the row is never dead
+    /// space: step counts, queue depth, cost — the facts that answer "how far along?".
+    let meta: String
 }
 
 enum LayoutEmitter {
@@ -70,6 +73,7 @@ enum LayoutEmitter {
         for l in s.lines { print("TEXT LINE \(l)") }
         for ch in s.chips { print("TEXT CHIP \(ch)") }
         if !s.provenance.isEmpty { print("TEXT PROVENANCE \(s.provenance)") }
+        if !s.meta.isEmpty { print("TEXT META \(s.meta)") }
         // Every violation, so the picture cannot be drawn from an illegal canvas without
         // the emitter saying so out loud.
         let v = LupyIslandLayout.violations(of: c, need: s.need)
@@ -95,10 +99,10 @@ enum LayoutEmitter {
     /// The surfaces worth proving, in the order the founder would meet them.
     static let sheets: [Sheet] = [
         Sheet(id: "rest", need: .rest, state: .idle,
-              headline: "", lines: [], chips: [], provenance: ""),
+              headline: "", lines: [], chips: [], provenance: "", meta: ""),
 
         Sheet(id: "whisper", need: .whisper(textWidth: 138), state: .working,
-              headline: "Reading 12 files…", lines: [], chips: [], provenance: ""),
+              headline: "Reading 12 files…", lines: [], chips: [], provenance: "", meta: ""),
 
         Sheet(id: "answer", need: .answer(lines: 3, chips: 2, provenance: true), state: .finished,
               headline: "Done — 3 ways to cut the build time",
@@ -106,7 +110,8 @@ enum LayoutEmitter {
                       "Move the asset catalogue to a prebuilt step so it is not re-encoded.",
                       "Skip the universal slice — this Mac is arm64 only."],
               chips: ["1  Apply all three", "2  Show the diff"],
-              provenance: "researched 4 sources · 2 agents · $0.11 · 3m 12s"),
+              provenance: "researched 4 sources · 2 agents · $0.11 · 3m 12s",
+              meta: "finished 3m ago"),
 
         Sheet(id: "decision", need: .decision(options: 2, hasEvidence: true, queue: 1), state: .approval,
               headline: "Needs your OK",
@@ -114,7 +119,7 @@ enum LayoutEmitter {
                       "  rm -rf build/ && xcodegen generate",
                       "in ~/lupy  ·  session a91f"],
               chips: ["⌘Y  Allow once", "⌘N  Deny"],
-              provenance: ""),
+              provenance: "", meta: "1 of 1 waiting"),
 
         Sheet(id: "task", need: .task(steps: 4, hasPlan: true, hasPreview: true), state: .working,
               headline: "Rebuilding the island UI",
@@ -123,13 +128,13 @@ enum LayoutEmitter {
                       "3  Canvas growth law — running",
                       "4  Wire the views — waiting"],
               chips: [],
-              provenance: "step 3 of 4 · 1m 48s · Lupy's Computer"),
+              provenance: "step 3 of 4 · 1m 48s · Lupy's Computer", meta: "step 3 of 4"),
 
         Sheet(id: "question", need: .decision(options: 3, hasEvidence: false, queue: 1), state: .question,
               headline: "Which branch should I push to?",
               lines: ["I can see two remotes and I will not guess."],
               chips: ["1  arena/47c739ab", "2  main", "3  Neither — ask me"],
-              provenance: ""),
+              provenance: "", meta: "3 options"),
 
         Sheet(id: "chat", need: .chat(turns: 3, streaming: true), state: .thinking,
               headline: "Thinking…",
@@ -140,21 +145,21 @@ enum LayoutEmitter {
                       "Lupy: it can see the title, never the content, unless",
                       "        you turn computer control on yourself."],
               chips: [],
-              provenance: ""),
+              provenance: "", meta: "streaming"),
 
         Sheet(id: "error", need: .answer(lines: 2, chips: 2, provenance: true), state: .error,
               headline: "The build failed",
               lines: ["Swift 6: cannot access 'ticker' from a nonisolated deinit.",
                       "IslandCharacterView.swift:59"],
               chips: ["1  Fix it", "2  Show me the log"],
-              provenance: "run 39129202902 · 42s"),
+              provenance: "run 39129202902 · 42s", meta: "failed 42s in"),
 
         Sheet(id: "transcript", need: .transcript(lines: 2), state: .searching,
               headline: "Listening…",
               lines: ["“…and put the notes from this call into the",
                       "     second brain before I forget.”"],
               chips: [],
-              provenance: ""),
+              provenance: "", meta: "mic on · 0:14"),
     ]
 
     static func main() {

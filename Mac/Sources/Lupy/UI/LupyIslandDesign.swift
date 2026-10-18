@@ -576,8 +576,13 @@ enum LupyIslandLayout {
     /// Padding, on an 8 pt grid. Growth is stepped, so the island never jitters by a point
     /// and a half between two similar needs and every size is a number a designer can read.
     static let grid: Double     = 8
-    static let padEdge: Double  = 20
-    static let padInner: Double = 14
+    /// 16 pt at the edge: the standard floating-panel inset, and proven by
+    /// `containsRounded` to clear a 22 pt corner with room to spare.
+    static let padEdge: Double  = 16
+    /// 10 pt between rows. A 13 pt line wants a 22 pt row and a breath, not a gap as big
+    /// as the line itself — the first cut of this law used 14 and the cards looked empty,
+    /// which is exactly what the founder's eye caught.
+    static let padInner: Double = 10
 
     /// LUPY's column, in points of *frame*.
     ///
@@ -595,15 +600,19 @@ enum LupyIslandLayout {
     static let avatarGap: Double      = 14
 
     /// The composer. Permanent whenever the canvas is open — the only control that is.
-    static let composerHeight: Double = 44
-    static let composerGap: Double    = 12
+    /// 40 pt is a standard macOS field height; 44 was a phone number.
+    static let composerHeight: Double = 40
+    static let composerGap: Double    = 10
 
     /// Row metrics.
     /// The headline row is exactly as tall as LUPY, so he and the status sentence share a
-    /// centre line and he reads as the one saying it.
+    /// centre line and he reads as the one saying it. Its right half carries the card's
+    /// meta (step count, queue, cost) so the row is never dead space.
     static let headlineRow: Double = avatarExpanded
-    static let rowHeight: Double   = 26
-    static let chipHeight: Double  = 28
+    /// A 13 pt line in a 22 pt row is how every well-set Mac list reads.
+    static let rowHeight: Double   = 22
+    /// A chip is a button you press with a pointer, not a row you read.
+    static let chipHeight: Double  = 26
 
     /// The narrowest card that can still hold a headline and a source line.
     static let headlineMin: Double = 240

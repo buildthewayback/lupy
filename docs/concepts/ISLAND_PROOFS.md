@@ -1,3 +1,5 @@
+> **Start here instead:** [ISLAND_WALKTHROUGH.md](ISLAND_WALKTHROUGH.md) — three pictures, three questions.
+
 # LUPY's island — three pictures to look at before you choose
 
 Boss, this page is the whole island design in three pictures. Everything in them is
