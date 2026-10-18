@@ -65,9 +65,9 @@ extension LupyType {
     static func font(_ size: Double, weight: Font.Weight = .regular, mono: Bool = false) -> Font {
         .system(size: size, weight: weight, design: mono ? .monospaced : .default)
     }
-    static var headlineFont: Font { font(headline, weight: .semibold) }
+    static var headlineFont: Font { font(headline, weight: .bold) }   // HIG Headline
     static var bodyFont: Font { font(body) }
-    static var chipFont: Font { font(chip, weight: .semibold) }
+    static var chipFont: Font { font(chip, weight: .medium) }
     static var provenanceFont: Font { font(provenance) }
     static var whisperFont: Font { font(peek, weight: .semibold) }
 }
@@ -80,11 +80,16 @@ struct LupyComposer: View {
     @State private var text: String = ""
 
     var body: some View {
-        HStack(spacing: 10) {
+        let fieldH = LupyIslandLayout.composerHeight - 2
+        let circle: CGFloat = 24          // one control size across the island
+        HStack(spacing: LupyIslandLayout.chipIconGap + 4) {
             Image(systemName: "mic.fill")
-                .font(.system(size: 13, weight: .medium))
+                .font(.system(size: 11, weight: .medium))
                 // Icons take the iconography tone; words never do.
                 .foregroundStyle(LupyPalette.iconography.colour)
+                .frame(width: circle, height: circle)
+                .overlay(Circle().strokeBorder(LupyPalette.decoration.colour
+                    .opacity(0.6), lineWidth: 1))
             TextField("Ask LUPY anything…", text: $text)
                 .textFieldStyle(.plain)
                 .font(LupyType.bodyFont)
@@ -100,19 +105,16 @@ struct LupyComposer: View {
                 text = ""
             } label: {
                 Image(systemName: "return.left")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(Color(red: 0.02, green: 0.04, blue: 0.07))
-                    .frame(width: 30, height: 26)
-                    .background(LupyPalette.accent.colour,
-                                in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(LupyPalette.ink.colour)
+                    .frame(width: circle, height: circle)
+                    .background(LupyPalette.accent.colour, in: Circle())
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 14)
-        .frame(height: LupyIslandLayout.composerHeight - 8)
-        .background(
-            LupyGlass.card().surface(corner: (LupyIslandLayout.composerHeight - 8) * 0.44)
-        )
+        .padding(.horizontal, 8)
+        .frame(height: fieldH)
+        .background(LupyGlass.card().surface(corner: LupyIslandLayout.fieldCorner))
     }
 }
 
@@ -133,15 +135,15 @@ struct LupyCanvasChrome<Content: View>: View {
         ZStack(alignment: .topLeading) {
             // The card's glass, behind whatever the view brings.
             if !c.content.isEmpty {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RoundedRectangle(cornerRadius: LupyIslandLayout.cardCorner, style: .continuous)
                     .fill(.ultraThinMaterial)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        RoundedRectangle(cornerRadius: LupyIslandLayout.cardCorner, style: .continuous)
                             .fill(LupyGlass.card().base.colour
                                 .opacity(LupyGlass.card().fillAlpha))
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        RoundedRectangle(cornerRadius: LupyIslandLayout.cardCorner, style: .continuous)
                             .strokeBorder(LupyGlass.card().hairline.colour, lineWidth: 1)
                     )
                     .frame(width: c.content.width, height: c.content.height)
@@ -212,6 +214,9 @@ struct LupyStatusLine: View {
                     .padding(.leading, 2)
                 }
             }
+            // The sentence is a string on the card: it keeps the card's padding.
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, LupyIslandLayout.padInner)
         }
     }
 }
