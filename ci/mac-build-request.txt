@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T16:45Z
-Reason: the island now draws LUPY instead of Coucou's character
+Build requested: 2026-10-18T13:05Z
+Reason: island draws LUPY; Swift 6 deinit fix
