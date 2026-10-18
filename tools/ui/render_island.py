@@ -34,12 +34,18 @@ from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont  # noqa: 
 from render_rig_states import parse as parse_rig                        # noqa: E402
 from scene import draw_character                                        # noqa: E402
 
-REG = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+# Inter: the free Google-metric stand-in for SF Pro (same proportions, open licence).
+# The shipping app uses the native system font; proofs use Inter so the pictures tell
+# the truth about size and weight. Weights map to HIG roles, not to moods.
+_F = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")
+REG = os.path.join(_F, "Inter-Regular.ttf")     # body, meta
+MED = os.path.join(_F, "Inter-Medium.ttf")       # chip labels, whisper line
+SEMI = os.path.join(_F, "Inter-SemiBold.ttf")    # emphasized body
+BOLD = os.path.join(_F, "Inter-Bold.ttf")        # HIG "Headline": 13 Bold
 MONO = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 
 SS = 3                      # supersample: the founder called an early render "pixelated"
-MENUBAR = 26                # pt, the macOS menu bar the island hangs from
+MENUBAR = 24   # HIG: the menu bar is 24 pt on every non-notch Mac                # pt, the macOS menu bar the island hangs from
 LAYOUT = "/tmp/island_layout.txt"
 RIG = "/tmp/states.txt"
 OUT = os.path.join(HERE, "..", "..", "docs", "concepts")
@@ -405,10 +411,11 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
     # ---- headline row: the sentence left, the card's meta right
     if status and status[2] > 0 and canvas["surface"] in ("headline", "whisper"):
         size = doc["type"]["headline"] if canvas["surface"] == "headline" else doc["type"]["peek"]
-        f = ImageFont.truetype(BOLD, max(6, int(size * ss)))
-        tx, ty = P(status[0], status[1])
+        wf = BOLD if canvas["surface"] == "headline" else SEMI
+        f = ImageFont.truetype(wf, max(6, int(size * ss)))
+        tx, ty = P(status[0] + m["inner"], status[1])
         share = 0.62 if canvas["meta"] else 0.98
-        text = fit(canvas["headline"], f, status[2] * ss * share, d)
+        text = fit(canvas["headline"], f, (status[2] - 2 * m["inner"]) * ss * share, d)
         # his light, faint, behind the sentence — the state's own colour only
         glow = canvas.get("glow")
         if glow and canvas["surface"] == "headline":
@@ -422,7 +429,7 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
         if canvas["meta"]:
             mf = ImageFont.truetype(REG, max(6, int(doc["type"]["provenance"] * ss)))
             mtw = d.textlength(canvas["meta"], font=mf)
-            d.text((P(status[0] + status[2], 0)[0] - mtw - ss,
+            d.text((P(status[0] + status[2] - m["inner"], 0)[0] - mtw,
                     ty + (status[3] * ss - mf.size) / 2), canvas["meta"], font=mf,
                    fill=body_text)
 
@@ -440,20 +447,20 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
             else:
                 f = mono_f if line.startswith("  ") else body_f
                 fill = body_text
-            tx, ty = P(content[0], y)
-            d.text((tx + ss, ty + (m["row"] * ss - f.size) / 2),
-                   fit(line, f, content[2] * ss - 4 * ss, d), font=f, fill=fill)
+            tx, ty = P(content[0] + m["inner"], y)
+            d.text((tx, ty + (m["row"] * ss - f.size) / 2),
+                   fit(line, f, (content[2] - 2 * m["inner"]) * ss, d), font=f, fill=fill)
             y += m["row"]
             if i < len(rows) - 1:
                 y += m["inner"]
-        chip_y = content[1] + content[3] - m["chip"]
+        chip_y = content[1] + content[3] - m["inner"] - m["chip"]
     else:
         chip_y = None
 
     # ---- chips: primary = accent with ink text, the rest glass
     if canvas["chips"] and content and chip_y is not None:
-        cf = ImageFont.truetype(BOLD, max(6, int(doc["type"]["chip"] * ss)))
-        cx = content[0]
+        cf = ImageFont.truetype(MED, max(6, int(doc["type"]["chip"] * ss)))
+        cx = content[0] + m["inner"]
         accent = col["accent"]
         for i, ch in enumerate(canvas["chips"]):
             label = ch
@@ -467,7 +474,7 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
             if shortcut:
                 sw = 12 + igap          # ⌘ glyph box + gap; glyph drawn inside it
             cw = tw + sw + 2 * padH
-            if cx + cw > content[0] + content[2]:
+            if cx + cw > content[0] + content[2] - m["inner"]:
                 break
             x0, y0 = P(cx, chip_y)
             rect = [x0, y0, x0 + cw * ss, y0 + m["chip"] * ss]
@@ -509,8 +516,8 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
         paste_glass(img, field, m["fieldCorner"], doc["glass"]["card"], ss, shadow=False)
         d = ImageDraw.Draw(img)
         # mic in its own round glass button — the standard affordance
-        mx, my = fx + 8 * ss + fh * 0.3, fy + fh * 0.5
-        mr = fh * 0.3
+        mx, my = fx + 8 * ss + 12 * ss, fy + fh * 0.5
+        mr = 12 * ss
         d.ellipse([mx - mr, my - mr, mx + mr, my + mr],
                   outline=rgb(col["line"]), width=max(1, int(ss * 0.6)))
         icon_mic(d, mx, my, mr * 1.15, rgb(col["icon"]))
@@ -518,12 +525,12 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
         d.text((mx + mr + 12 * ss, fy + (fh - pf.size) / 2), "Ask LUPY anything…",
                font=pf, fill=body_text)
         # send: primary button at the right end
-        sw = 32 * ss
-        button(img, [fx + fw - 8 * ss - sw, fy + 4 * ss,
-                     fx + fw - 8 * ss, fy + fh - 4 * ss], ss, "", pf, "primary",
+        sw = 24 * ss
+        button(img, [fx + fw - 8 * ss - sw, fy + 8 * ss,
+                     fx + fw - 8 * ss, fy + fh - 8 * ss], ss, "", pf, "primary",
                col["accent"], ink_text, body_text, radius=int(sw / 2))
         d = ImageDraw.Draw(img)
-        icon_return(d, fx + fw - 8 * ss - sw / 2, fy + fh * 0.5, fh * 0.4, ink_text)
+        icon_return(d, fx + fw - 8 * ss - sw / 2, fy + fh * 0.5, 12 * ss, ink_text)
 
     # ---- LUPY, last: his light sits over the glass he stands on
     if avatar and avatar[2] > 0:

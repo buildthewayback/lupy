@@ -371,7 +371,10 @@ struct LupyGlass: Equatable {
 enum LupyType {
     /// The status sentence in an open canvas. The largest text on the island, because it
     /// is the one thing that must be read at a glance.
-    static let headline: Double = 16   // a grid multiple; bold, not bigger
+    /// macOS HIG text style "Headline": 13 pt, Bold, 16 pt line height. The island is a
+    /// compact surface; Apple's own alerts and cards title at 13 Bold, and the founder's
+    /// eye caught 16 as "too big" because it was — a Title-3 number on a Headline job.
+    static let headline: Double = 13
     /// A whisper beside him in the compact band.
     static let peek: Double     = 13
     /// Card body.
@@ -609,21 +612,23 @@ enum LupyIslandLayout {
     /// centre line and he reads as the one saying it. Its right half carries the card's
     /// meta (step count, queue, cost) so the row is never dead space.
     static let headlineRow: Double = avatarExpanded
-    /// A 13 pt line in a 20 pt line box (154 % — inside the 140–160 % body range) plus a
-    /// 4 pt related-row gap: pitch 24, a full grid step. Lists read as lists.
+    /// HIG body line height is 16 pt for 13 pt text; plus an 8 pt related-row gap the
+    /// pitch is 24 — a full grid step, and how every well-set Mac list reads.
     static let rowHeight: Double   = 24
-    /// A chip is a button you press with a pointer, not a row you read. 28 pt is the
-    /// modern macOS bordered control at .regular — on the 4 pt sub-grid, between the
-    /// small (24) and large (32) sizes, and 8 pt taller than the row it answers.
-    static let chipHeight: Double  = 28
+    /// A chip is a button you press with a pointer. macOS push buttons run ~22 pt at
+    /// .regular and ~28 at .large; 24 is the table-row / sidebar-medium height and the
+    /// grid step between them — the size the founder's crops called for after 28 read
+    /// chunky next to 13 pt labels.
+    static let chipHeight: Double  = 24
 
     // MARK: the control kit, on the same scale
-    /// Button horizontal padding: space-2, the default inside cards and buttons.
-    static let chipPadH: Double     = 16
+    /// Button horizontal padding at the 12 half-step: a 24 pt control wants 12, where
+    /// the taller 28 pt cut wanted 16.
+    static let chipPadH: Double     = 12
     /// Icon to label inside a button: the standard icon-text gap.
     static let chipIconGap: Double  = 8
     /// Radii come from one family — 8, 16, 24, capsule — never from a thumb:
-    static let chipCorner: Double   = 8    // a macOS button
+    static let chipCorner: Double   = 7    // a macOS button (Big Sur corner ≈ 6–7)
     static let cardCorner: Double   = 16   // a card, in the modern 8–16 range
     static let fieldCorner: Double  = 8    // a macOS text field
 
@@ -719,7 +724,11 @@ enum LupyIslandLayout {
             ? rowHeight
             : stepped(Double(rows) * rowHeight + Double(rows - 1) * padInner)
         let chips = chipRow(need)
-        let body = headlineRow + padInner + cardHeight + (chips > 0 ? padInner + chips : 0)
+        // The trailing padInner is the card's own bottom padding: without it the last
+        // row — or the chip row — sat flush on the card's hairline, which is exactly
+        // the "no padding" the founder's crops circled.
+        let body = headlineRow + padInner + cardHeight
+                 + (chips > 0 ? padInner + chips : 0) + padInner
 
         var h = padEdge + body + composerGap + composerHeight + padEdge
         h = fit(h, minHeight, maxHeight)

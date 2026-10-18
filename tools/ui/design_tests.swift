@@ -277,8 +277,13 @@ final class DesignTests {
         for t in LupyType.all {
             atLeast(t, LupyType.floor, "text size \(t) pt clears the floor")
         }
-        ok(LupyType.headline > LupyType.body, "the status sentence is the largest text")
-        ok(LupyType.headline >= 15, "the headline is at least 15 pt (research: 15–16 pt body)")
+        // Apple's macOS type table settles this: the "Headline" style is 13 pt Bold —
+        // the SAME size as Body, hierarchy carried by weight, not by points. Alert
+        // messages, card titles and sheet headings all set at 13 Bold. The founder's
+        // crop said our 16 pt looked "too big": it was a Title-3 number on a Headline
+        // job. So: never smaller than body, and exactly the HIG Headline size.
+        ok(LupyType.headline >= LupyType.body, "the status sentence is never smaller than body text")
+        near(LupyType.headline, 13, 0.01, "the headline is the HIG Headline style: 13 pt, Bold carries it")
         // The headline must clear AA at its own size; small text needs more contrast, so
         // this is the size that carries the strictest requirement.
         let g = LupyGlass.panel
