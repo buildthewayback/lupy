@@ -351,11 +351,20 @@ def icon_command(d, cx, cy, s, colour):
 
 # --------------------------------------------------------------------- the scene
 
-def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26):
-    """One island, hanging from a menu bar over a desktop. Returns RGB at pp*SS px/pt."""
+def scene_width_pt(canvas):
+    """The screen width, in points, this canvas wants when drawn alone."""
+    return int(canvas["w"]) + 52
+
+
+def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
+    """One island, hanging from a menu bar over a desktop. Returns RGB at pp*SS px/pt.
+    min_w (points) lets a sheet share one screen width, so every row's menu bar
+    runs edge to edge instead of being chopped to the island's own width."""
     ss = SS * pp
     w, h, corner = canvas["w"], canvas["h"], canvas["corner"]
     side = 26
+    if min_w and w + 2 * side < min_w:
+        side += (min_w - (w + 2 * side)) // 2
     top = MENUBAR if context else 0
     W = int((w + 2 * side) * ss)
     H = int((top + h + below) * ss)
@@ -535,10 +544,12 @@ def fit(text, font, avail, d):
 
 # --------------------------------------------------------------------- sheets
 
-def stack(doc, rig, ids, kind, pp, title=None, note=None, gap=18):
-    tiles = [draw_scene(doc, c, rig, kind, pp) for c in
-             sorted([c for c in doc["canvases"] if c["id"] in ids],
-                    key=lambda c: ids.index(c["id"]))]
+def stack(doc, rig, ids, kind, pp, title=None, note=None, gap=18, min_w=None):
+    cs = sorted([c for c in doc["canvases"] if c["id"] in ids],
+                key=lambda c: ids.index(c["id"]))
+    if min_w is None:
+        min_w = max(scene_width_pt(c) for c in cs)
+    tiles = [draw_scene(doc, c, rig, kind, pp, min_w=min_w) for c in cs]
     lab = int(26 * pp)
     W = max(t.size[0] for t in tiles)
     head = int(56 * pp) if title else 0
@@ -568,7 +579,10 @@ def stack(doc, rig, ids, kind, pp, title=None, note=None, gap=18):
 
 def columns(doc, rig, groups, pp, title=None, note=None):
     """Side-by-side columns of stacked tiles — used for the light/dark pair."""
-    cols = [stack(doc, rig, ids, k, pp, title=cap) for (ids, k, cap) in groups]
+    allc = [c for (ids, k, cap) in groups for c in doc["canvases"] if c["id"] in ids]
+    min_w = max(scene_width_pt(c) for c in allc)
+    cols = [stack(doc, rig, ids, k, pp, title=cap, min_w=min_w)
+            for (ids, k, cap) in groups]
     gap = int(24 * pp)
     W = sum(c.size[0] for c in cols) + gap * (len(cols) - 1)
     H = max(c.size[1] for c in cols)
@@ -582,10 +596,10 @@ def columns(doc, rig, groups, pp, title=None, note=None):
 
 def grid(doc, rig, pp, cols=2, ids=None, title=None, note=None):
     tiles = []
-    for c in doc["canvases"]:
-        if ids and c["id"] not in ids:
-            continue
-        tiles.append((draw_scene(doc, c, rig, "dark", pp), c))
+    cs = [c for c in doc["canvases"] if not ids or c["id"] in ids]
+    min_w = max(scene_width_pt(c) for c in cs) if cs else None
+    for c in cs:
+        tiles.append((draw_scene(doc, c, rig, "dark", pp, min_w=min_w), c))
     lab = int(24 * pp)
     colw, rowh = {}, {}
     for i, (t, _) in enumerate(tiles):
