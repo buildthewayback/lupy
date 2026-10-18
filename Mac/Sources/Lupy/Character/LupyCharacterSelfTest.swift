@@ -76,6 +76,23 @@ enum LupyCharacterSelfTest {
             failures += 1
         }
 
+        // The island speaks BotState and the rig speaks LupyCharacterState. If the two
+        // ever drift, the island shows one state's face under another state's colour —
+        // this is the only harness that can see both enums, so it is the only place the
+        // bridge can be tested.
+        var mapped = 0
+        for bot in BotState.allCases {
+            let translated = LupyStateMapping.state(from: bot)
+            let expected = bot.rawValue == "ratelimit" ? "rate_limit" : bot.rawValue
+            if translated.name == expected { mapped += 1 }
+            else {
+                lines.append("FAIL \(bot.rawValue) reaches the rig as *\(translated.name)*, want \(expected)")
+            }
+        }
+        lines.append("\(mapped == BotState.allCases.count ? "PASS" : "FAIL") "
+            + "all \(BotState.allCases.count) island states reach the rig as themselves (\(mapped))")
+        if mapped != BotState.allCases.count { failures += 1 }
+
         lines.append(failures == 0 ? "CHARACTER SELF-TEST PASSED"
                                    : "CHARACTER SELF-TEST FAILED (\(failures))")
         let text = lines.joined(separator: "\n") + "\n"

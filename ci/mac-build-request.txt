@@ -1,2 +1,2 @@
-Build requested: 2026-10-17T15:55Z
-Reason: self-test run budget; blush already removed
+Build requested: 2026-10-17T16:45Z
+Reason: the island now draws LUPY instead of Coucou's character
