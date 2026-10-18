@@ -432,11 +432,14 @@ def duo(doc, rig, ids, pp, pad=26, title=None, note=None):
     return out
 
 
-def grid(doc, rig, pp, cols=3, pad=22):
-    """Every surface the island has, at once. Columns are sized per column so a wide
-    canvas does not leave a dead gutter next to a narrow one."""
+def grid(doc, rig, pp, cols=3, pad=22, ids=None):
+    """The surfaces, at once. Columns are sized per column so a wide canvas does not
+    leave a dead gutter next to a narrow one. `ids` picks a subset — used for the
+    founder's choice sheet."""
     tiles = []
     for c in doc["canvases"]:
+        if ids and c["id"] not in ids:
+            continue
         tiles.append((draw_island(doc, c, rig, "dark", pp, margin=pad * 0.4), c))
     lab = int(24 * pp)
     colw = {}
@@ -459,10 +462,17 @@ def grid(doc, rig, pp, cols=3, pad=22):
     d = ImageDraw.Draw(out)
     tf = ImageFont.truetype(BOLD, max(9, int(17 * pp)))
     lf = ImageFont.truetype(REG, max(8, int(11 * pp)))
-    d.text((12, int(10 * pp)), "every surface, one law", font=tf, fill=(226, 229, 236))
-    d.text((12, int(30 * pp)),
-           "size is computed from what the canvas must show — never a table of fixed heights",
-           font=lf, fill=(150, 156, 170))
+    if ids:
+        d.text((12, int(10 * pp)), "the four surfaces waiting for your approval", font=tf,
+               fill=(226, 229, 236))
+        d.text((12, int(30 * pp)),
+               "same law, four needs — pick the first one to build for real",
+               font=lf, fill=(150, 156, 170))
+    else:
+        d.text((12, int(10 * pp)), "every surface, one law", font=tf, fill=(226, 229, 236))
+        d.text((12, int(30 * pp)),
+               "size is computed from what the canvas must show — never a table of fixed heights",
+               font=lf, fill=(150, 156, 170))
     for i, (t, c) in enumerate(tiles):
         cx, cy = xs[i % cols], ys[i // cols]
         out.paste(t, (cx + (colw[i % cols] - t.size[0]) // 2, cy))
@@ -503,6 +513,11 @@ def main():
     pb2 = os.path.join(OUT, "lupy-island-surfaces.png")
     b2.save(pb2)
     print(f"wrote {pb2}  {b2.size[0]}x{b2.size[1]}")
+
+    ch = grid(doc, rig, 1.15, cols=2, ids=["decision", "answer", "task", "chat"])
+    pch = os.path.join(OUT, "lupy-island-choices.png")
+    ch.save(pch)
+    print(f"wrote {pch}  {ch.size[0]}x{ch.size[1]}")
 
     c = grid(doc, rig, 0.85, cols=3)
     pc = os.path.join(OUT, "lupy-island-all.png")
