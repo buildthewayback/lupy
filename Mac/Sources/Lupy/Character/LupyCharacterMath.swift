@@ -370,6 +370,23 @@ enum LupyComposition {
     static func unit(width: Double, height: Double) -> Double {
         min(width, height) * unitFraction
     }
+
+    // MARK: Small sizes are a different drawing, not a squeezed one.
+
+    /// Below this body width, the label's text is smaller than a football-field pixel
+    /// budget can carry: the sketch's 0.163 font is 4 pt at a 24 pt body, which is
+    /// unreadable mush. The pills use one of these sizes.
+    static let detailFloor: Double = 46
+
+    /// True when there is room for the status bubble and its moving dots.
+    static func showsBubble(bodyWidth: Double) -> Bool { bodyWidth >= detailFloor }
+
+    /// True when the ∪∪ can be read as two lids. Under ~30 pt the gap between them
+    /// closes and the face collapses into a single dash — worse than not trying.
+    static func showsCupEyes(bodyWidth: Double) -> Bool { bodyWidth >= 30 }
+
+    /// True when the badge's glyph fits inside the disc with air around it.
+    static func showsBadge(bodyWidth: Double) -> Bool { bodyWidth >= 30 }
 }
 
 // MARK: - Body path
@@ -700,6 +717,19 @@ struct LupyRig {
         pointerActive = false
     }
 
+    /// The eyes drawn at a given body width.
+    ///
+    /// Below 30 pt the ∪∪ gap is under a pixel: the two lids fuse into one dash and he
+    /// stops looking like himself. At that size the capsule is still two clear marks,
+    /// so the small character keeps the signature eye rather than a smudge of it.
+    func eyeStyle(at bodyWidth: Double) -> LupyEyeStyle {
+        let style = effectiveEyeStyle
+        if style.isArc && !LupyComposition.showsCupEyes(bodyWidth: bodyWidth) {
+            return .capsule
+        }
+        return style
+    }
+
     /// The eyes actually drawn: mood can override the state's shape (heavy lids when
     /// tired, closed when asleep), but a state that is *already* explicit wins.
     var effectiveEyeStyle: LupyEyeStyle {
@@ -796,12 +826,13 @@ struct LupyRig {
     func eyes(bodyWidth: Double) -> [LupyEyeFrame] {
         let rx = bodyWidth * 0.5
         let ry = bodyWidth * 0.5 * LupyGeometry.bodyAspect
-        // effectiveEyeStyle, not state.eyeStyle: the mood overrides (asleep, heavy
-        // lids) were computed and then never drawn — the character stayed awake with
-        // his eyes open on a sleeping machine.
+        // eyeStyle(at:), not state.eyeStyle: the mood overrides (asleep, heavy lids)
+        // were computed and then never drawn — the character stayed awake with his
+        // eyes open on a sleeping machine — and a 15 pt pill needs the capsule, not a
+        // ∪∪ that fuses into one dash.
         return LupyEyes.frames(yaw: gazeX.value, pitch: gazeY.value,
                                rx: rx, ry: ry, bodyWidth: bodyWidth,
-                               style: effectiveEyeStyle)
+                               style: eyeStyle(at: bodyWidth))
     }
 }
 

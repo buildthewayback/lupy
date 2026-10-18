@@ -323,8 +323,12 @@ final class RigTests {
         ok(sleepRig.effectiveEyeStyle == .arch, "an empty battery closes his eyes")
         // The app draws what effectiveEyeStyle says. It used to ignore it, so the
         // character stayed wide awake on a sleeping machine.
-        ok(sleepRig.eyes(bodyWidth: 1.0).allSatisfy { $0.style == .arch },
+        // 1.0 is the unit body (a full-width body is 1.0 wide) — use a real width so the
+        // small-size rule does not turn the test into a test of the fallback.
+        ok(sleepRig.eyes(bodyWidth: 100).allSatisfy { $0.style == .arch },
            "the drawn eyes are the overridden ones, not the raw state's")
+        ok(sleepRig.eyes(bodyWidth: 16).allSatisfy { $0.style == .capsule },
+           "at pill size the face falls back to capsules instead of fusing into a dash")
 
         print("\n== composition ==")
         ok(LupyComposition.glowReach <= LupyComposition.frameHalf,
@@ -395,7 +399,7 @@ final class RigTests {
         lookRig.movePointer(to: 400, -200)
         var n = 0
         while n < 90 { lookRig.step(dt: LupyFrameClock.step); n += 1 }
-        let closed = lookRig.eyes(bodyWidth: 1.0)
+        let closed = lookRig.eyes(bodyWidth: 100)
         ok(closed.allSatisfy { abs($0.x) < 0.18 },
            "a closed lid stays put instead of sliding with the mouse")
         // And they must fit inside the silhouette at their widest point.

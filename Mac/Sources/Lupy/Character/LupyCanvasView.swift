@@ -117,6 +117,7 @@ final class LupyCharacterDriver: ObservableObject {
 enum LupyRenderer {
     static func draw(_ frame: LupyFrameSnapshot,
                      state drawnState: LupyCharacterState? = nil,
+                     statusBubble: Bool = true,
                      in context: inout GraphicsContext) {
         let unit = frame.unit
 
@@ -297,7 +298,14 @@ struct LupyCanvasView: View {
                 // must stay a pure function of the snapshot it receives.
                 let frame = driver.snapshot(at: timeline.date, size: geo.size)
                 Canvas { context, _ in
-                    LupyRenderer.draw(frame, state: driver.state, in: &context)
+                    // At pill size the label and the glyph are not drawings that
+                    // survive shrinking: they are 4 pt text and a sub-pixel glyph.
+                    let showsBubble = LupyComposition.showsBubble(bodyWidth: driver.unit)
+                    let showsBadge = LupyComposition.showsBadge(bodyWidth: driver.unit)
+                    LupyRenderer.draw(frame,
+                                      state: showsBadge ? driver.state : nil,
+                                      statusBubble: showsBubble,
+                                      in: &context)
                 }
             }
             .onContinuousHover(coordinateSpace: .local) { phase in

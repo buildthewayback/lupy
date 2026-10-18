@@ -81,6 +81,7 @@ struct IslandCharacterView: View {
     var paused: Bool = false
 
     @StateObject private var driver = IslandSampler()
+    @State private var bubbleWidth: CGFloat = 0
 
     /// The frame is larger than the body: 1/unitFraction, so the glow is never clipped
     /// and the badge's reach is inside the view.
@@ -89,9 +90,29 @@ struct IslandCharacterView: View {
     }
 
     var body: some View {
-        LupyCanvasView(state: LupyStateMapping.state(from: state.effectiveState),
-                       vitals: paused ? nil : driver.sampler.vitals,
-                       busySamples: paused ? 0 : driver.sampler.busyStreak)
+        ZStack(alignment: .topLeading) {
+            LupyCanvasView(state: LupyStateMapping.state(from: state.effectiveState),
+                           vitals: paused ? nil : driver.sampler.vitals,
+                           busySamples: paused ? 0 : driver.sampler.busyStreak)
+            // The status bubble is not drawn by the canvas — it is a SwiftUI view, so
+            // it has to be placed here, and only when there is room for its text.
+            if LupyComposition.showsBubble(bodyWidth: Double(bodyWidth)) {
+                LupyStatusBubble(state: LupyStateMapping.state(from: state.effectiveState),
+                                 bodyWidth: bodyWidth)
+                    .fixedSize()
+                    .background(GeometryReader { b in
+                        Color.clear
+                            .onAppear { bubbleWidth = b.size.width }
+                            .onChange(of: b.size.width) { _, w in bubbleWidth = w }
+                    })
+                    .position(
+                        x: frame * 0.5
+                            - bodyWidth * CGFloat(LupyComposition.bubbleTrailingInset)
+                            - bubbleWidth / 2,
+                        y: frame * 0.5 - bodyWidth * CGFloat(LupyComposition.bubbleRise)
+                    )
+            }
+        }
             .frame(width: frame, height: frame)
             .opacity(paused ? 0 : 1)
             .onAppear { if !paused { driver.start() } }
