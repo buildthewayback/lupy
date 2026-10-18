@@ -1464,7 +1464,8 @@ struct GhostBotView: View {
     @State private var scale: CGFloat = 0.35
 
     var body: some View {
-        BotCanvasView(state: AppState.shared)
+        IslandCharacterView(state: AppState.shared,
+                            bodyWidth: canvasSize * CGFloat(LupyComposition.unitFraction) * 0.6)
             .frame(width: canvasSize, height: canvasSize)
             .scaleEffect(scale)
             .onAppear {
