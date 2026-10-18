@@ -41,22 +41,31 @@ enum LupyStateMapping {
 /// `LupyVitalsSampler` publishes `vitals`, but `busyStreak` is plain state, so a view
 /// observing the sampler would not redraw when only the streak changes. This object
 /// forwards both through one `objectWillChange`, so the rig always sees a matched pair.
+///
+/// Lifecycle is explicit start/stop, not `deinit`: Swift 6 will not let a nonisolated
+/// `deinit` touch a `Timer`, and the island already tells us exactly when he is on
+/// screen.
 @MainActor
 final class IslandSampler: ObservableObject {
     let sampler = LupyVitalsSampler()
-    private var cancellable: Any?
     private var ticker: Timer?
 
-    init() {
-        // Mirror the sampler's own cadence rather than polling faster than it samples.
-        ticker = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
+    func start() {
+        sampler.start()
+        guard ticker == nil else { return }
+        let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.objectWillChange.send() }
         }
-        ticker?.tolerance = 0.5
-        if let ticker { RunLoop.main.add(ticker, forMode: .common) }
+        timer.tolerance = 0.5
+        RunLoop.main.add(timer, forMode: .common)
+        ticker = timer
     }
 
-    deinit { ticker?.invalidate() }
+    func stop() {
+        ticker?.invalidate()
+        ticker = nil
+        sampler.stop()
+    }
 }
 
 // MARK: - The view
@@ -85,10 +94,10 @@ struct IslandCharacterView: View {
                        busySamples: paused ? 0 : driver.sampler.busyStreak)
             .frame(width: frame, height: frame)
             .opacity(paused ? 0 : 1)
-            .onAppear { if !paused { driver.sampler.start() } }
-            .onDisappear { driver.sampler.stop() }
+            .onAppear { if !paused { driver.start() } }
+            .onDisappear { driver.stop() }
             .onChange(of: paused) { _, isPaused in
-                if isPaused { driver.sampler.stop() } else { driver.sampler.start() }
+                if isPaused { driver.stop() } else { driver.start() }
             }
             .accessibilityLabel("Lupy")
             .accessibilityAddTraits(.isImage)
