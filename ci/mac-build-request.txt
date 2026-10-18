@@ -1,2 +1,2 @@
-Build requested: 2026-10-18T13:40Z
-Reason: one character everywhere — pills, ghost, dictation
+Build requested: 2026-10-18T14:20Z
+Reason: small-size rules + the island's own label
