@@ -289,6 +289,9 @@ struct LupyCanvasView: View {
     /// Consecutive busy samples, so one spike cannot make him panic.
     var busySamples: Int = 0
 
+    /// Some call sites have no room for the status label (a 22 pt pill).
+    var showsStatusLabel: Bool = true
+
     @StateObject private var driver = LupyCharacterDriver()
 
     var body: some View {

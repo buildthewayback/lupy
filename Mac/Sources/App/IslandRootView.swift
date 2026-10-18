@@ -97,7 +97,8 @@ struct IslandContainer: View {
             // Single BotPlacement — always alive in the view tree so spring animations
             // fire from the current position (e.g. choose at 60,101) when canvas deactivates.
             // Hidden during upload canvas or greeting (both draw their own Mochi).
-            BotPlacement(state: state, islandW: islandWidth, islandH: islandHeight)
+            BotPlacement(state: state, islandW: islandWidth, islandH: islandHeight,
+                         cornerRadius: cornerRadius)
                 // Keep idle animations inside the resting strip. Expanded views
                 // retain the panel's full height for particles and hands.
                 .mask(alignment: .topLeading) {
@@ -289,6 +290,9 @@ struct BotPlacement: View {
     @ObservedObject var state: AppState
     let islandW: CGFloat
     let islandH: CGFloat
+    /// The island's own corner radius: the status label must stay inside the rounded
+    /// corner or its first word gets sliced off.
+    var cornerRadius: CGFloat = IslandConst.roundedCorner
 
     var body: some View {
         let (cx, cy, diameter, opacity) = botPosition(mode: state.mode, view: state.view, islandW: islandW, islandH: islandH, uploadProgress: state.uploadProgress, hasNotch: state.hasNotch)
@@ -315,7 +319,9 @@ struct BotPlacement: View {
                     // cx = 36 + 526*t: bot center at fill right edge (bar left=36, width=526)
                     let uploadCx = 36 + CGFloat(t * (2 - t)) * 526
                     IslandCharacterView(state: state, bodyWidth: diameter,
-                                        paused: state.mochiOnDesktop)
+                                        paused: state.mochiOnDesktop,
+                                        showsStatusBubble: state.mode == .expanded,
+                                        labelInset: cornerRadius)
                         .opacity(state.isDraggingBot || state.mochiOnDesktop ? 0 : opacity)
                         .position(x: uploadCx, y: cy)
                 }

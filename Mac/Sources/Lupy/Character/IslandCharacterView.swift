@@ -79,6 +79,29 @@ struct IslandCharacterView: View {
     var bodyWidth: CGFloat
     /// Pause the render loop when the island is hidden or he is drawn on the desktop.
     var paused: Bool = false
+    /// Draw the status label. Off in a pill, where there is no room for its text.
+    var showsStatusBubble: Bool = true
+    /// Keep the label's left edge inside this distance from the frame's left edge.
+    /// The island passes its corner radius, so the rounded corner cannot cut a word.
+    var labelInset: CGFloat = 0
+
+    /// Where the label's centre goes.
+    ///
+    /// Default: hung by its trailing edge off his shoulder, per the sketch. With a
+    /// `labelInset` (the island), the label is pushed right just far enough that its
+    /// left edge clears the island's rounded corner — but never so far that it covers
+    /// his face, which is the worse failure of the two.
+    private var bubbleCentreX: CGFloat {
+        let free = frame * 0.5
+            - bodyWidth * CGFloat(LupyComposition.bubbleTrailingInset)
+            - bubbleWidth / 2
+        guard labelInset > 0, bubbleWidth > 0 else { return free }
+        let clearOfCorner = labelInset + bubbleWidth / 2
+        guard clearOfCorner > free else { return free }
+        // The furthest right it may sit without crossing the body's centre line.
+        let onHim = frame * 0.5 - bubbleWidth / 2
+        return min(clearOfCorner, onHim)
+    }
 
     @StateObject private var driver = IslandSampler()
     @State private var bubbleWidth: CGFloat = 0
@@ -96,7 +119,12 @@ struct IslandCharacterView: View {
                            busySamples: paused ? 0 : driver.sampler.busyStreak)
             // The status bubble is not drawn by the canvas — it is a SwiftUI view, so
             // it has to be placed here, and only when there is room for its text.
-            if LupyComposition.showsBubble(bodyWidth: Double(bodyWidth)) {
+            //
+            // Placement is passed in, not implied. The island clips the window band to
+            // the island's rounded corner, so a label that sits at the frame's left
+            // edge gets sliced ("…your OK"). Inside the island band the label has to
+            // sit inboard of the character; in a window of his own it can float free.
+            if showsStatusBubble {
                 LupyStatusBubble(state: LupyStateMapping.state(from: state.effectiveState),
                                  bodyWidth: bodyWidth)
                     .fixedSize()
@@ -106,9 +134,7 @@ struct IslandCharacterView: View {
                             .onChange(of: b.size.width) { _, w in bubbleWidth = w }
                     })
                     .position(
-                        x: frame * 0.5
-                            - bodyWidth * CGFloat(LupyComposition.bubbleTrailingInset)
-                            - bubbleWidth / 2,
+                        x: bubbleCentreX,
                         y: frame * 0.5 - bodyWidth * CGFloat(LupyComposition.bubbleRise)
                     )
             }
