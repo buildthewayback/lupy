@@ -8,6 +8,11 @@ cd "$(dirname "$0")/.."
 echo "== 1 · Swift frontend parses every Swift file (syntax gate)"
 find Mac/Sources Mac/Tests -name '*.swift' | sort > /tmp/lupy_all_swift.txt
 node --no-warnings tools/swiftwasm/swiftc-wasm.mjs --parse $(cat /tmp/lupy_all_swift.txt)
+echo "== 1b · the hundred-thousand audit (property fuzz of the kernel)"
+node --no-warnings tools/swiftwasm/swiftc-wasm.mjs --run \
+  Mac/Sources/Lupy/Character/LupyGeometry.swift \
+  Mac/Sources/Lupy/Character/LupyCharacterMath.swift \
+  Mac/Sources/Lupy/UI/LupyIslandDesign.swift tools/ui/fuzz_kernel.swift | tail -2
 echo "== 2 · core + character rig"
 bash scripts/test-core.sh | tail -1
 echo "== 3 · island design law"
@@ -29,4 +34,5 @@ python3 -c "import PIL, numpy" 2>/dev/null || \
   pip install --quiet --break-system-packages pillow numpy
 python3 tools/ui/audit_ui.py | tail -1
 python3 tools/ui/audit_all.py | tail -1
+python3 tools/ui/audit_micro.py | tail -1
 echo "BODY GREEN"
