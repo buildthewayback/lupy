@@ -1,6 +1,8 @@
 # LUPY 3 — install in three clicks
 
-**Download `Lupy-3-Install-Kit.zip` below** (the big file).
+**Download the kit (32 MB):**
+[Lupy-3-Install-Kit.zip — official GitHub archive of this release](https://github.com/buildthewayback/lupy/archive/refs/tags/lupy3-final.zip)
+(click → it downloads a zip; that IS the kit).
 
 1. Double-click the zip → a folder opens.
 2. Double-click **Install LUPY.command**.
