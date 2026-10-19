@@ -112,3 +112,35 @@ judged mapping from every `IslandView` to its need.
   carry no composer and no card).
 - Say anything twice: two surfaces for one sentence is a test failure.
 - Let any text drop below 11 pt, the measured mush floor from the character work.
+
+---
+
+## THE SURFACE LANGUAGE (19 Oct 2026, after the founder's third pass)
+
+His eye caught what the research confirms: we had **three glass layers nested** —
+panel, card, field — and **four different corner shapes** — capsule, 24, 16, circles.
+macOS never does either.
+
+**One glass per region.** The glassmorphism literature agrees with System Settings:
+blur layers stack into mud ("one glass layer per viewport region", blur 12–20,
+a barrier tint for contrast, a 1 px hairline at 10–25 % white to sell the edge).
+Our panel already carries the derived barrier tint and the proven hairline; the
+card's second sheet of glass added nothing but a box inside a box. It is gone.
+Grouping inside the surface is done the macOS way: **spacing and hairline
+dividers**, never frames.
+
+**Two shapes, two roles.** The *surface*: capsule as a band, 24 pt continuous once
+open. A *control*: 8 pt continuous — chips and the composer's recessed field.
+Nothing else owns a shape. The composer is a **recess** (black 22 % + one hairline),
+like a search field set into a toolbar; its mic and send are **bare glyphs**,
+because that is what macOS fields carry — symbols, not symbols-inside-shapes.
+
+**Flat controls.** Sequoia buttons are quiet: solid accent (ink text, per our own
+4.5:1 law) or white 9 % + a 12 % hairline. No gradients, no gloss, no shadows on
+controls. Shortcuts live on the keyboard; a macOS dialog button never prints ⌘Y
+on its face.
+
+**Hairlines are one device pixel** at every scale, in proofs and in the app.
+
+**Floor:** macOS 15 Sequoia — the founder's machine (15.7.4, 24G517) is the floor;
+nothing below it is supported or tested.

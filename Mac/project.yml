@@ -115,7 +115,7 @@ targets:
         PRODUCT_NAME: Lupy
         INFOPLIST_FILE: Resources/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        MACOSX_DEPLOYMENT_TARGET: "15.0"
         ENABLE_SANDBOX: NO
       configs:
         Release:

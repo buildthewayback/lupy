@@ -84,12 +84,11 @@ struct LupyComposer: View {
         let circle: CGFloat = 24          // one control size across the island
         HStack(spacing: LupyIslandLayout.chipIconGap + 4) {
             Image(systemName: "mic.fill")
-                .font(.system(size: 11, weight: .medium))
-                // Icons take the iconography tone; words never do.
+                .font(.system(size: 14, weight: .medium))
+                // Icons take the iconography tone; words never do. Bare glyph:
+                // macOS fields carry symbols, not symbols-inside-shapes.
                 .foregroundStyle(LupyPalette.iconography.colour)
                 .frame(width: circle, height: circle)
-                .overlay(Circle().strokeBorder(LupyPalette.decoration.colour
-                    .opacity(0.6), lineWidth: 1))
             TextField("Ask LUPY anything…", text: $text)
                 .textFieldStyle(.plain)
                 .font(LupyType.bodyFont)
@@ -105,16 +104,24 @@ struct LupyComposer: View {
                 text = ""
             } label: {
                 Image(systemName: "return.left")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(LupyPalette.ink.colour)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(LupyPalette.accent.colour)
                     .frame(width: circle, height: circle)
-                    .background(LupyPalette.accent.colour, in: Circle())
             }
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 8)
         .frame(height: fieldH)
-        .background(LupyGlass.card().surface(corner: LupyIslandLayout.fieldCorner))
+        // A recess, not a second sheet of glass: darker inset + one hairline,
+        // the way a macOS search field sits inside its toolbar.
+        .background(
+            RoundedRectangle(cornerRadius: LupyIslandLayout.fieldCorner, style: .continuous)
+                .fill(Color.black.opacity(0.22))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: LupyIslandLayout.fieldCorner, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.10), lineWidth: 1)
+        )
     }
 }
 
@@ -133,23 +140,6 @@ struct LupyCanvasChrome<Content: View>: View {
     var body: some View {
         let c = canvas
         ZStack(alignment: .topLeading) {
-            // The card's glass, behind whatever the view brings.
-            if !c.content.isEmpty {
-                RoundedRectangle(cornerRadius: LupyIslandLayout.cardCorner, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: LupyIslandLayout.cardCorner, style: .continuous)
-                            .fill(LupyGlass.card().base.colour
-                                .opacity(LupyGlass.card().fillAlpha))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: LupyIslandLayout.cardCorner, style: .continuous)
-                            .strokeBorder(LupyGlass.card().hairline.colour, lineWidth: 1)
-                    )
-                    .frame(width: c.content.width, height: c.content.height)
-                    .offset(x: c.content.x, y: c.content.y)
-            }
-
             // The status sentence, in the one home the law gave it.
             if !c.statusBox.isEmpty {
                 LupyStatusLine(state: state,

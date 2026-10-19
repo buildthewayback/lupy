@@ -263,99 +263,54 @@ def paste_glass(img, box, corner, glass, ss, shadow=True, highlight=True):
 
 
 def button(img, rect, ss, label, font, kind, accent, ink_text, body_text, radius=None):
-    """A control that looks pressable: gradient fill clipped to a rounded shape, inner
-    top highlight, 1px border, small shadow.
-
-    `kind` is 'primary' (the accent, with INK text: white on a vivid accent measures
-    3.6:1, under our own 4.5:1 law, so the accent button takes near-black words) or
-    'glass' (a lifted card surface with body-colour words).
-    """
+    """A macOS button: flat fill, one hairline on the glass variant, no gradient,
+    no gloss, no shadow. Sequoia controls are quiet; the proof must be too."""
     x0, y0, x1, y1 = [int(v) for v in rect]
     w, h = x1 - x0, y1 - y0
-    rad = radius if radius is not None else int(h * 0.34)
-
-    # shadow first, under everything
-    sh = Image.new("L", img.size, 0)
-    ImageDraw.Draw(sh).rounded_rectangle([x0, y0 + int(1.5 * ss), x1, y1 + int(1.5 * ss)],
-                                         rad, fill=80)
-    sh = sh.filter(ImageFilter.GaussianBlur(ss * 1.2))
-    img.paste(Image.new("RGB", img.size, (0, 0, 0)), (0, 0), sh)
-
-    # gradient fill, built on its own layer and clipped to the rounded shape
-    if kind == "primary":
-        # accent arrives as 0..1 from the law; the gradient maths runs in 0..255.
-        # Mixing the two without converting is how every button came out white.
-        acc = rgb(accent)
-        fill_top = irgb(mix(acc, (255, 255, 255), 0.18))
-        fill_bot = irgb(mix(acc, (0, 0, 0), 0.22))
-        edge = irgb(mix(acc, (255, 255, 255), 0.38))
-        fg = ink_text
-    else:
-        fill_top, fill_bot = (54, 60, 78), (38, 43, 58)
-        edge = (98, 106, 128)
-        fg = body_text
-    layer = Image.new("RGB", (w, h), fill_top)
+    rad = radius if radius is not None else int(h / 2)
+    layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     ld = ImageDraw.Draw(layer)
-    for i in range(h):
-        t = i / max(1, h - 1)
-        ld.line([(0, i), (w, i)], fill=irgb(mix(fill_top, fill_bot, t)))
-    hl = Image.new("L", (w, h), 0)
-    ImageDraw.Draw(hl).rounded_rectangle([1, 1, w - 2, int(h * 0.5)], rad,
-                                         outline=26, width=max(1, int(ss * 0.7)))
-    hl2 = Image.new("L", (w, h), 255)
-    ImageDraw.Draw(hl2).rectangle([0, int(h * 0.34), w, h], fill=0)
-    from PIL import ImageChops
-    hl = ImageChops.multiply(hl, hl2)
-    layer.paste(Image.new("RGB", (w, h), (255, 255, 255)), (0, 0), hl)
-    mask = Image.new("L", (w, h), 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, w - 1, h - 1], rad, fill=255)
-    img.paste(layer, (x0, y0), mask)
-
-    d = ImageDraw.Draw(img)
-    d.rounded_rectangle([x0, y0, x1, y1], rad, outline=edge, width=max(1, int(ss * 0.6)))
+    if kind == "primary":
+        ld.rounded_rectangle([0, 0, w - 1, h - 1], rad, fill=rgb(accent) + (255,))
+    else:
+        ld.rounded_rectangle([0, 0, w - 1, h - 1], rad, fill=(255, 255, 255, 23))
+        ld.rounded_rectangle([0, 0, w - 1, h - 1], rad,
+                             outline=(255, 255, 255, 31), width=max(1, int(ss * 0.5)))
+    img.paste(layer.convert("RGB"), (x0, y0), layer.split()[3])
     if label:
+        d = ImageDraw.Draw(img)
         tw = d.textlength(label, font=font)
-        d.text((x0 + (w - tw) / 2, y0 + (h - font.size) / 2 - ss * 0.5), label,
-               font=font, fill=fg)
+        d.text((x0 + (w - tw) / 2, y0 + (h - font.size) / 2), label, font=font,
+               fill=ink_text if kind == "primary" else body_text)
     return img
 
 
-def icon_mic(d, cx, cy, s, colour):
-    """A microphone that reads as one: capsule body, cradle arc, stem, base."""
-    w = s * 0.42
-    d.rounded_rectangle([cx - w / 2, cy - s * 0.62, cx + w / 2, cy + s * 0.10],
-                        radius=w / 2, fill=colour)
-    d.arc([cx - s * 0.36, cy - s * 0.34, cx + s * 0.36, cy + s * 0.30],
-          start=0, end=180, fill=colour, width=max(1, int(s * 0.13)))
-    d.line([cx, cy + s * 0.30, cx, cy + s * 0.52], fill=colour, width=max(1, int(s * 0.13)))
-    d.line([cx - s * 0.24, cy + s * 0.52, cx + s * 0.24, cy + s * 0.52],
-           fill=colour, width=max(1, int(s * 0.13)))
+def icon_mic(d, cx, cy, s, color, ss):
+    """SF Symbols' mic, stroke-drawn: capsule body, cradle arc, stem, base."""
+    wdt = max(1, int(round(1.5 * ss)))
+    d.rounded_rectangle([cx - 0.17 * s, cy - 0.44 * s, cx + 0.17 * s, cy + 0.06 * s],
+                        radius=0.17 * s, outline=color, width=wdt)
+    d.arc([cx - 0.34 * s, cy - 0.22 * s, cx + 0.34 * s, cy + 0.30 * s], 0, 180,
+          fill=color, width=wdt)
+    d.line([cx, cy + 0.30 * s, cx, cy + 0.46 * s], fill=color, width=wdt)
+    d.line([cx - 0.16 * s, cy + 0.46 * s, cx + 0.16 * s, cy + 0.46 * s],
+           fill=color, width=wdt)
 
 
-def icon_return(d, cx, cy, s, colour):
-    lw = max(1, int(s * 0.16))
-    d.line([cx - s * 0.34, cy - s * 0.30, cx + s * 0.36, cy - s * 0.30], fill=colour, width=lw)
-    d.line([cx + s * 0.36, cy - s * 0.30, cx + s * 0.36, cy + s * 0.10], fill=colour, width=lw)
-    d.line([cx + s * 0.36, cy + s * 0.10, cx - s * 0.30, cy + s * 0.10], fill=colour, width=lw)
-    d.polygon([(cx - s * 0.10, cy - s * 0.12), (cx - s * 0.10, cy + s * 0.32),
-               (cx - s * 0.44, cy + s * 0.10)], fill=colour)
+def icon_return(d, cx, cy, s, color, ss):
+    """SF Symbols' return.left: shaft, chevron head, tail dropping at the right."""
+    wdt = max(1, int(round(1.6 * ss)))
+    d.line([cx - 0.28 * s, cy - 0.16 * s, cx + 0.34 * s, cy - 0.16 * s],
+           fill=color, width=wdt)
+    d.line([cx - 0.10 * s, cy - 0.36 * s, cx - 0.30 * s, cy - 0.16 * s,
+            cx - 0.10 * s, cy + 0.04 * s], fill=color, width=wdt, joint="curve")
+    d.line([cx + 0.34 * s, cy - 0.16 * s, cx + 0.34 * s, cy + 0.10 * s],
+           fill=color, width=wdt)
+    d.arc([cx + 0.10 * s, cy + 0.10 * s, cx + 0.58 * s, cy + 0.58 * s], 180, 270,
+          fill=color, width=wdt)
+    d.line([cx + 0.10 * s, cy + 0.34 * s, cx - 0.10 * s, cy + 0.34 * s],
+           fill=color, width=wdt)
 
-
-def icon_command(d, cx, cy, s, colour):
-    """⌘ as four loops and a square — drawn, because no font here carries the glyph."""
-    lw = max(1, int(s * 0.14))
-    r = s * 0.20
-    o = s * 0.20
-    for sx in (-1, 1):
-        for sy in (-1, 1):
-            bx, by = cx + sx * o, cy + sy * o
-            d.arc([bx - r, by - r, bx + r, by + r], start=0, end=360, fill=colour, width=lw)
-    d.rectangle([cx - o, cy - o, cx + o, cy + o], outline=colour, width=lw)
-    d.rectangle([cx - o + lw, cy - o + lw, cx + o - lw, cy + o - lw],
-                outline=(0, 0, 0, 0))
-
-
-# --------------------------------------------------------------------- the scene
 
 def scene_width_pt(canvas):
     """The screen width, in points, this canvas wants when drawn alone."""
@@ -456,80 +411,51 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
     else:
         chip_y = None
 
-    # ---- chips: primary = accent with ink text, the rest glass
+    # ---- chips: flat macOS buttons; shortcuts stay on the keyboard
     if canvas["chips"] and content and chip_y is not None:
         cf = ImageFont.truetype(MED, max(6, int(doc["type"]["chip"] * ss)))
         cx = content[0] + m["inner"]
         accent = col["accent"]
         for i, ch in enumerate(canvas["chips"]):
             label = ch
-            if label[:2] in ("⌘Y", "⌘N") or label[:1].isdigit():
-                shortcut, rest = label[:2], label[2:]
-            else:
-                shortcut, rest = "", label
-            padH, igap = m["chipPadH"], m["chipIconGap"]
-            tw = d.textlength(rest, font=cf) / ss
-            sw = 0.0
-            if shortcut:
-                sw = 12 + igap          # ⌘ glyph box + gap; glyph drawn inside it
-            cw = tw + sw + 2 * padH
+            # macOS dialog buttons never print their shortcut on the face; the
+            # emitter's ⌘X / digit prefixes are for the rig, not for the button.
+            if label[:2] in ("⌘Y", "⌘N"):
+                label = label[2:]
+            elif label[:1].isdigit():
+                label = label[1:]
+            padH = m["chipPadH"]
+            tw = d.textlength(label, font=cf) / ss
+            cw = tw + 2 * padH
             if cx + cw > content[0] + content[2] - m["inner"]:
                 break
             x0, y0 = P(cx, chip_y)
             rect = [x0, y0, x0 + cw * ss, y0 + m["chip"] * ss]
-            if i == 0:
-                button(img, rect, ss, "", cf, "primary", accent, ink_text, body_text,
-                       radius=int(m["chipCorner"] * ss))
-            else:
-                button(img, rect, ss, "", cf, "glass", accent, ink_text, body_text,
-                       radius=int(m["chipCorner"] * ss))
+            button(img, rect, ss, "", cf, "primary" if i == 0 else "glass",
+                   accent, ink_text, body_text, radius=int(m["chipCorner"] * ss))
             d = ImageDraw.Draw(img)
-            tx = x0 + padH * ss
-            if shortcut:
-                icon_command(d, tx + 6 * ss, y0 + m["chip"] * ss / 2, 11 * ss,
-                             ink_text if i == 0 else rgb(col["icon"]))
-                tx += (12 + igap) * ss
-                d.text((tx, y0 + (m["chip"] * ss - cf.size) / 2), rest, font=cf,
-                       fill=ink_text if i == 0 else body_text)
-                tx += d.textlength(rest, font=cf)
-            else:
-                num, rest2 = rest[:1], rest[1:]
-                kb = ImageFont.truetype(BOLD, max(6, int(doc["type"]["chip"] * ss)))
-                d.rounded_rectangle([tx, y0 + 6 * ss, tx + 14 * ss, y0 + m["chip"] * ss - 6 * ss],
-                                    4 * ss, fill=(255, 255, 255, 0),
-                                    outline=ink_text if i == 0 else rgb(col["icon"]),
-                                    width=max(1, int(ss * 0.5)))
-                d.text((tx + 4.6 * ss, y0 + (m["chip"] * ss - kb.size) / 2 - ss * 0.4), num,
-                       font=kb, fill=ink_text if i == 0 else rgb(col["icon"]))
-                tx += 18 * ss
-                d.text((tx, y0 + (m["chip"] * ss - cf.size) / 2), rest2, font=cf,
-                       fill=ink_text if i == 0 else body_text)
+            d.text((x0 + padH * ss, y0 + (m["chip"] * ss - cf.size) / 2), label,
+                   font=cf, fill=ink_text if i == 0 else body_text)
             cx += cw + 8
 
-    # ---- composer: mic button + field + send
+    # ---- composer: one recessed field, bare glyphs, no shapes of their own
     if composer and composer[2] > 0:
         fx, fy = P(composer[0], composer[1])
         fw, fh = composer[2] * ss, composer[3] * ss
-        field = (side + composer[0] + 1, oy + composer[1] + 1,
-                 composer[2] - 2, composer[3] - 2)
-        paste_glass(img, field, m["fieldCorner"], doc["glass"]["card"], ss, shadow=False)
+        box = [fx + ss * 0.5, fy + ss * 0.5, fx + fw - ss * 0.5, fy + fh - ss * 0.5]
+        rad = m["fieldCorner"] * ss
+        ov = Image.new("RGB", img.size, (0, 0, 0))
+        msk = Image.new("L", img.size, 0)
+        ImageDraw.Draw(msk).rounded_rectangle(box, rad, fill=56)   # black at 22 %
+        img.paste(ov, (0, 0), msk)
         d = ImageDraw.Draw(img)
-        # mic in its own round glass button — the standard affordance
-        mx, my = fx + 8 * ss + 12 * ss, fy + fh * 0.5
-        mr = 12 * ss
-        d.ellipse([mx - mr, my - mr, mx + mr, my + mr],
-                  outline=rgb(col["line"]), width=max(1, int(ss * 0.6)))
-        icon_mic(d, mx, my, mr * 1.15, rgb(col["icon"]))
+        # a hairline is ONE device pixel, at any proof scale
+        d.rounded_rectangle(box, rad, outline=(255, 255, 255, 26), width=1)
+        icon_mic(d, fx + 16 * ss, fy + fh / 2, 16 * ss, rgb(col["icon"]), ss)
         pf = ImageFont.truetype(REG, max(6, int(doc["type"]["body"] * ss)))
-        d.text((mx + mr + 12 * ss, fy + (fh - pf.size) / 2), "Ask LUPY anything…",
+        d.text((fx + 36 * ss, fy + (fh - pf.size) / 2), "Ask LUPY anything…",
                font=pf, fill=body_text)
-        # send: primary button at the right end
-        sw = 24 * ss
-        button(img, [fx + fw - 8 * ss - sw, fy + 8 * ss,
-                     fx + fw - 8 * ss, fy + fh - 8 * ss], ss, "", pf, "primary",
-               col["accent"], ink_text, body_text, radius=int(sw / 2))
-        d = ImageDraw.Draw(img)
-        icon_return(d, fx + fw - 8 * ss - sw / 2, fy + fh * 0.5, 12 * ss, ink_text)
+        icon_return(d, fx + fw - 16 * ss, fy + fh / 2, 16 * ss, rgb(col["accent"]), ss)
 
     # ---- LUPY, last: his light sits over the glass he stands on
     if avatar and avatar[2] > 0:
