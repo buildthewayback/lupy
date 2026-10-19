@@ -77,3 +77,15 @@ comes back here; you run the line again. Thirty seconds a loop, zero dollars.
 
 Circle anything. The council (three of them: pictures, all-surfaces, wiring) and I
 will fix exactly what you circle, and only that.
+
+## If the App Store refuses Xcode ("macOS XX or later is required")
+
+The App Store only offers the newest Xcode, which demands a newer macOS than yours.
+You do not need Xcode at all — Apple's small Command Line Tools carry the compiler:
+
+```
+xcode-select --install
+bash scripts/build-mac-app.sh && bash scripts/smoke-mac-app.sh && open build/DerivedData/Build/Products/Release/Lupy.app
+```
+
+Build → native smoke evidence → LUPY launches. No OS upgrade, no 12 GB download.

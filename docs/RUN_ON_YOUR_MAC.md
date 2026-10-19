@@ -48,3 +48,15 @@ your Mac password once), then run the `bash scripts/run-mac.sh` line again:
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
+
+## If the App Store refuses Xcode ("macOS XX or later is required")
+
+The App Store only offers the newest Xcode, which demands a newer macOS than yours.
+You do not need Xcode at all — Apple's small Command Line Tools carry the compiler:
+
+```
+xcode-select --install
+bash scripts/build-mac-app.sh && bash scripts/smoke-mac-app.sh && open build/DerivedData/Build/Products/Release/Lupy.app
+```
+
+Build → native smoke evidence → LUPY launches. No OS upgrade, no 12 GB download.
