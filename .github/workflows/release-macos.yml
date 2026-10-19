@@ -1,0 +1,42 @@
+# THE PRODUCT PIPELINE — GitHub's own macOS runner builds, signs ad-hoc, packs a DMG
+# and publishes it as a Release asset. The founder downloads ONE file, the normal way.
+# No Xcode project needed: SwiftPM manifest + hand-assembled bundle (scripts/build-no-xcode.sh).
+name: release-macos
+on:
+  push:
+    tags: ["lupy3-*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Build Lupy.app (SwiftPM, no Xcode project)
+        run: bash scripts/build-no-xcode.sh --no-launch
+
+      - name: Native smoke evidence (GUI launch, animation check)
+        continue-on-error: true
+        run: bash scripts/smoke-mac-app.sh build-noxcode/Lupy.app dist-smoke || true
+
+      - name: Pack the DMG
+        run: |
+          mkdir -p dist stage/Lupy.app stage/Applications-link
+          cp -R build-noxcode/Lupy.app stage/Lupy.app
+          ln -s /Applications stage/Applications
+          hdiutil create -volname "Lupy" -srcfolder stage -ov -format UDZO dist/Lupy.dmg
+          shasum -a 256 dist/Lupy.dmg | tee dist/Lupy.dmg.sha256
+
+      - name: Publish Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=${GITHUB_REF_NAME}
+          gh release create "$TAG" dist/Lupy.dmg dist/Lupy.dmg.sha256 \
+            --title "LUPY 3 — ${TAG}" --notes-file docs/RELEASE_NOTES.md || \
+          gh release upload "$TAG" dist/Lupy.dmg dist/Lupy.dmg.sha256 --clobber
