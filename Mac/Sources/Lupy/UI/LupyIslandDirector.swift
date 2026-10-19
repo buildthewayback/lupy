@@ -28,14 +28,15 @@ final class LupyIslandDirector: NSObject {
     var onAsk: ((String) -> Void)?
 
     func start() {
-        Publishers.CombineLatest4(
+        Publishers.CombineLatest5(
             state.$pendingApproval,
+            state.$pendingQuestion,
             state.$tasks,
             state.$chatHistory,
             state.$view
         )
         .receive(on: RunLoop.main)
-        .sink { [weak self] _, _, _, _ in self?.refresh() }
+        .sink { [weak self] _, _, _, _, _ in self?.refresh() }
         .store(in: &bag)
 
         // ⌘Y / ⌘N answer the approval without touching the mouse — the shortcuts
@@ -82,6 +83,69 @@ final class LupyIslandDirector: NSObject {
                 LupyIslandApprovalView(payload: payload) { [weak self] i in
                     self?.decide(i)
                 }
+            }
+            return
+        }
+
+        // A question from an agent: his capsule eyes, the choices as chips.
+        if let q = state.pendingQuestion, let item = q.items.first {
+            let chips = item.options.prefix(4).map { LupyApprovalChip(label: $0.label) }
+            let payload = LupyApprovalPayload(
+                meta: "awaiting your choice",
+                lines: [
+                    .init(text: item.question),
+                    .init(text: item.header.isEmpty ? " " : item.header, mono: true),
+                ],
+                chips: Array(chips))
+            show(screen: screen,
+                 need: .decision(options: chips.count, hasEvidence: true, queue: 1),
+                 character: .question) {
+                LupyIslandApprovalView(payload: payload) { [weak self] i in
+                    guard let opts = state.pendingQuestion?.items.first?.options,
+                          i < opts.count else { return }
+                    self?.hooks.sendQuestionAnswers([item.header: opts[i].label])
+                    self?.refresh()
+                }
+            }
+            return
+        }
+
+        // Something broke: the error card, his dash eyes, the reason in mono.
+        if state.view == .error,
+           let t = state.tasks.first(where: { $0.state == .error }) {
+            show(screen: screen,
+                 need: .answer(lines: 2, chips: 0, provenance: true),
+                 character: .error) {
+                LupyIslandCardView(
+                    need: .answer(lines: 2, chips: 0, provenance: true),
+                    state: .error,
+                    payload: .init(meta: "needs attention",
+                                   lines: [
+                                       .init(text: t.name),
+                                       .init(text: t.finalLine ?? "the session stopped",
+                                             mono: true),
+                                   ],
+                                   provenance: t.sessionCwd ?? nil))
+            }
+            return
+        }
+
+        // Finished with something to say: the answer card, calm and green.
+        if state.view == .finished,
+           let t = state.tasks.first(where: { $0.state == .finished
+                                              && !(t.finalLine ?? "").isEmpty }) {
+            show(screen: screen,
+                 need: .answer(lines: 2, chips: 0, provenance: true),
+                 character: .finished) {
+                LupyIslandCardView(
+                    need: .answer(lines: 2, chips: 0, provenance: true),
+                    state: .finished,
+                    payload: .init(meta: "finished",
+                                   lines: [
+                                       .init(text: t.name),
+                                       .init(text: t.finalLine ?? ""),
+                                   ],
+                                   provenance: t.sessionCwd ?? nil))
             }
             return
         }
