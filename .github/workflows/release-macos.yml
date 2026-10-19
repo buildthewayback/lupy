@@ -1,6 +1,5 @@
-# THE PRODUCT PIPELINE — GitHub's own macOS runner builds, signs ad-hoc, packs a DMG
-# and publishes it as a Release asset. The founder downloads ONE file, the normal way.
-# No Xcode project needed: SwiftPM manifest + hand-assembled bundle (scripts/build-no-xcode.sh).
+# THE PRODUCT PIPELINE — GitHub's own Mac builds the reference app with the repo's
+# proven scripts, packs a DMG, publishes a Release. The founder downloads ONE file.
 name: release-macos
 on:
   push:
@@ -9,34 +8,33 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15
+    runs-on: macos-latest          # the label with a proven success in this repo
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
-      - name: Swift version
-        run: swift --version
+      - name: XcodeGen (the project generator build-mac-app.sh expects)
+        run: brew install xcodegen
 
-      - name: Build Lupy.app (SwiftPM, no Xcode project)
-        run: bash scripts/build-no-xcode.sh --no-launch
+      - name: Reference build — Lupy.app, ad-hoc signed, zipped (proven script)
+        run: bash scripts/build-mac-app.sh
 
-      - name: Native smoke evidence (GUI launch, animation check)
+      - name: Native smoke evidence on the built app
         continue-on-error: true
-        run: bash scripts/smoke-mac-app.sh build-noxcode/Lupy.app dist-smoke || true
+        run: bash scripts/smoke-mac-app.sh || true
 
-      - name: Pack the DMG
+      - name: Pack the DMG (Lupy.app + Applications symlink, drag-to-install)
         run: |
-          mkdir -p dist stage/Lupy.app stage/Applications-link
-          cp -R build-noxcode/Lupy.app stage/Lupy.app
+          mkdir -p dist stage
+          unzip -q dist/Lupy-*.zip -d stage
           ln -s /Applications stage/Applications
           hdiutil create -volname "Lupy" -srcfolder stage -ov -format UDZO dist/Lupy.dmg
           shasum -a 256 dist/Lupy.dmg | tee dist/Lupy.dmg.sha256
 
-      - name: Publish Release
+      - name: Publish Release with the DMG
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG=${GITHUB_REF_NAME}
-          gh release create "$TAG" dist/Lupy.dmg dist/Lupy.dmg.sha256 \
-            --title "LUPY 3 — ${TAG}" --notes-file docs/RELEASE_NOTES.md || \
-          gh release upload "$TAG" dist/Lupy.dmg dist/Lupy.dmg.sha256 --clobber
+          gh release create "$TAG" dist/Lupy.dmg dist/Lupy.dmg.sha256 dist/Lupy-*.zip \
+            --title "LUPY 3 — ${TAG}" --notes-file docs/RELEASE_NOTES.md
