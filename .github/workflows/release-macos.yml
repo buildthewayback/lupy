@@ -2,8 +2,8 @@
 # proven scripts, packs a DMG, publishes a Release. The founder downloads ONE file.
 name: release-macos
 on:
-  push:
-    tags: ["lupy3-*"]
+  # dormant: this account's macOS runners stopped provisioning (0-ms startup failures,
+  # even for the previously proven workflow). Kept for the day the allowance returns.
   workflow_dispatch:
 
 jobs:

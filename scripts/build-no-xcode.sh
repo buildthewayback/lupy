@@ -22,6 +22,14 @@ printf 'APPL????' > "$APP/Contents/PkgInfo"
 cp CoucouAssets/Assets.xcassets/MenuBarIcon.imageset/menubar@2x.png "$APP/Contents/Resources/MenuBarIcon.png"
 cp -R CoucouAssets/sounds "$APP/Contents/Resources/sounds"
 codesign --force -s - "$APP" 2>/dev/null || true
+if [ "${1:-}" = "--install" ]; then
+  echo "== installing to /Applications"
+  rm -rf /Applications/Lupy.app
+  cp -R "$APP" /Applications/Lupy.app
+  open /Applications/Lupy.app
+  echo "LUPY is in Applications and running — the pill under your menu bar is him."
+  exit 0
+fi
 if [ "${1:-}" = "--no-launch" ]; then
   echo "== built (no launch): $APP"
 else
