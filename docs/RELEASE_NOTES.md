@@ -1,19 +1,20 @@
-# LUPY 3 — install like any app
+# LUPY 3 — install in three clicks
 
-**Download `Lupy.dmg` below** (the big file, not the .sha256 one).
+**Download `Lupy-3-Install-Kit.zip` below** (the big file).
 
-1. Double-click `Lupy.dmg` → a window opens with **Lupy** and an **Applications** folder.
-2. Drag **Lupy** onto **Applications**. Done installing. Eject the dmg.
-3. First launch only: because Lupy is ad-hoc signed (no paid Apple developer account
-   yet), macOS will say it can't check the app. **Right-click (or Control-click) the
-   Lupy icon → Open → Open.** Once. Never again.
-4. He lives in your menu bar area: a small dark pill at the top centre of the screen,
-   with LUPY breathing in it. Click the pill's world: menu bar → Lupy → Demo mode shows
-   the approval card; type in his box to talk to him (chat keys live in Settings, same
-   as v0.2).
+1. Double-click the zip → a folder opens.
+2. Double-click **Install LUPY.command**.
+   If macOS says it cannot verify it: **right-click it → Open → Open.** (Once, ever.)
+3. A window opens and builds for a few minutes (first time only). At the end LUPY
+   launches by himself and lives in **Applications** from now on, like any app.
 
-That's it. No Terminal, no Xcode, no paste. If anything misbehaves: screenshot, circle,
-send — the fix arrives as a new dmg here.
+He is the small dark pill at the top centre of your screen, under the menu bar.
+Menu bar → **Lupy → Demo mode** shows his approval card; click his typing box to talk.
 
-Honest fine print: ad-hoc signed, not notarized (needs a $99/year Apple developer
-account to change); macOS 15 or newer; Apple Silicon.
+Needs macOS 15+ and Apple Silicon. No Xcode, no Terminal typing, no pastes.
+If the window ever says INSTALL FAILED: screenshot it and send it — a new kit arrives.
+
+Fine print, honest: the kit builds LUPY on your Mac with Apple's free Command Line
+Tools and signs him ad-hoc (a paid Apple developer account would add notarization;
+not yet). GitHub's cloud Macs stopped provisioning for this account, which is why
+the product arrives as a self-building kit instead of a pre-built dmg.
