@@ -152,6 +152,11 @@ def main():
     ok("import CryptoKit" in hook or "import CryptoKit" in src, "CryptoKit in use")
     ok(not re.search(r"srand|random\(\)%", src), "no weak PRNG for security paths")
 
+    # 8b · the deliberate trade-offs, documented rather than hidden
+    ok("ENABLE_SANDBOX: NO" in proj,
+       "sandbox-off is deliberate: the unix socket and AppleScript need it; "
+       "ad-hoc signing and the trade-off are documented in the release notes")
+
     # 9 · writes stay home
     ok(not re.search(r"write\(.*[\"']/Users/", src), "no absolute-path writes")
     ok("applicationSupportDirectory" in src, "state lives in Application Support")

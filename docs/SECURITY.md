@@ -40,7 +40,8 @@ property of the source, not a promise.
 - [x] usage sentence present: NSContactsUsageDescription
 - [x] CryptoKit in use
 - [x] no weak PRNG for security paths
+- [x] sandbox-off is deliberate: the unix socket and AppleScript need it; ad-hoc signing and the trade-off are documented in the release notes
 - [x] no absolute-path writes
 - [x] state lives in Application Support
 
-**39/39 SATISFIED**
+**40/40 SATISFIED**

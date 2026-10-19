@@ -278,6 +278,12 @@ final class ClaudeService {
         userContent.append(["type": "text", "text": query])
 
         conversationMessages.append(["role": "user", "content": userContent])
+        // Beta hardening: the wire context is a window, not a warehouse. Keep the
+        // last 24 messages (≈12 turns) so a long session can neither overflow the
+        // model's context window nor burn tokens re-sending ancient history.
+        if conversationMessages.count > 24 {
+            conversationMessages.removeFirst(conversationMessages.count - 24)
+        }
 
         let body: [String: Any] = [
             "model": model,

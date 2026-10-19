@@ -17,8 +17,9 @@ echo "== 2 · core + character rig"
 bash scripts/test-core.sh | tail -1
 echo "== 3 · island design law"
 bash tools/ui/test-design.sh | tail -1
-echo "== 3b · security council"
+echo "== 3b · security + beta councils"
 python3 tools/ui/audit_security.py | tail -1
+python3 tools/ui/audit_beta.py | tail -1
 echo "== 4 · wiring council (whole body)"
 python3 tools/ui/audit_wiring.py | tail -1
 echo "== 5 · emits (regenerated every run — /tmp resets cannot break the chain)"
