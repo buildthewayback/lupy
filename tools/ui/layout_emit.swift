@@ -123,7 +123,7 @@ enum LayoutEmitter {
 
         Sheet(id: "task", need: .task(steps: 4, hasPlan: true, hasPreview: true), state: .working,
               headline: "Rebuilding the island UI",
-              lines: ["1  Design kernel — 432 checks passing",
+              lines: ["1  Design kernel — 473 checks passing",
                       "2  Glass + palette — derived, not guessed",
                       "3  Canvas growth law — running",
                       "4  Wire the views — waiting"],
