@@ -158,6 +158,72 @@ def main():
         bad = re.search(r"IslandViewContent|FlowPill|BotCanvasView", text(p))
         ok(bad is None, f"no legacy view dependency: {os.path.basename(p)}")
 
+    # ---- 5 · WHOLE-BODY SEAMS: every cross-file reference in the app resolves ----
+    import glob as _glob
+    body = {}
+    for f in _glob.glob(os.path.join(ROOT, "Mac/Sources/**/*.swift"), recursive=True):
+        body[os.path.relpath(f, ROOT)] = open(f).read()
+    allsrc = "\n".join(body.values())
+
+    # 5a · #selector(foo) must have an @objc func foo somewhere in the same file
+    for rel, txt in body.items():
+        for sel in set(re.findall(r"#selector\((?:\w+\.)?(\w+)\)", txt)):
+            ok(re.search(rf"@objc[^\n]*\n[^\n]*func {sel}\b|@objc func {sel}\b|func {sel}\(", txt) is not None,
+               f"selector target exists: {rel} #{sel}")
+
+    # 5b · notification names: every .forName(.x) / name: .x is a defined constant
+    defined_names = set(re.findall(r"static let (\w+)\s*=\s*Notification\.Name", allsrc))
+    defined_names |= set(re.findall(r"static let (\w+)\s*:\s*Notification\.Name", allsrc))
+    system_ok = ("NSApplication", "NSWindow", "NSView", "NSText", "NSWorkspace",
+                 "AVAudioSession", "AVAudioEngine", "UIScene", "NSStatusBar")
+    for rel, txt in body.items():
+        refs = set(re.findall(r"forName:\s*\.(\w+)", txt))
+        # a bare `name: .x` only counts when the line is about a Notification
+        for line in txt.splitlines():
+            if "Notification" in line:
+                refs |= set(re.findall(r"name:\s*\.(\w+)", line))
+        for ref in refs:
+            if ref in defined_names or ref.startswith(system_ok):
+                continue
+            ok(False, f"notification name resolves: {rel} .{ref}")
+            break
+        else:
+            ok(True, f"notification names resolve: {os.path.basename(rel)}")
+
+    # 5c · enum cases: qualified references match the enum's comma-listed cases
+    enums = {}
+    for en in ["IslandView", "BotState", "BotEmote", "LupyCharacterState", "LupyCanvasNeed"]:
+        bodies = re.findall(rf"enum {en}[^{{]*{{(.*?)\n}}", allsrc, re.S)
+        # extensions of the enum carry members too (static helpers, colours…)
+        bodies += re.findall(rf"extension {en}\s*{{(.*?)\n}}", allsrc, re.S)
+        if bodies:
+            cases = {"allCases", "rawValue", "hashValue"}
+            for b in bodies:
+                for group in re.findall(r"case ([\w, ]+)", b):
+                    cases |= {g.strip() for g in group.split(",") if g.strip()}
+                # computed members count as members too
+                cases |= set(re.findall(r"\b(?:var|func) (\w+)", b))
+            enums[en] = cases
+    for en, cases in enums.items():
+        for ref in set(re.findall(rf"{en}\.(\w+)", allsrc)):
+            ok(ref in cases, f"{en} case exists: .{ref}")
+
+    # 5d · asset names: NSImage(named:/Image("x") live in an asset catalogue
+    cats = set()
+    for d in _glob.glob(os.path.join(ROOT, "Mac/**/Assets.xcassets/*.imageset"), recursive=True):
+        cats.add(os.path.basename(d).replace(".imageset", ""))
+    for rel, txt in body.items():
+        for a in set(re.findall(r"NSImage\(named:\s*\"(\w[\"\w/]*)\"", txt)) | \
+                   set(re.findall(r"(?<![\w])Image\(\"(\w[\"\w/]*)\"", txt)):
+            ok(a in cats or "/" in a or a in ("", ), f"asset exists: {rel} '{a}'")
+
+    # 5e · every state.$publisher the app observes is @Published on AppState
+    appstate = body.get("Mac/Sources/App/AppState.swift", "")
+    pub = set(re.findall(r"@Published var (\w+)", appstate))
+    for rel, txt in body.items():
+        for ref in set(re.findall(r"state\.\$(\w+)", txt)):
+            ok(ref in pub, f"AppState publisher exists: {rel} ${ref}")
+
     print(f"\nCOUNCIL, WIRING: {'SATISFIED' if not FAILS else str(len(FAILS)) + ' FAILURES'}"
           f" ({CHECKS} checks)")
     return 1 if FAILS else 0

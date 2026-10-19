@@ -48,6 +48,7 @@ let out = null;
 let wmo = true;
 let runArgs = [];
 let typecheckOnly = false;
+let parseOnly = false;
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
   if (a === '-D') { defines.push(argv[++i]); continue; }
@@ -55,6 +56,7 @@ for (let i = 0; i < argv.length; i++) {
   if (a === '--out') { out = argv[++i]; continue; }
   if (a === '--per-file') { wmo = false; continue; }
   if (a === '--typecheck') { typecheckOnly = true; continue; }
+  if (a === '--parse') { parseOnly = true; continue; }
   if (a.startsWith('--mode=')) { process.env.SWIFTWASM_MODE = a.slice(7); continue; }
   if (a === '--') { runArgs = argv.slice(i + 1); break; }
   files.push(path.resolve(a));
@@ -264,6 +266,13 @@ const common = [
 
 const t0 = Date.now();
 const objects = [];
+if (parseOnly) {
+  const cargs = ['swift-frontend', '-frontend', '-parse', ...vfiles, ...common];
+  const r = await runShimCompile(cargs, '/build/objects/none.o');
+  if (r.stderr.trim()) process.stderr.write(r.stderr);
+  console.error(`[swiftc-wasm] parse ${Date.now() - t0} ms -> ${r.code === 0 ? 'OK' : 'FAILED'}`);
+  process.exit(r.code);
+}
 if (typecheckOnly) {
   const cargs = ['swift-frontend', '-frontend', '-typecheck', ...vfiles, ...common];
   const r = await runShimCompile(cargs, '/build/objects/none.o');
