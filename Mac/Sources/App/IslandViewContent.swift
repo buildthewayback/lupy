@@ -4089,8 +4089,9 @@ struct AgentPill: View {
                     Capsule()
                         .stroke(Color(hex: effectiveColor).opacity(isHovered ? 0.55 : 0.14), lineWidth: 1)
                     HStack(spacing: 0) {
-                        MiniBotCanvasView(task: task)
-                            .frame(width: 22 / 0.6, height: 22 / 0.6)
+                        // The character view already sizes itself (body + glow + badge),
+                        // so it is placed, not squeezed into a 22 pt box.
+                        MiniBotCanvasView(task: task, bodyWidth: 15)
                             .frame(width: 22, height: 22, alignment: .center)
                             .padding(.leading, 8)
                         Spacer()
@@ -4156,8 +4157,7 @@ struct MusicPill: View {
 
             // Mini Mochi at leading edge
             HStack(spacing: 0) {
-                MiniBotCanvasView(task: task, isDancing: isPlaying)
-                    .frame(width: 22 / 0.6, height: 22 / 0.6)
+                MiniBotCanvasView(task: task, isDancing: isPlaying, bodyWidth: 15)
                     .frame(width: 22, height: 22, alignment: .center)
                     .padding(.leading, 8)
                 Spacer()
@@ -4376,8 +4376,7 @@ struct ColumnAgentsView: View {
     var body: some View {
         VStack(spacing: 0) {
             ForEach(Array(others.prefix(4).enumerated()), id: \.1.id) { idx, task in
-                MiniBotCanvasView(task: task)
-                    .frame(width: 16 / 0.6, height: 16 / 0.6)
+                MiniBotCanvasView(task: task, bodyWidth: 11)
                     .frame(width: 16, height: 16)
                     .position(x: 0, y: CGFloat(50 + idx * 24))
                     .animation(.spring(response: 0.5, dampingFraction: 0.72).delay(Double(idx) * 0.035), value: idx)

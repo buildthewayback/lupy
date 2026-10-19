@@ -227,59 +227,31 @@ struct BotCanvasView: View {
 }
 
 /// Mini bot canvas (for agent pills/column)
+/// A small LUPY for pill badges and cards.
+///
+/// This used to be Coucou's `BotEngine` mini: the old character, in the task's own
+/// colour. The founder approved one character and the app was drawing two, so this now
+/// renders LUPY from the same kernel as everywhere else. The task's colour is no longer
+/// painted onto a body — LUPY's body is white in every state by law, and the colour is
+/// the state's light.
 struct MiniBotCanvasView: View {
     let task: AgentTask
     var isDancing: Bool = false
-    @StateObject private var engine: BotEngine
-
-    init(task: AgentTask, isDancing: Bool = false) {
-        self.task = task
-        self.isDancing = isDancing
-        _engine = StateObject(wrappedValue: {
-            let e = BotEngine()
-            e.isMini = true
-            e.bodyColor = cgColorFromHex(task.color)
-            return e
-        }())
-    }
+    /// Points the body should occupy. Pill badges sit around 16–22 pt; cards around 34.
+    var bodyWidth: CGFloat = 20
 
     @Environment(\.islandViewActive) private var viewActive
 
-
     var body: some View {
-        // Display refresh rate. Paused in island views that are not shown.
-        TimelineView(.animation(paused: !viewActive)) { timeline in
-            let frame = timeline.date   // see BotCanvasView: redraw on every tick
-            Canvas { context, size in
-                _ = frame
-                engine.setDancing(isDancing)
-                MochiFrameClock.advance(engine)
-                var ctx = context
-                engine.applyDance(&ctx, size: size)
-                engine.draw(context: ctx, size: size)
-            }
-        }
-        .onChange(of: task.state) { _, newState in
-            engine.setState(newState)
-        }
-        // The colour is set once, when the engine is made: a colour picked in
-        // Settings has to reach a mini Mochi that is already on screen.
-        .onChange(of: task.color) { _, newColor in
-            engine.bodyColor = cgColorFromHex(newColor)
-        }
-        .onAppear {
-            engine.setState(task.state, force: true)
-            if let emote = task.emote {
-                engine.setPermanentEmote(emote)
-            }
-            // Direct eye override takes priority (e.g. .wide eyes for Research)
-            if let eye = task.miniEye {
-                engine.permanentEye = eye
-                engine.eyeOverride = eye
-                engine.eyeOverrideUntil = .greatestFiniteMagnitude
-            }
-        }
+        LupyCanvasView(state: LupyStateMapping.state(from: task.state))
+            .frame(width: frame, height: frame)
+            .opacity(viewActive ? 1 : 0)
+            // The rig animates on its own clock; the island's active flag only decides
+            // whether it is worth drawing at all.
+            .allowsHitTesting(false)
     }
+
+    private var frame: CGFloat { bodyWidth / CGFloat(LupyComposition.unitFraction) }
 }
 
 // MARK: - Frame clock

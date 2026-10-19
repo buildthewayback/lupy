@@ -69,3 +69,167 @@ Asked the 4 open questions before starting.
     single-job rerun refused by the API. **F11 (run 38938047078, `735de9b`) DELIVERED: all green
     both Macs** — 36/36 download, chat 19/19, control 9/9 (clean "run: finished"), memory 46–57 MB.
     Campaign total ≈1,932/2,000 Linux-eq (96.6%) — allowance spent; next builds wait for November.
+
+## 2026-10-16 (LUPY 3) — the rebuild directive
+Founder tested F11 with a real API key (works!), verdict: half-half — Coucou leftovers wired the
+Coucou way (island home shows coding pills; chat gates behind approvals). New directive: full
+architecture-first rebuild — deep Coucou audit, blueprint for his needs (browser use, agentic
+tasks, his areas), remove originals, build his surfaces, rewire. Days allowed; zero CI until the
+allowance resets 1 Nov. docs/LUPY3_PLAN.md; 4 scoping questions asked.
+
+## 2026-10-16 (LUPY 3) — interview complete; blueprint + audit drafted
+3 interview rounds (see LUPY3_PLAN.md): identity = personal AI orchestrator ("and my personal
+assistant kinda"), salon-website pipeline = the spec, research-first/quality-anchored, earned
+autonomy (nothing overnight on day one), ~$15/month model ladder, per-task eyes rule.
+DRAFTED: docs/LUPY3_BLUEPRINT.md (the contract: pipeline, ladder, second brain, browser agent,
+autonomy ladder, surfaces, what dies) + docs/LUPY3_AUDIT.md (dismantling map with verdicts;
+open "(?)" items go to the founder at blueprint review). Next: deepen the audit edge-by-edge,
+then build order planning. Builds wait for the CI allowance reset (1 Nov).
+
+## 2026-10-17 (LUPY 3) — swarm locked, utilities decided, UI researched, handoff written
+Founder round 4: one Lupy front / multi-agent swarm behind (many free-tier models, "5 or 10,
+as needed"); utilities (music/mail/notes/clipboard/iPhone/Flow daily pages) STAY if island-first
+and beautiful; UI must be researched heavily and be "amazing". Done: UI research doc (island
+apps, 2026 AI-chat conventions, agent-UX patterns, Liquid Glass) with Lupy design rules +
+tokens; BLUEPRINT v2 (swarm section, UI link, utilities decision); AUDIT v2 (all (?) resolved,
+absorb verdicts for insights/dictionary/snippets/styles); concept render; LUPY3_HANDOFF.md
+(ignition key for the next session + GitHub account migration plan). Next: founder blueprint
+review → build order.
+
+## 2026-10-17 evening (LUPY 3) — smart-canvas direction + references + concept renders
+Founder round 5: the island becomes a SMART CANVAS (avatar-first under camera, grows per
+need, persistent mic+composer, progressive disclosure, no fixed dashboard, Linear polish).
+References studied: Vibe Island (notch approvals ⌘Y/⌘N, quick-answers ⌘1–3, quota glance),
+AgentsRoom (3 ambient states, surge notifications), Coworker (validates deterministic-core
+orchestration + memory-before-orchestration), Linear (polish bar). UI research doc round-2
+section + revised design rules; BLUEPRINT §7 rewritten as smart canvas; original-character
+mandate (capsule eyes, same-or-better quality, Coucou rig as base) recorded. 4 concept
+renders generated into docs/concepts/. Awaiting founder brainstorm/acceptance before build.
+
+## 2026-10-17 night (LUPY 3) — corrections: character spec + UI style target
+Founder round 6: (1) NOT mango — org name ≠ character; ask, don't assume. (2) Character =
+his design (ref saved docs/concepts/founder-ref-20261017.jpg), WHITE base, tall solid-black
+capsule eyes no pupils (the signature), Coucou's animation quality, traits later (crown,
+accessories, seasonal, pyjamas) — fancy, not overloaded. (3) My first UI renders rejected —
+vertical was wrong; target = Synvy Neuro dark glassmorphism, HORIZONTAL widget-like, laptop
+first. (4) Order: character → UI use cases → backend. (5) AI images must be persistent:
+approved renders become locked references. Docs updated (BLUEPRINT §7/§8, UI_RESEARCH §3
+tokens + round 3, PLAN round 6). Generating white-character candidates from his reference
+for approval.
+
+## 2026-10-17 night II (LUPY 3) — vision handoff: references map written, session closes
+Founder decided: visual work moves to a new session WITH vision (this agent cannot view
+images; two character candidates were rejected). Wrote docs/LUPY3_REFERENCES.md — the
+master map of every link he gave (10 links + his character reference image) with his words
+on each, incl. the Milkinside palette (#374772/#576692/#989FAB/#C0C5D4…). Character spec
+corrected: NO hands/legs, exactly his reference, white, black capsule eyes no pupils.
+HANDOFF updated with vision-session first-actions. PLAN round 7 recorded. Character
+candidates from the rejected attempt were NOT saved (founder skipped both). Next session:
+read HANDOFF → study all references with eyes → character base → UI use cases → backend.
+
+## 2026-10-17 night III (LUPY 3) — Google Drive handoff copy (the 99% clone)
+Founder connected Google Drive so the next session isn't dependent on git only. Wrote
+docs/LUPY3_AGENT_MEMORY.md (full agent-state clone: session mechanics, facts, founder
+profile, priorities, dead ends). Preparing Drive folder "Lupy LUPY3 Handoff" with: all
+LUPY3_*.md docs + WORK_LOG + founder-ref-20261017.jpg + 00_READ_ME_FIRST.md +
+lupy3-local-commits.bundle (git bundle of the local-only commits 8493846..HEAD so the new
+session can restore the exact git history). HANDOFF updated with the Drive restore path.
+
+## 2026-10-17 (LUPY 3, session 3 — vision) — memory restored, vision proven, character base v1
+New session on arena/47c739ab-lupy. Drive folder "Lupy LUPY3 Handoff" read in prescribed
+order (00_NEW_SESSION_START_HERE supersedes 00_READ_ME_FIRST). `docs/` had NO LUPY3 files
+(LUPY 3 commits never reached GitHub) → all 10 LUPY3 docs + founder-ref-20261017.jpg copied
+from Drive, image md5 029995c9… verified identical, WORK_LOG entries merged (commit 19de740).
+**Vision check PASSED**: founder-ref-20261017.jpg opened and described back — TRI-TRI MOCHI
+sprite sheet, 11 states, plump rounded-triangle mochi, no limbs, cream body, tall solid-black
+capsule eyes with no pupils, blush cheeks, cream halo over near-black. Added
+docs/concepts/ref-idle-crop.jpg (idle tile crop, no pixel edits) as the generation anchor.
+**Character base v1 generated** (founder chose: 3 candidates + both tones):
+char-base-A-classic (wide gumdrop — eyes rendered glossy, violates the flat-black-eyes rule),
+char-base-B-tall (triangular dome — apex too pointy vs reference; eyes clean),
+char-base-C-pebble (closest silhouette to the reference; eyes clean),
+char-base-B-pure-white (pure #FFFFFF tone test on B).
+Contact sheet docs/concepts/lupy3-character-candidates-v1.png. Awaiting founder pick/patches
+before locking the persistent reference. No code touched.
+
+## 2026-10-17 (LUPY 3, session 3 — vision) — FOUNDER CORRECTION: character is LUPY, this is V3
+Founder ruling (verbatim gist): no more "Coucou"/"Mochi"; the character is **Lupy**; this is
+**LUPY 3**, our own character; Coucou is only the engineering/anchor reference; the 4th
+image (pure-white tall dome) is the valid character; eyes can never be anything but his
+example — tall solid-black capsules, no pupils, no highlights; body colours and overlays are
+free to change but the EYES are the expression; character must be consistent everywhere;
+"there is no chance for character error is branding"; and the eventual animation/interaction
+system must match Coucou's repo quality.
+→ Wrote **docs/LUPY_BRAND_CHARACTER.md** (brand + character law: names, exact geometry,
+eye law, 11 states + 8 emotes, animation rules, production pipeline).
+→ Researched Coucou properly: the character is NOT a sprite sheet — it is a procedural
+SwiftUI/Canvas engine (`CoucouKit/BotEngine.swift`, 1,901 lines): superellipse `mochiPath`,
+`MochiConst.eyeW/eyeH/eyeSp/eyeP`, an `EyeShape` enum (pill/wide/dot/line/flat/happy/closed/
+spiral/heart/star/tired/wink/cup) and a `BotStates` table holding colour+tint+eye+badge+glow
++behaviour per state. LICENSE-ASSETS confirms the artwork/name "Mochi" is copyrighted to
+Louis Raillé — we must ship our own character, which is exactly what LUPY 3 does.
+→ **Measured the founder's reference numerically** (not eyeballed): body h/w = 0.8021, eye
+w = 0.139·bodyW, eye h = 0.2888·bodyW (ratio 2.08), eye centre ±0.1644·bodyW at 0.572 of
+body height from top, blush #F78E86 at ±0.24·bodyW. Found and documented that the source
+sheet's eyes sit 25px right of the body midline (slightly turned render, not design intent)
+→ the production rig is symmetrised from averaged half-widths.
+→ Assets: `docs/concepts/lupy-character-spec-v1.json` (geometry spec),
+`tools/character/render_states.py` (spec-driven state renderer, ImageMagick),
+`docs/concepts/states/` (19 PNGs), `docs/concepts/lupy-character-states.png` (contact sheet),
+`docs/concepts/lupy-master-M2-softapex.png` (locked white master).
+Debug: IM `copy_opacity` REPLACES alpha instead of multiplying (blush painted the whole
+body) → `DstIn` is the correct operator; a grayscale gradient silently drops the alpha
+channel → masks/gradients must be forced to `-type TrueColorAlpha`; `gradient:` is top-down.
+Awaiting founder sign-off on M2 + the 11-state sheet before locking the persistent reference.
+
+## 2026-10-17 (LUPY 3, session 3) — STATES v2: real shading (founder: "needs more gloss and depth")
+Founder reviewed the flat sheet and asked for the gloss/volume of his reference. Rewrote the
+renderer from ImageMagick compositing to **Pillow pixel math** (`tools/character/render_states.py`
+v2) after proving IM's operators were unusable here: `copy_opacity` REPLACES alpha,
+`-composite` merges only TWO images (silently dropping the extra badge layers), and grayscale
+gradients drop the alpha channel. New stack, 19 states in ~1.7 s:
+  1 base vertical gradient (shade -0.30 top specular end -> -0.02 at base)
+  2 inner rim shading from a blurred distance field -> genuine volume
+  3 broad top-front specular + tight hotspot (screen blend)
+  4 bottom contact shade + soft floor shadow
+  5 colour halo, 6 blush (clipped), 7 eyes, 8 badge/overlays
+Also: eye ink is warm near-black #1A1418 (never pure #000) matching the reference; happy =
+capped arch n, sleeping = cup u, drawn as explicit polylines with round caps (PIL `arc()`
+was collapsing them); badges at upper-left with a real bubble tail; spirals enlarged.
+Grep-verified: no ImageMagick calls left in the renderer except the optional sheet montage
+(now pure Pillow). Tree clean, pushed.
+
+## 2026-10-17 (LUPY 3, session 3) — STATES v3: matched to the reference by measurement
+Founder asked for more polish and asked to see every render in chat (no workspace access).
+Worked numerically against the reference instead of by eye:
+- Sampled the reference backdrop and vertical glow profile at the body centre:
+  ref halo at 10/25/40/60px above the body = (149,118,89)/(113,88,68)/(70,60,51)/(45,42,40).
+  Ours started at (39,37,38) — ~4x too weak and too cool.
+- Found the bug: `v ** 0.80` on a 0-255 value collapses 255 -> 82, so the halo mask was
+  always ~1/3 strength. Must normalise (`(v/255)**g * 255`).
+- Found a second bug: `Image.paste()` never writes the alpha channel, so the first halo
+  layer was fully transparent — it had been invisible for several passes.
+- Found a third: `str.replace()` fails silently when the pattern is not found; one patch
+  reported success while changing nothing. Verified with grep afterwards.
+Final state (all measured): body ivory (253,234,210) vs reference (251,230,199); halo
+matching within ~10% at every sampled distance; backdrop (24,24,27) vs ref (34,34,36);
+eye geometry w/body 0.141 vs 0.139, h/body 0.289 vs 0.289, c2c 0.329 vs 0.329.
+Removed the white rim outline (the reference has none), softened the base bounce.
+Contact sheet rebuilt with labels: docs/concepts/lupy-character-states.png (19 states).
+
+## 19 Oct 2026 — production-final pass (one go)
+
+Everything the island is, in layers, each with its own proof:
+1. **Character** — locked reference (135 rig checks). Body pure white, colour in the
+   glow, ∪∪ lids default, badge right rim.
+2. **Design law** — `LupyIslandDesign.swift`: 8 pt grid + documented 4 pt half-step,
+   HIG type ramp (13 Bold headline), derived glass (alpha 0.837, 11.07:1 worst case),
+   one surface / two shapes language, anchor law (`softwareGap`) for no-notch Macs.
+   473 headless checks.
+3. **Surfaces** — approval (the reference), task, chat, card family; SwiftUI views
+   that own zero numbers.
+4. **Shell + director** — real window, both anchors, one spring = the jump; routes
+   AppState (approvals, tasks, chat) into the canvas; ⌘Y/⌘N; composer → ClaudeService.
+5. **Proof system** — renderer at 1:1 from the law; `audit_ui.py` (12) and
+   `audit_all.py` (43) measure the pictures themselves; both SATISFIED.
+6. **Run path** — `scripts/run-mac.sh`, macOS 15 floor, legacy island one flag away.

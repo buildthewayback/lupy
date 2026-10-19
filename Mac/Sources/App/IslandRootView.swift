@@ -97,7 +97,8 @@ struct IslandContainer: View {
             // Single BotPlacement — always alive in the view tree so spring animations
             // fire from the current position (e.g. choose at 60,101) when canvas deactivates.
             // Hidden during upload canvas or greeting (both draw their own Mochi).
-            BotPlacement(state: state, islandW: islandWidth, islandH: islandHeight)
+            BotPlacement(state: state, islandW: islandWidth, islandH: islandHeight,
+                         cornerRadius: cornerRadius)
                 // Keep idle animations inside the resting strip. Expanded views
                 // retain the panel's full height for particles and hands.
                 .mask(alignment: .topLeading) {
@@ -289,32 +290,18 @@ struct BotPlacement: View {
     @ObservedObject var state: AppState
     let islandW: CGFloat
     let islandH: CGFloat
+    /// The island's own corner radius: the status label must stay inside the rounded
+    /// corner or its first word gets sliced off.
+    var cornerRadius: CGFloat = IslandConst.roundedCorner
 
     var body: some View {
         let (cx, cy, diameter, opacity) = botPosition(mode: state.mode, view: state.view, islandW: islandW, islandH: islandH, uploadProgress: state.uploadProgress, hasNotch: state.hasNotch)
-        let canvasSize = diameter / 0.6
-        let overhang: CGFloat = 40
         let isUploading = state.view == .uploading
 
         Group {
-            // No glow in uploading mode — the tiny dot doesn't need it
-            if state.mode == .expanded && !isUploading {
-                Circle()
-                    .fill(RadialGradient(
-                        gradient: Gradient(stops: [
-                            .init(color: botGlowColor(state.effectiveState), location: 0),
-                            .init(color: .clear, location: 0.62)
-                        ]),
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: diameter * 1.1
-                    ))
-                    .frame(width: diameter * 2.2, height: diameter * 2.2)
-                    .blur(radius: 6)
-                    .opacity(botGlowOpacity(state.effectiveState))
-                    .position(x: cx, y: cy)
-                    .animation(.easeInOut(duration: 0.4), value: state.effectiveState)
-            }
+            // No separate glow here any more: LUPY's light is drawn by his own rig,
+            // in the state's colour, from the same kernel the sheets use. Two glows
+            // for one character meant two colours that drifted apart.
 
             // Uploading: no particle overhang (no hearts during upload), positioned directly at cy.
             // BotEngine cy = H/2 + 0 + oy*R + R*0.06 ≈ H/2 (body centered in canvas).
@@ -331,21 +318,26 @@ struct BotPlacement: View {
                     let t = min(1.0, max(0, elapsed / state.uploadDuration))
                     // cx = 36 + 526*t: bot center at fill right edge (bar left=36, width=526)
                     let uploadCx = 36 + CGFloat(t * (2 - t)) * 526
-                    BotCanvasView(state: state, particleOverhang: 0, paused: state.mochiOnDesktop)
-                        .frame(width: canvasSize, height: canvasSize)
+                    IslandCharacterView(state: state, bodyWidth: diameter,
+                                        paused: state.mochiOnDesktop,
+                                        showsStatusBubble: state.mode == .expanded,
+                                        labelInset: cornerRadius)
                         .opacity(state.isDraggingBot || state.mochiOnDesktop ? 0 : opacity)
                         .position(x: uploadCx, y: cy)
                 }
                 .transition(.scale(scale: 0.01, anchor: .center).combined(with: .opacity))
             } else {
                 // Invisible while Mochi lives on the desktop: no drawing either.
-                BotCanvasView(state: state, particleOverhang: overhang, paused: state.mochiOnDesktop)
-                    .frame(width: canvasSize, height: canvasSize + overhang)
+                IslandCharacterView(state: state, bodyWidth: diameter,
+                                    paused: state.mochiOnDesktop)
                     .opacity(state.isDraggingBot || state.mochiOnDesktop ? 0 : opacity)
-                    .position(x: cx, y: cy - overhang / 2)
+                    // No -overhang/2: that offset existed to centre Coucou's canvas,
+                    // which reserved 40 pt at the top for heart particles. LUPY's frame
+                    // is square and already centred on the body.
+                    .position(x: cx, y: cy)
                     .animation(.spring(response: 0.5, dampingFraction: 0.72), value: cx)
                     .animation(.spring(response: 0.5, dampingFraction: 0.72), value: cy)
-                    .animation(.spring(response: 0.5, dampingFraction: 0.72), value: canvasSize)
+                    .animation(.spring(response: 0.5, dampingFraction: 0.72), value: diameter)
                     .transition(.scale(scale: 0.01, anchor: .center).combined(with: .opacity))
             }
         }
@@ -713,7 +705,7 @@ struct CompactMiniGrid: View {
         let cols = [GridItem(.fixed(12), spacing: 4), GridItem(.fixed(12), spacing: 4)]
         LazyVGrid(columns: cols, spacing: 4) {
             ForEach(others) { task in
-                MiniBotCanvasView(task: task)
+                MiniBotCanvasView(task: task, bodyWidth: 15)
                     .frame(width: 12 / 0.6, height: 12 / 0.6)
                     .frame(width: 12, height: 12, alignment: .center)
             }

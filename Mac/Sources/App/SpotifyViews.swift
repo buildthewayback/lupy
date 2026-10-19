@@ -31,7 +31,7 @@ struct SpotifyPill: View {
 
             // Mini Mochi at leading edge
             HStack(spacing: 0) {
-                MiniBotCanvasView(task: task, isDancing: controller.isPlaying)
+                MiniBotCanvasView(task: task, isDancing: controller.isPlaying, bodyWidth: 15)
                     .frame(width: 22 / 0.6, height: 22 / 0.6)
                     .frame(width: 22, height: 22, alignment: .center)
                     .padding(.leading, 8)

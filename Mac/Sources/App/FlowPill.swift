@@ -324,9 +324,12 @@ struct FlowPillView: View {
     /// Mochi, drawn by the same engine as the compact island's mini Mochis: his eyes wander all
     /// around while you speak. 22 pt wide like a pill's Mochi (the canvas is larger, as there).
     private var mochi: some View {
-        // Still while only a recorded call shows: the pill costs nothing during a long call.
-        FlowMochiView(active: model.phase != .idle || model.hovered)
-            .frame(width: 22 / 0.6, height: 22 / 0.6)
+        // LUPY, from the same kernel as everywhere else — one character, one face.
+        // He stays visible during a recorded call (the pill used to stop drawing him
+        // to save power, which left a hole where the character belongs).
+        LupyCanvasView(state: model.phase == .idle ? .idle : .working)
+            .frame(width: 22 / CGFloat(LupyComposition.unitFraction),
+                   height: 22 / CGFloat(LupyComposition.unitFraction))
             .frame(width: 22, height: 22, alignment: .center)
     }
 
@@ -469,33 +472,6 @@ private struct FlowAnnouncementView: View {
 
 /// The pill's Mochi: a mini Mochi (BotEngine, like the pills of the compact island), white, idle,
 /// so his eyes wander around. Drawn only while the pill is open.
-private struct FlowMochiView: View {
-    let active: Bool
-    @StateObject private var engine: BotEngine
-
-    init(active: Bool) {
-        self.active = active
-        _engine = StateObject(wrappedValue: {
-            let e = BotEngine()
-            e.isMini = true
-            e.bodyColor = cgColorFromHex("#F5F6F8")
-            return e
-        }())
-    }
-
-    var body: some View {
-        TimelineView(.animation(paused: !active)) { timeline in
-            let frame = timeline.date   // redraw on every tick, as in MiniBotCanvasView
-            Canvas { context, size in
-                _ = frame
-                MochiFrameClock.advance(engine)
-                engine.draw(context: context, size: size)
-            }
-        }
-        .onAppear { engine.setState(.idle, force: true) }
-    }
-}
-
 /// The pill's window: borderless, never takes the focus (the words go to the app you type in), on
 /// every Space and over full-screen apps. It stays at the bottom centre of a screen while Flow
 /// dictation is on, and moves to the screen the mouse is on when you speak. It is taller than the

@@ -244,6 +244,20 @@ if bash scripts/smoke-mac-app.sh "$DEST" "$OUT" > /dev/null 2>&1; then
 else bad "smoke test failed (see smoke report below)"; fi
 grep -E '^(running|resident|Activity|CPU|quit|screenshot|animation)' "$OUT/smoke-report.txt" 2>/dev/null | sed 's/^/      /' >> "$REPORT"
 
+say "-- character window (the real SwiftUI rig, at 520 pt, state by state)"
+
+"$DEST/Contents/MacOS/Lupy" --character-preview > "$OUT/character-stdout.txt" 2>&1 &
+CHAR_PID=$!
+sleep 4
+if kill -0 "$CHAR_PID" 2>/dev/null; then
+  pass "the character window opens and stays up"
+else
+  bad "the character window exited (see character-stdout.txt)"
+fi
+shot character
+pkill -x Lupy 2>/dev/null
+sleep 1
+
 say "-- conversation self-test (the island's interaction loop, end-to-end on the real engine)"
 CHATDIR="$(mktemp -d)/lupy-chat-data"
 if "$DEST/Contents/MacOS/Lupy" --chat-self-test --data-dir "$CHATDIR" --report "$OUT/chat-selftest.txt" > "$OUT/chat-stdout.txt" 2>&1; then

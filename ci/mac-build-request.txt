@@ -1,2 +1,3 @@
-Build requested: 2026-10-16T19:20Z
-Reason: build F11 — LUPY 2 final; control self-test approved-Send observation disambiguated (F10 macOS-26 flake)
+request: lupy3-final-product-build
+date: 2026-10-19
+reason: build the final LUPY 3 app zip for the founder (release pipeline probe + product)

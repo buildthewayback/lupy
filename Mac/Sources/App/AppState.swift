@@ -400,7 +400,16 @@ final class AppState: ObservableObject {
     @Published var n8nRuns: [N8nRun] = []
 
     // Chat conversation history
-    @Published var chatHistory: [ChatMessage] = []
+    @Published var chatHistory: [ChatMessage] = [] {
+        didSet {
+            // Beta hardening: the visible history is bounded too — 200 messages,
+            // oldest first to go. The UI slices the last few turns anyway; this
+            // keeps a day-long session from becoming a memory leak.
+            if chatHistory.count > 200 {
+                chatHistory.removeFirst(chatHistory.count - 200)
+            }
+        }
+    }
 
     // Pending approval request from Claude Code hook
     @Published var pendingApproval: ApprovalInfo? = nil
