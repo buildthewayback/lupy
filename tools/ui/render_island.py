@@ -397,14 +397,13 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
     primary = rgb(col["primary"])
     ink_text = (7, 10, 16)
 
-    # ---- the card
-    if content and content[2] > 0:
-        paste_glass(img, (side + content[0], oy + content[1], content[2], content[3]),
-                    m["cardCorner"], doc["glass"]["card"], ss, shadow=False)
+    # Divider under the headline row: structure without a box. macOS groups with
+    # hairlines and spacing; the card's glass frame is gone on purpose.
+    if content and content[2] > 0 and status and status[2] > 0:
         d = ImageDraw.Draw(img)
-        # divider under the headline row: structure, in the decoration tone
         dy = (oy + status[1] + status[3]) * ss
-        d.line([P(content[0] + 2, 0)[0], dy, P(content[0] + content[2] - 2, 0)[0], dy],
+        d.line([P(content[0] + m["inner"], 0)[0], dy,
+                P(content[0] + content[2] - m["inner"], 0)[0], dy],
                fill=rgb(mix(col["line"], (0, 0, 0), 0.45)),
                width=max(1, int(ss * 0.5)))
 

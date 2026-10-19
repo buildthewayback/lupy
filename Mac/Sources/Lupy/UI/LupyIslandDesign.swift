@@ -627,10 +627,14 @@ enum LupyIslandLayout {
     static let chipPadH: Double     = 12
     /// Icon to label inside a button: the standard icon-text gap.
     static let chipIconGap: Double  = 8
-    /// Radii come from one family — 8, 16, 24, capsule — never from a thumb:
-    static let chipCorner: Double   = 7    // a macOS button (Big Sur corner ≈ 6–7)
-    static let cardCorner: Double   = 16   // a card, in the modern 8–16 range
-    static let fieldCorner: Double  = 8    // a macOS text field
+    /// THE SHAPE LANGUAGE — two roles, never a third:
+    ///   * the SURFACE: a capsule while it is a band, `corner()` once it opens;
+    ///   * a CONTROL: 8 pt continuous — chips, the composer's recessed field.
+    /// Nothing else gets a shape. macOS System Settings groups with spacing and
+    /// hairline dividers, never with a box inside a box; the founder's eye caught
+    /// our card-in-panel-in-field nesting as exactly the mistake it was.
+    static let chipCorner: Double   = 8    // every control: one corner, one family
+    static let fieldCorner: Double  = 8    // the composer's recess, same corner
 
     /// The narrowest card that can still hold a headline and a source line.
     static let headlineMin: Double = 240
