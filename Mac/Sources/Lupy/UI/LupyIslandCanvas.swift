@@ -36,12 +36,17 @@ extension LupyGlass {
 struct LupyGlassSurface: ViewModifier {
     let glass: LupyGlass
     let corner: CGFloat
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     func body(content: Content) -> some View {
         content
             .background(
                 RoundedRectangle(cornerRadius: corner, style: .continuous)
-                    .fill(.ultraThinMaterial)
+                    // Reduce Transparency: a solid, designed floor — never clear,
+                    // never broken. The contrast law still holds on this colour.
+                    .fill(reduceTransparency
+                          ? AnyShapeStyle(glass.base.colour.opacity(0.96))
+                          : AnyShapeStyle(.ultraThinMaterial))
                     .saturation(glass.saturation)
                     .overlay(
                         RoundedRectangle(cornerRadius: corner, style: .continuous)

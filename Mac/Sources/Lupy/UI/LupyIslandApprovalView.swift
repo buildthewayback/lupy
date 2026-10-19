@@ -87,7 +87,7 @@ struct LupyIslandApprovalView: View {
                 // because white on the accent fails our own 4.5:1 law.
                 HStack(spacing: LupyIslandLayout.grid) {
                     ForEach(Array(payload.chips.enumerated()), id: \.element.id) { i, chip in
-                        Button { onChip(i) } label: { LupyChipLabel(chip: chip) }
+                        Button { onChip(i) } label: { LupyChipFace(chip: chip) }
                             .buttonStyle(.plain)
                     }
                 }
@@ -100,7 +100,7 @@ struct LupyIslandApprovalView: View {
 
 // MARK: - One chip, on the control kit
 
-private struct LupyChipLabel: View {
+struct LupyChipFace: View {
     let chip: LupyApprovalChip
 
     var body: some View {

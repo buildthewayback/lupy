@@ -5,6 +5,7 @@ import SwiftUI
 final class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     private(set) var islandController: IslandWindowController?
+    private var lupy3Director: LupyIslandDirector?
     private var demoMenuItem: NSMenuItem?
     private var lupyStopControlItem: NSMenuItem?
 
@@ -277,6 +278,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// The composer's voice: the island's typing line into the assistant, using
+    /// the same path the v0.2 chat surface uses — one backend, two doors.
+    func askClaude(_ text: String) async {
+        let state = AppState.shared
+        await MainActor.run {
+            state.chatHistory.append(ChatMessage(role: .user, content: text))
+            state.stateOverride = .thinking
+            state.view = .lupyChat
+        }
+        await ClaudeService.shared.chat(query: text, context: state.promptContext,
+                                        state: state)
+    }
+
     // MARK: - Island setup
 
     private func setupIsland() {
@@ -284,6 +298,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         islandController?.showWindow(nil)
         islandController?.fsm.launch()
         HookServer.shared.start()
+        // LUPY 3: the director hosts the new island and keeps the v0.2 one collapsed
+        // with a notification the old FSM already obeys. `lupy3LegacyIsland` in
+        // defaults brings the old island back, untouched, if ever needed.
+        if !UserDefaults.standard.bool(forKey: "lupy3LegacyIsland") {
+            lupy3Director = LupyIslandDirector()
+            lupy3Director?.onAsk = { [weak self] text in
+                Task { await self?.askClaude(text) }
+            }
+            lupy3Director?.start()
+        }
         #if !APPSTORE
         _ = VoiceEngine.shared  // registers system observers; starts mic only if the user enabled voice
         FlowDictation.shared.start()  // watches the dictation key only if Flow dictation is on
