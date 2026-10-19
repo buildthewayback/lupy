@@ -216,3 +216,20 @@ matching within ~10% at every sampled distance; backdrop (24,24,27) vs ref (34,3
 eye geometry w/body 0.141 vs 0.139, h/body 0.289 vs 0.289, c2c 0.329 vs 0.329.
 Removed the white rim outline (the reference has none), softened the base bounce.
 Contact sheet rebuilt with labels: docs/concepts/lupy-character-states.png (19 states).
+
+## 19 Oct 2026 — production-final pass (one go)
+
+Everything the island is, in layers, each with its own proof:
+1. **Character** — locked reference (135 rig checks). Body pure white, colour in the
+   glow, ∪∪ lids default, badge right rim.
+2. **Design law** — `LupyIslandDesign.swift`: 8 pt grid + documented 4 pt half-step,
+   HIG type ramp (13 Bold headline), derived glass (alpha 0.837, 11.07:1 worst case),
+   one surface / two shapes language, anchor law (`softwareGap`) for no-notch Macs.
+   473 headless checks.
+3. **Surfaces** — approval (the reference), task, chat, card family; SwiftUI views
+   that own zero numbers.
+4. **Shell + director** — real window, both anchors, one spring = the jump; routes
+   AppState (approvals, tasks, chat) into the canvas; ⌘Y/⌘N; composer → ClaudeService.
+5. **Proof system** — renderer at 1:1 from the law; `audit_ui.py` (12) and
+   `audit_all.py` (43) measure the pictures themselves; both SATISFIED.
+6. **Run path** — `scripts/run-mac.sh`, macOS 15 floor, legacy island one flag away.
