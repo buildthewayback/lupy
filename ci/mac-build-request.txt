@@ -1,2 +1,3 @@
-Build requested: 2026-10-18T14:55Z
-Reason: label no longer sliced by the island corner
+request: lupy3-final-product-build
+date: 2026-10-19
+reason: build the final LUPY 3 app zip for the founder (release pipeline probe + product)
