@@ -177,8 +177,8 @@ def desktop(w, h, kind, seed=3):
     return img
 
 
-def menu_bar(w, ss, kind, notch_w):
-    """The macOS menu bar, with the notch the island hangs from."""
+def menu_bar(w, ss, kind, notch_w, notch=True):
+    """The macOS menu bar; the notch only where the hardware has one."""
     h = int(MENUBAR * ss)
     bar = Image.new("RGB", (w, h), (246, 247, 250) if kind == "bright" else (18, 19, 24))
     d = ImageDraw.Draw(bar)
@@ -197,7 +197,9 @@ def menu_bar(w, ss, kind, notch_w):
         tw = d.textlength(m, font=fr)
         d.text((x - tw, (h - fr.size) // 2), m, font=fr, fill=ink)
         x -= int(tw + 16 * ss)
-    # the notch: black, centred, the island's home
+    # the notch: black, centred, the island's home — absent on bare Macs
+    if not notch:
+        return bar
     nw = int(notch_w * ss)
     d.rounded_rectangle([(w - nw) // 2, -int(6 * ss), (w + nw) // 2, h],
                         radius=int(10 * ss), fill=(0, 0, 0))
@@ -341,25 +343,28 @@ def scene_width_pt(canvas):
     return int(canvas["w"]) + 52
 
 
-def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
+def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None,
+               anchor="notch"):
     """One island, hanging from a menu bar over a desktop. Returns RGB at pp*SS px/pt.
     min_w (points) lets a sheet share one screen width, so every row's menu bar
     runs edge to edge instead of being chopped to the island's own width."""
     ss = SS * pp
+    m = doc["metric"]
     w, h, corner = canvas["w"], canvas["h"], canvas["corner"]
     side = 26
     if min_w and w + 2 * side < min_w:
         side += (min_w - (w + 2 * side)) // 2
+    gap = 0.0 if anchor == "notch" else m["softwareGap"]
     top = MENUBAR if context else 0
     W = int((w + 2 * side) * ss)
-    H = int((top + h + below) * ss)
+    H = int((top + gap + h + below) * ss)
 
     img = desktop(W, H, kind)
     if context:
-        bar = menu_bar(W, ss, kind, min(w, 210))
+        bar = menu_bar(W, ss, kind, min(w, 210), notch=(anchor == "notch"))
         img.paste(bar, (0, 0))
 
-    oy = top
+    oy = top + gap
     g = doc["glass"]["panel"]
     paste_glass(img, (side, oy, w, h), corner, g, ss)
     d = ImageDraw.Draw(img)
@@ -504,12 +509,14 @@ def fit(text, font, avail, d):
 
 # --------------------------------------------------------------------- sheets
 
-def stack(doc, rig, ids, kind, pp, title=None, note=None, gap=18, min_w=None):
+def stack(doc, rig, ids, kind, pp, title=None, note=None, gap=18, min_w=None,
+          anchor="notch"):
     cs = sorted([c for c in doc["canvases"] if c["id"] in ids],
                 key=lambda c: ids.index(c["id"]))
     if min_w is None:
         min_w = max(scene_width_pt(c) for c in cs)
-    tiles = [draw_scene(doc, c, rig, kind, pp, min_w=min_w) for c in cs]
+    tiles = [draw_scene(doc, c, rig, kind, pp, min_w=min_w, anchor=anchor)
+             for c in cs]
     lab = int(26 * pp)
     W = max(t.size[0] for t in tiles)
     head = int(56 * pp) if title else 0
@@ -629,6 +636,17 @@ def main():
     save(stack(doc, rig, ["answer", "task", "question", "error", "transcript"], "dark", 1.1),
          "lupy-island-surfaces.png")
     save(grid(doc, rig, 0.9, cols=3), "lupy-island-all.png")
+
+    # The founder's M1 2020 has no notch: the software island, and the jump.
+    save(stack(doc, rig, ["rest", "whisper", "decision"], "dark", 1.5,
+               title="4 · the jump — one capsule, one origin, no notch needed",
+               note="his capsule hangs 4 pt under the menu bar and grows from itself",
+               anchor="software"),
+         "walk-4-the-jump.png")
+    dec = [c for c in doc["canvases"] if c["id"] == "decision"][0]
+    save(draw_scene(doc, dec, rig, "dark", 2.6, anchor="software"),
+         "shot-approval-m1.png")
+    save(draw_scene(doc, dec, rig, "dark", 2.6), "shot-approval.png")
 
 
 if __name__ == "__main__":

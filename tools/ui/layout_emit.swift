@@ -189,7 +189,7 @@ enum LayoutEmitter {
         let m2 = " row \(num(L.rowHeight)) chip \(num(L.chipHeight)) composer \(num(L.composerHeight))"
         let m3 = " chipPadH \(num(L.chipPadH)) chipIconGap \(num(L.chipIconGap))"
         let m4 = " chipCorner \(num(L.chipCorner))"
-        let m5 = " fieldCorner \(num(L.fieldCorner))"
+        let m5 = " fieldCorner \(num(L.fieldCorner)) softwareGap \(num(L.softwareGap))"
         print(m1 + m2 + m3 + m4 + m5)
         print("CONTRAST primary_bright \(num(LupyPalette.textPrimary.contrast(with: LupyGlass.panel.composited(over: br))))"
               + " primary_dark \(num(LupyPalette.textPrimary.contrast(with: LupyGlass.panel.composited(over: dk))))"

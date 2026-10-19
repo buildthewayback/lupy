@@ -639,6 +639,15 @@ enum LupyIslandLayout {
     /// The narrowest card that can still hold a headline and a source line.
     static let headlineMin: Double = 240
 
+    // MARK: where the island hangs — notch Macs and bare Macs alike
+    /// The founder's MacBook (M1 2020) has NO notch, and the island must live there
+    /// exactly as happily as on a notched machine — the way Coucou floats its pill.
+    /// On a bare Mac the capsule is a SOFTWARE island: it hangs 4 pt below the menu
+    /// bar, centred, and every growth step morphs from that same capsule origin, so
+    /// LUPY "jumps" from the pill into the open canvas instead of teleporting.
+    /// On a notch Mac the band wraps the housing and the gap is 0.
+    static let softwareGap: Double = 4
+
     /// Round *up* to the grid.
     ///
     /// Up, not down and not nearest. The height of a canvas is the sum of the rows its

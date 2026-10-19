@@ -69,3 +69,20 @@ app? I will build that one, show you the result, and wait for your OK before the
 
 That's all. Answer 1, 2 and 3 in any order — or just answer 3 and I'll use my judgment
 on 1 and 2 and show you what I chose.
+
+---
+
+## Picture 4 — your MacBook (the one without a notch)
+
+![the jump, no notch needed](walk-4-the-jump.png)
+
+Your M1 2020 has no notch, so the island is a **software capsule**: it hangs 4 pt
+under the menu bar, centred, exactly where Coucou floats its pill. Same three
+moments, same sizes, same LUPY — and because every growth step starts from that
+one capsule, he *grows* from the pill into the open card instead of teleporting.
+On a notched Mac the same law wraps the housing; nothing else changes. This is
+written into the design law as `softwareGap`, so both machines are one code path.
+
+No question here — this one is settled. Circle anything else that still isn't
+Apple-clean and the council (the picture-auditing test in `tools/ui/audit_ui.py`,
+12 checks) plus my eyes will fix exactly that.
