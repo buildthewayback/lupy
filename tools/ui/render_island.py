@@ -271,11 +271,27 @@ def button(img, rect, ss, label, font, kind, accent, ink_text, body_text, radius
     layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     ld = ImageDraw.Draw(layer)
     if kind == "primary":
-        ld.rounded_rectangle([0, 0, w - 1, h - 1], rad, fill=rgb(accent) + (255,))
+        # Sequoia's accent button: a whisper of vertical depth (top ~6% lighter),
+        # a 1-px inner top light, a 1-px darker rim. Quiet, but not a web tag.
+        acc = rgb(accent)
+        for yy in range(h):
+            t = yy / max(1, h - 1)
+            c = irgb(mix(irgb(mix(acc, (255, 255, 255), 0.10)),
+                         irgb(mix(acc, (0, 0, 0), 0.10)), t))
+            ld.line([(0, yy), (w, yy)], fill=c + (255,))
+        msk = Image.new("L", (w, h), 0)
+        ImageDraw.Draw(msk).rounded_rectangle([0, 0, w - 1, h - 1], rad, fill=255)
+        layer.putalpha(msk)
+        ld = ImageDraw.Draw(layer)
+        # inner light on the TOP edge only — light comes from above
+        ld.line([(rad, 1), (w - rad, 1)], fill=(255, 255, 255, 34), width=1)
+        ld.rounded_rectangle([0, 0, w - 1, h - 1], rad,
+                             outline=irgb(mix(acc, (0, 0, 0), 0.35)) + (255,), width=1)
     else:
         ld.rounded_rectangle([0, 0, w - 1, h - 1], rad, fill=(255, 255, 255, 23))
+        ld.line([(rad, 1), (w - rad, 1)], fill=(255, 255, 255, 26), width=1)
         ld.rounded_rectangle([0, 0, w - 1, h - 1], rad,
-                             outline=(255, 255, 255, 31), width=max(1, int(ss * 0.5)))
+                             outline=(255, 255, 255, 31), width=1)
     img.paste(layer.convert("RGB"), (x0, y0), layer.split()[3])
     if label:
         d = ImageDraw.Draw(img)
@@ -310,6 +326,14 @@ def icon_return(d, cx, cy, s, color, ss):
           fill=color, width=wdt)
     d.line([cx + 0.10 * s, cy + 0.34 * s, cx - 0.10 * s, cy + 0.34 * s],
            fill=color, width=wdt)
+
+
+def ink_top(font, text, y_centre):
+    """Top y so the string's INK (not its line box) centres on y_centre.
+    PIL's 'm' anchor centres ascent..descent; a string without descenders then
+    floats high. The founder's eye measures ink, so the ink is what we centre."""
+    b = font.getbbox(text)
+    return y_centre - (b[3] - b[1]) / 2 - b[1]
 
 
 def scene_width_pt(canvas):
@@ -359,8 +383,7 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
         dy = (oy + status[1] + status[3]) * ss
         d.line([P(content[0] + m["inner"], 0)[0], dy,
                 P(content[0] + content[2] - m["inner"], 0)[0], dy],
-               fill=rgb(mix(col["line"], (0, 0, 0), 0.45)),
-               width=max(1, int(ss * 0.5)))
+               fill=(255, 255, 255, 22), width=1)
 
     # ---- headline row: the sentence left, the card's meta right
     if status and status[2] > 0 and canvas["surface"] in ("headline", "whisper"):
@@ -379,13 +402,14 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
             gm = gm.filter(ImageFilter.GaussianBlur(14 * ss))
             img.paste(Image.new("RGB", img.size, rgb(glow)), (0, 0), gm)
             d = ImageDraw.Draw(img)
-        d.text((tx + ss, ty + (status[3] * ss - f.size) / 2), text, font=f, fill=primary)
+        d.text((tx, ink_top(f, text, ty + status[3] * ss / 2)), text, font=f,
+               fill=primary)
         if canvas["meta"]:
             mf = ImageFont.truetype(REG, max(6, int(doc["type"]["provenance"] * ss)))
             mtw = d.textlength(canvas["meta"], font=mf)
-            d.text((P(status[0] + status[2] - m["inner"], 0)[0] - mtw,
-                    ty + (status[3] * ss - mf.size) / 2), canvas["meta"], font=mf,
-                   fill=body_text)
+            d.text((P(status[0] + status[2] - m["inner"], 0)[0],
+                    ink_top(mf, canvas["meta"], ty + status[3] * ss / 2)),
+                   canvas["meta"], font=mf, fill=body_text, anchor="rt")
 
     # ---- card rows
     if content and content[2] > 0 and canvas["lines"]:
@@ -402,8 +426,9 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
                 f = mono_f if line.startswith("  ") else body_f
                 fill = body_text
             tx, ty = P(content[0] + m["inner"], y)
-            d.text((tx, ty + (m["row"] * ss - f.size) / 2),
-                   fit(line, f, (content[2] - 2 * m["inner"]) * ss, d), font=f, fill=fill)
+            d.text((tx, ink_top(f, line, ty + m["row"] * ss / 2)),
+                   fit(line, f, (content[2] - 2 * m["inner"]) * ss, d), font=f,
+                   fill=fill)
             y += m["row"]
             if i < len(rows) - 1:
                 y += m["inner"]
@@ -434,8 +459,8 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
             button(img, rect, ss, "", cf, "primary" if i == 0 else "glass",
                    accent, ink_text, body_text, radius=int(m["chipCorner"] * ss))
             d = ImageDraw.Draw(img)
-            d.text((x0 + padH * ss, y0 + (m["chip"] * ss - cf.size) / 2), label,
-                   font=cf, fill=ink_text if i == 0 else body_text)
+            d.text((x0 + padH * ss, ink_top(cf, label, y0 + m["chip"] * ss / 2)),
+                   label, font=cf, fill=ink_text if i == 0 else body_text)
             cx += cw + 8
 
     # ---- composer: one recessed field, bare glyphs, no shapes of their own
@@ -453,8 +478,8 @@ def draw_scene(doc, canvas, rig, kind, pp, context=True, below=26, min_w=None):
         d.rounded_rectangle(box, rad, outline=(255, 255, 255, 26), width=1)
         icon_mic(d, fx + 16 * ss, fy + fh / 2, 16 * ss, rgb(col["icon"]), ss)
         pf = ImageFont.truetype(REG, max(6, int(doc["type"]["body"] * ss)))
-        d.text((fx + 36 * ss, fy + (fh - pf.size) / 2), "Ask LUPY anything…",
-               font=pf, fill=body_text)
+        d.text((fx + 36 * ss, ink_top(pf, "Ask LUPY anything…", fy + fh / 2)),
+               "Ask LUPY anything…", font=pf, fill=body_text)
         icon_return(d, fx + fw - 16 * ss, fy + fh / 2, 16 * ss, rgb(col["accent"]), ss)
 
     # ---- LUPY, last: his light sits over the glass he stands on
