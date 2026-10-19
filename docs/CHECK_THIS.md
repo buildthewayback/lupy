@@ -29,5 +29,17 @@ the rest is proven by 1,298 automated checks before it reaches you.
    may differ — ask me if the command bounces), relaunch: v0.2 island returns untouched.
    `-bool false` brings LUPY 3 back.
 
+**When Arena needs compile evidence (or you want the app without Xcode):** one more
+line in Terminal, from inside the `lupy3` folder:
+
+```
+bash scripts/build-mac-app.sh && bash scripts/smoke-mac-app.sh
+```
+
+It builds the real `Lupy.app` and then checks it like a picky user: does it launch,
+does the window appear, does LUPY actually move. If anything prints **red text**:
+copy everything from the first red line to the end and paste it to Arena. The fix
+comes back here; you run the line again. Thirty seconds a loop, zero dollars.
+
 Circle anything. The council (three of them: pictures, all-surfaces, wiring) and I
 will fix exactly what you circle, and only that.
