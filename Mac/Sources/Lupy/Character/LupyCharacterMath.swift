@@ -20,6 +20,7 @@ enum LM {
     /// Reduce to [-pi, pi].
     @inline(__always)
     static func wrap(_ x0: Double) -> Double {
+        guard x0.isFinite else { return 0 }   // hostile input dies at the door
         var x = x0
         if x > pi || x < -pi {
             x = x.truncatingRemainder(dividingBy: twoPi)
@@ -47,6 +48,7 @@ enum LM {
     static func cos(_ x: Double) -> Double { sin(x + halfPi) }
 
     static func sqrt(_ v: Double) -> Double {
+        guard v.isFinite, v >= 0 else { return 0 }   // hostile input dies at the door
         if v <= 0 { return 0 }
         var g = v > 1 ? v : 1.0
         var i = 0
@@ -368,7 +370,9 @@ enum LupyComposition {
     static var frameHalf: Double { 0.5 / unitFraction }
 
     static func unit(width: Double, height: Double) -> Double {
-        min(width, height) * unitFraction
+        guard width.isFinite, height.isFinite, width > 0, height > 0,
+              width < 1e6, height < 1e6 else { return 0 }
+        return min(width, height) * unitFraction
     }
 
     // MARK: Small sizes are a different drawing, not a squeezed one.

@@ -682,14 +682,17 @@ enum LupyIslandLayout {
     /// The whole answer. One call, no view code involved.
     static func canvas(_ need: LupyCanvasNeed,
                        notchWidth: Double = LupyIslandLayout.notchWidth) -> LupyCanvas {
+        // Hostile input dies at the door: NaN and infinity are not sizes.
+        let notchWidth = notchWidth.isFinite ? max(0, notchWidth) : 0
         switch need {
         case .rest:
             return band(width: notchWidth, avatar: avatarRest, status: .motion,
                         statusBox: .zero, notchWidth: notchWidth)
 
-        case .whisper(let textWidth):
+        case .whisper(let rawTextWidth):
             // Avatar left, one line right. Height stays the notch band: a whisper must not
             // change the island's silhouette, only fill it.
+            let textWidth = rawTextWidth.isFinite ? max(0, rawTextWidth) : 0
             let d = avatarWhisper
             let labelX = padEdge + d + avatarGap
             let w = fit(padEdge + d + avatarGap + textWidth + padEdge, minWidth, maxWidth)
