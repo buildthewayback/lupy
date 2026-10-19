@@ -14,3 +14,37 @@ supported. You need **Xcode** (free, App Store) and **Homebrew** (you likely hav
 
 If you ever want the old v0.2 island back for comparison:
 `defaults write <your.bundle.id> lupy3LegacyIsland -bool true` and relaunch.
+
+## If the clone says "repository not found"
+
+The repo is **private**, so an unsigned-in Terminal sees nothing (GitHub hides private
+repos as "not found"). Two doors, pick either:
+
+**Door 1 — your browser (no setup, two minutes).** You are already signed in at
+github.com. Open https://github.com/buildthewayback/lupy → click the branch button
+(it says `main`) → type `arena/47c739ab-lupy` and click it → green **Code** button →
+**Download ZIP** → double-click the zip in Downloads. Then in Terminal:
+
+```
+cd ~/Downloads/lupy-arena-47c739ab-lupy && bash scripts/run-mac.sh
+```
+
+**Door 2 — sign the Terminal in once (best for updates later).** If `brew` exists on
+your Mac (`which brew` prints a path):
+
+```
+brew install gh && gh auth login
+```
+
+Answer: GitHub.com · HTTPS · login in browser · paste the one-time code. Then:
+
+```
+gh repo clone buildthewayback/lupy lupy3 -- -b arena/47c739ab-lupy && cd lupy3 && bash scripts/run-mac.sh
+```
+
+**If anything says `brew: command not found`:** paste this one line first (it asks for
+your Mac password once), then run the `bash scripts/run-mac.sh` line again:
+
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
