@@ -28,7 +28,7 @@ struct LupyIslandPlacement: Equatable {
     /// Points from the top edge of the screen to the top edge of the island.
     let top: CGFloat
 
-    static func forScreen(_ screen: NSScreen) -> LupyIslandPlacement {
+    @MainActor static func forScreen(_ screen: NSScreen) -> LupyIslandPlacement {
         // A notch shows up as a safe-area inset at the top of the screen.
         if screen.safeAreaInsets.top > 0 {
             return LupyIslandPlacement(anchor: .notch, top: 0)
@@ -39,7 +39,7 @@ struct LupyIslandPlacement: Equatable {
     }
 
     /// The window frame, in AppKit's bottom-left coordinates, centred horizontally.
-    func frame(for canvas: LupyCanvas, on screen: NSScreen) -> NSRect {
+    @MainActor func frame(for canvas: LupyCanvas, on screen: NSScreen) -> NSRect {
         let sf = screen.frame
         let x = sf.midX - canvas.width / 2
         let y = sf.maxY - top - canvas.height
@@ -51,6 +51,14 @@ struct LupyIslandPlacement: Equatable {
 
 /// A borderless, non-activating panel that lives above the menu bar, joins every
 /// Space, and morphs with a spring whenever the kernel says the canvas changed.
+///
+/// `@MainActor` is load-bearing, not decoration: NSWindow & family are
+/// main-actor isolated in the SDK, and this class once lacked the annotation —
+/// the first real compile on the founder's Mac (kit 3.3's first run, 2026-10-20)
+/// stopped at `panel?.orderOut(nil)` for exactly that reason. Its only owner
+/// (LupyIslandDirector) is @MainActor, so this costs nothing. The census in
+/// tools/ui/audit_isolation.py keeps any sibling from ever repeating it.
+@MainActor
 final class LupyIslandShellController: NSObject {
     private var panel: NSPanel?
     private var hosting: NSHostingView<AnyView>?

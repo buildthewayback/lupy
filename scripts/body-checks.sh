@@ -68,6 +68,9 @@ done
 echo "INSTALL WIRING: SATISFIED (icon ships, registers; standard Setup window; credential-blind; steps in sync)"
 echo "== 6c · installer rehearsal (the step machine, stress-run in simulation)"
 bash tools/ui/installer-harness.sh | tail -1
+echo "== 6d · isolation census (the sandbox can parse AppKit, not type-check it —
+          no controller may ever again miss its @MainActor: kit 3.3 field, 2026-10-20)"
+python3 tools/ui/audit_isolation.py | tail -1
 python3 tools/ui/audit_ui.py | tail -1
 python3 tools/ui/audit_all.py | tail -1
 python3 tools/ui/audit_micro.py | tail -1
