@@ -218,3 +218,55 @@ conversation → settings reorg → `--chat-self-test` + CI → docs → build F
   refine_status unit-tested verbatim (fetch→12, 412/980→43%, 980/980→68%,
   post-70 no-stomp, garbage-safe). The face's runtime on macOS remains the
   founder's acceptance — with the modal net underneath it either way.
+
+## 2026-10-20 — Kit 3.3: the proper Setup (founder field report #3 + his spec)
+
+Field report #3: kit 3.2's run froze 33 min behind a macOS keychain window
+(git's osxkeychain helper, consulted during SwiftPM's public-repo fetch),
+then died when SwiftPM's binary-artifact authorization lookup hit the
+keychain and returned status -128 (errSecUserCanceled) on the 87 MB
+NemoTextProcessing.xcframework. The face's heartbeat kept saying "alive"
+throughout — technically true (the shell lived), uselessly false (nothing
+moved). The founder's review, verbatim-ish: wants "the standard way … not
+always stays on top but anytime can see … step by step … so we know if did
+work, show what error so I can show or tell you", and a setup that is
+complete and stress-tested, not partial. 3.3 is that, end to end:
+
+- Credential-blind builds (scripts/build-no-xcode.sh): git's credential
+  helpers blanked process-scoped via GIT_CONFIG_* env (an empty helper
+  RESETS the list — osxkeychain is never consulted; his config untouched),
+  GIT_TERMINAL_PROMPT=0, and SwiftPM's own --disable-keychain, probed from
+  `swift build --help` at runtime so older toolchains build exactly as
+  before. Everything fetched is public; no password can ever be asked.
+  (--help probing because the sandbox swiftwasm is swiftc-only.)
+- The face v3 (LupyProgress.swift): a STANDARD window — normal level,
+  minimize button, close tucks it away (Cancel is the explicit stop; Cmd-Q
+  cancels), Dock-click reopens, Dock tile shows the bar + "%" badge and
+  bounces with a check at the end. Six named steps (waiting/doing/done/
+  failed, each with its own time), overall bar with honest ETA, live build
+  tail, heartbeat confession, orange stall detail, and a final proof
+  screen that stays until HE closes it: all-green summary + Show in
+  Finder, or the exact failed step + Save report.
+- Install-LUPY v3.3: a real step machine (v3 status line; steps never
+  travel backwards; monotonic percent). Step 3 vs 4 split from the build's
+  own bracket lines (Fetching/Downloading = step 3, byte totals spoken as
+  MB; compile lines = step 4, 25->68% from [n/m]); step 5 from build
+  milestones >=70. Freeze watchdog: build.log not growing for 150 s past a
+  150 s grace -> STUCK warning (a hidden window can never again eat
+  33 minutes silently). Step 6 verifies its own work — app in Applications,
+  executable inside, icon on, and the process actually alive (24 s watch)
+  — before anyone says "done". Every ending writes a plain-words report
+  (/tmp/lupy-install-report.txt; failures also to the Desktop; the window
+  can Save it anywhere). Modal-dialogue fallback kept throughout: no
+  silent stretch exists at any point.
+- Rehearsal before shipping, as specified: tools/ui/installer-harness.sh
+  extracts the step machine verbatim and drives 34 checks — happy path,
+  the founder's real freeze replayed from his pasted log (STUCK at 300 s,
+  clears on growth), hostile inputs (garbage milestones, [0/0], deleted
+  files; found and fixed a step state-regression: finished steps now
+  never reopen). Wired into body-checks as step 6c; 6b grows greps for
+  --disable-keychain, the window's standard manners, verify/report, and
+  the six step names byte-identical across shell and Swift.
+- NOT re-implemented from his paste of an unrelated "City Controlled
+  Practice-Testing Pack" spec ("MISTKE-- GOO"): read as mistaken paste +
+  GO, confirmed to him; nothing in it touches LUPY.

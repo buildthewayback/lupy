@@ -7,16 +7,38 @@ set -euo pipefail
 cd "$(dirname "$0")/../Mac"
 mkdir -p ../build-noxcode
 LOG=../build-noxcode/build.log
+# Credential silence. Everything SwiftPM fetches for this build is PUBLIC
+# (FluidAudio's repo + its ready-made component), so no download may ever ask
+# about passwords. Left alone, git's osxkeychain helper pops a macOS keychain
+# window for github.com mid-fetch (it froze the founder's first 3.2 build for
+# ~33 min — build.log: "Fetched ... (1995.92s)"), and SwiftPM's own keychain
+# lookup turns a dismissed prompt into the fatal "Failed to find credentials
+# for 'https://github.com' in keychain: status -128". The belt, all
+# env-scoped so the founder's git/keychain setup is never modified:
+#   · git: never prompt; credential-helper list reset to empty (Apple's git
+#     defaults to osxkeychain — an empty value disables it for our processes);
+#   · SwiftPM: --disable-keychain (its own first-party off-switch for the
+#     keychain authorization lookup; probed in case a future name changes).
+export GIT_TERMINAL_PROMPT=0
+export GIT_CONFIG_COUNT=2
+export GIT_CONFIG_KEY_0=credential.helper
+export GIT_CONFIG_VALUE_0=
+export GIT_CONFIG_KEY_1=credential.https://github.com.helper
+export GIT_CONFIG_VALUE_1=
+SWIFT_AUTH_FLAGS=""
+if swift build --help 2>/dev/null | grep -q -- '--disable-keychain'; then
+  SWIFT_AUTH_FLAGS="--disable-keychain"
+fi
 # Progress for the double-click installer (Install LUPY.app's face reads this
 # file; the installer refines the long compile stretch from build.log itself).
 # Unset = silent; the .command road is unchanged.
 status() { if [ -n "${LUPY_INSTALL_STATUS_FILE:-}" ]; then printf '%s|%s|%s\n' "$1" "$2" "${3:-}" > "$LUPY_INSTALL_STATUS_FILE" || true; fi; }
 echo "== swift build -c release (first run fetches FluidAudio; some minutes of text)"
 status 25 "Compiling LUPY" "first build also downloads one small library (needs internet)"
-if ! swift build -c release > "$LOG" 2>&1; then
+if ! swift build $SWIFT_AUTH_FLAGS -c release > "$LOG" 2>&1; then
   echo "BUILD FAILED — last lines:"; tail -40 "$LOG"; exit 1
 fi
-BIN=$(swift build -c release --show-bin-path)
+BIN=$(swift build $SWIFT_AUTH_FLAGS -c release --show-bin-path)
 status 70 "Assembling Lupy.app" "his face, his sounds, his name"
 APP=../build-noxcode/Lupy.app
 rm -rf "$APP"
