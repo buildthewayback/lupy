@@ -1,0 +1,217 @@
+#!/bin/bash
+# Install LUPY — the double-click installer. No Terminal, ever: every word to the
+# founder goes through native macOS dialogues (osascript), progress included.
+#
+# What it does, in order:
+#   welcome -> preflight (Apple Silicon, macOS 15+, kit intact, /Applications
+#   writable, Apple's free Command Line Tools) -> build via
+#   scripts/build-no-xcode.sh --install (compiles on THIS Mac, installs
+#   /Applications/Lupy.app with his icon + name, launches him) -> done dialogue.
+# Every failure lands in a friendly dialogue with a way out — never a silent
+# death, never a Terminal window. Full log: /tmp/lupy-install.log
+# The Terminal twin of this installer is "Install LUPY.command" (kept as backup).
+
+# NOTE: no `set -e` — an abrupt exit would leave the founder staring at nothing.
+set -u
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:$PATH"
+
+# ── where am I?  …/Install LUPY.app/Contents/MacOS/Install-LUPY ─────────────
+SELF_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+APP_BUNDLE="$(cd "$SELF_DIR/../.." 2>/dev/null && pwd)"
+KIT="$(dirname "$APP_BUNDLE")"
+ICON="$APP_BUNDLE/Contents/Resources/AppIcon.icns"
+LOG="/tmp/lupy-install.log"
+STATUS_DIR="$(mktemp -d /tmp/lupy-install.XXXXXX 2>/dev/null || echo /tmp/lupy-install-status)"
+mkdir -p "$STATUS_DIR"
+STATUS_FILE="$STATUS_DIR/status.txt"
+DONE_FILE="$STATUS_DIR/done"
+CANCEL_FILE="$STATUS_DIR/cancel"
+
+: > "$LOG"
+exec >>"$LOG" 2>&1
+echo "== Install LUPY — $(date) — kit: $KIT"
+
+cleanup() {
+  touch "$DONE_FILE" 2>/dev/null
+  sleep 1
+  rm -rf "$STATUS_DIR" 2>/dev/null
+}
+trap cleanup EXIT
+
+# ── native dialogues (osascript; text travels as argv, never string-spliced) ─
+dialog() {
+  # $1 text · $2 buttons (comma-separated) · $3 default button → echoes the choice
+  /usr/bin/osascript - "$1" "$2" "$3" "$ICON" <<'APPLESCRIPT' 2>/dev/null
+on run argv
+  set theText to item 1 of argv
+  set btns to item 2 of argv
+  set defBtn to item 3 of argv
+  set iconPath to item 4 of argv
+  set AppleScript's text item delimiters to ","
+  set btnList to text items of btns
+  set AppleScript's text item delimiters to ""
+  try
+    set r to display dialog theText buttons btnList default button defBtn with title "Install LUPY" with icon (POSIX file iconPath)
+  on error errMsg number errNum
+    if errNum is -128 then return ""
+    set r to display dialog theText buttons btnList default button defBtn with title "Install LUPY"
+  end try
+  return button returned of r
+end run
+APPLESCRIPT
+}
+
+sorry() {
+  # $1 text — a one-way explanation, then a clean exit
+  dialog "$1" "OK" "OK" >/dev/null
+  exit 0
+}
+
+# ── the progress window (native progress UI, fed by the status file) ─────────
+progress_start() {
+  printf '2|Preparing…\n' > "$STATUS_FILE"
+  /usr/bin/osascript - "$STATUS_FILE" "$DONE_FILE" "$CANCEL_FILE" <<'APPLESCRIPT' >/dev/null 2>&1 &
+on run argv
+  set statusFile to item 1 of argv
+  set doneFile to item 2 of argv
+  set cancelFile to item 3 of argv
+  try
+    set progress total steps to 100
+    set progress completed steps to 2
+    set progress description to "Installing LUPY…"
+    set progress additional description to "Preparing…"
+    repeat
+      set isDone to false
+      try
+        do shell script "test -f " & quoted form of doneFile
+        set isDone to true
+      end try
+      if isDone then exit repeat
+      try
+        set lineText to do shell script "cat " & quoted form of statusFile
+        set AppleScript's text item delimiters to "|"
+        set parts to text items of lineText
+        set AppleScript's text item delimiters to ""
+        if (count of parts) >= 2 then
+          set progress completed steps to ((item 1 of parts) as integer)
+          set progress additional description to (item 2 of parts)
+        end if
+      end try
+      delay 1
+    end repeat
+    set progress completed steps to 100
+  on error
+    -- the window's stop button lands here: tell the installer to cancel
+    try
+      do shell script "touch " & quoted form of cancelFile
+    end try
+  end try
+end run
+APPLESCRIPT
+}
+
+status() { printf '%s|%s\n' "$1" "$2" > "$STATUS_FILE"; }
+cancelled() { [ -f "$CANCEL_FILE" ]; }
+
+# ── welcome ───────────────────────────────────────────────────────────────────
+CHOICE="$(dialog "LUPY installs himself on this Mac — no Xcode, no Terminal, nothing to type.
+
+First time only, this takes a few minutes: he fetches one small library and compiles with Apple's free tools. Then he lives in your Applications and launches by himself — the small dark pill under your menu bar." "Not now,Install LUPY" "Install LUPY")"
+[ "$CHOICE" = "Install LUPY" ] || exit 0
+
+progress_start
+
+# ── preflight, each with a plain-language way out ─────────────────────────────
+status 5 "Checking this Mac…"
+
+if [ ! -f "$KIT/scripts/build-no-xcode.sh" ]; then
+  sorry "I can't find the rest of the Lupy kit around me.
+
+Install LUPY.app has to stay inside the kit folder you unzipped (next to the folders called Mac, LupyCore and scripts). Move me back in there and double-click me again — nothing was changed."
+fi
+
+ARCH="$(uname -m)"
+if [ "$ARCH" != "arm64" ]; then
+  TRANSLATED="$(sysctl -in sysctl.proc_translated 2>/dev/null || echo 0)"
+  if [ "$TRANSLATED" != "1" ]; then
+    sorry "LUPY needs Apple Silicon (an M-series Mac), and this Mac reports $ARCH.
+
+Nothing was changed. A universal build can be made if you need one — tell Arena."
+  fi
+fi
+
+OS_MAJOR="$(sw_vers -productVersion 2>/dev/null | cut -d. -f1)"
+case "$OS_MAJOR" in (*[!0-9]*|'') OS_MAJOR=0 ;; esac
+if [ "$OS_MAJOR" -lt 15 ]; then
+  sorry "LUPY needs macOS 15 or newer, and this Mac is on macOS $(sw_vers -productVersion 2>/dev/null).
+
+Update macOS (System Settings → General → Software Update), then double-click me again. Nothing was changed."
+fi
+
+if [ ! -w /Applications ]; then
+  sorry "I can't write to the Applications folder with this account, so I can't install LUPY like a normal app.
+
+Sign in with an administrator account (or ask whoever manages this Mac), then double-click me again. Nothing was changed."
+fi
+
+# Apple's free Command Line Tools carry the compiler (no 8 GB Xcode).
+if ! xcode-select -p >/dev/null 2>&1 || ! /usr/bin/swift --version >/dev/null 2>&1; then
+  touch "$DONE_FILE"; sleep 1; rm -f "$DONE_FILE"
+  CHOICE="$(dialog "One thing first: LUPY is compiled on your Mac with Apple's free Command Line Tools, and they aren't installed yet.
+
+Click “Install Apple's tools” and macOS will offer them (a small download from Apple — not the 8 GB Xcode). Leave everything as it is: when Apple's window finishes, LUPY continues by himself." "Not now,Install Apple's tools" "Install Apple's tools")"
+  [ "$CHOICE" = "Install Apple's tools" ] || exit 0
+  progress_start
+  status 8 "Waiting for Apple's tools — click Install in Apple's window…"
+  xcode-select --install >/dev/null 2>&1
+  WAITED=0
+  until xcode-select -p >/dev/null 2>&1 && /usr/bin/swift --version >/dev/null 2>&1; do
+    if cancelled; then sorry "Install cancelled while waiting for Apple's tools. Nothing was changed — double-click me again any time."; fi
+    WAITED=$((WAITED + 5))
+    if [ "$WAITED" -ge 1800 ]; then
+      sorry "Apple's tools still aren't there after 30 minutes, so I've stopped waiting.
+
+If Apple's window is still working, let it finish — then double-click Install LUPY again and he picks up from here."
+    fi
+    sleep 5
+  done
+fi
+
+# ── the build (compile here, install to /Applications with icon + name, launch)
+status 15 "Starting the build…"
+echo "== build-no-xcode.sh --install"
+( cd "$KIT" && LUPY_INSTALL_STATUS_FILE="$STATUS_FILE" bash scripts/build-no-xcode.sh --install ) &
+BUILD_PID=$!
+while kill -0 "$BUILD_PID" 2>/dev/null; do
+  if cancelled; then
+    kill "$BUILD_PID" 2>/dev/null
+    break
+  fi
+  sleep 2
+done
+wait "$BUILD_PID" 2>/dev/null
+CODE=$?
+touch "$DONE_FILE"; sleep 1
+
+if cancelled && [ "$CODE" -ne 0 ]; then
+  sorry "Install cancelled. LUPY was not installed and nothing was changed — double-click me again any time."
+fi
+
+if [ "$CODE" -eq 0 ]; then
+  echo "== install OK"
+  dialog "LUPY is installed and running.
+
+He's the small dark pill at the top centre of your screen, under the menu bar. Click his typing box to talk to him — or use the menu bar: Lupy → Demo mode shows his approval card.
+
+From now on he lives in Applications, like any app. You can delete this kit folder." "Done" "Done" >/dev/null
+  exit 0
+fi
+
+echo "== install FAILED (exit $CODE)"
+CHOICE="$(dialog "The install didn't finish — nothing is broken, LUPY just isn't installed yet.
+
+The install log says exactly why. Open it, screenshot it, and send it to Arena: a fixed kit comes back. (The file “Install LUPY.command” in this folder does the same job in a Terminal window, if you ever want to watch it work.)" "Not now,Show the log" "Show the log")"
+if [ "$CHOICE" = "Show the log" ]; then
+  /usr/bin/open "$LOG" >/dev/null 2>&1
+fi
+exit 0

@@ -7,7 +7,11 @@ set -euo pipefail
 cd "$(dirname "$0")/../Mac"
 mkdir -p ../build-noxcode
 LOG=../build-noxcode/build.log
+# Progress for the double-click installer (Install LUPY.app reads this file to
+# feed its native progress window). Unset = silent; the .command road is unchanged.
+status() { if [ -n "${LUPY_INSTALL_STATUS_FILE:-}" ]; then printf '%s|%s\n' "$1" "$2" > "$LUPY_INSTALL_STATUS_FILE" || true; fi; }
 echo "== swift build -c release (first run fetches FluidAudio; some minutes of text)"
+status 25 "Compiling LUPY — first time also fetches one small library…"
 if ! swift build -c release > "$LOG" 2>&1; then
   echo "BUILD FAILED — last lines:"; tail -40 "$LOG"; exit 1
 fi

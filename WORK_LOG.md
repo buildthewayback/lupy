@@ -114,3 +114,47 @@ share one conversation/state; settings organised around user needs; end-to-end j
 Plan: LupyCore intent router + conversation turns (tested) → LupyChat shared conversation
 (app) → island `.lupyChat` view on Coucou's chrome → Today page leads with the same
 conversation → settings reorg → `--chat-self-test` + CI → docs → build F6.
+
+## 2026-10-20 — the icon forge + double-click installer (session arena/95108471)
+
+- **Context:** the founder asked this session to "pick up local commit e1af690 (full
+  product + tools/ui/make_appicon.py icon forge)". That commit exists nowhere reachable:
+  not in this clone, not on GitHub (API: no such SHA), and the Drive safety-net bundle
+  (`lupy3-local-commits.bundle`, 16 Oct) predates it. It lived in a previous session's
+  sandbox and was never pushed. So the forge + installer were **reconstructed from the
+  repo's own law** (same sources the original would have used) rather than picked up.
+  Baseline first: body-checks BODY GREEN + beta gate SATISFIED on the pristine tree
+  (main 86c35ff) before any change.
+- **The forge** (`tools/ui/make_appicon.py`): parses the shipped kernel geometry
+  (`Mac/Sources/Lupy/Character/LupyGeometry.swift`) — outline, eye metrics,
+  `showsBlush` (false → no blush), pure-white body — and renders the locked
+  character at 4x with the kernel's idle glow (white, blur 0.09u, strength 0.24,
+  scene.py's math) on the macOS 824-point dark squircle. Outputs:
+  `Mac/CoucouAssets/Assets.xcassets/AppIcon.appiconset` (Xcode road; Contents.json
+  byte-identical, only pixels new), `Mac/LupyAppIcon/AppIcon.icns` (+1024 preview,
+  hand-written PNG-entry icns, ic04–ic14), and the installer's own copy.
+  `--check` mode is now body-checks step 6a: the shipped icon must equal the locked
+  character byte for byte. **The app icon is no longer Coucou's Mochi** — first step
+  of the distribution swap (NOTICE.md updated; menu-bar icon + sounds still to swap
+  or permission still to ask).
+- **Wiring:** `Mac/Resources/Info.plist` gains `CFBundleIconFile=AppIcon`;
+  `scripts/build-no-xcode.sh` copies `Mac/LupyAppIcon/AppIcon.icns` into the bundle
+  before signing, strips quarantine and `lsregister -f`s + touches the installed app
+  (icon cache), and feeds progress to `LUPY_INSTALL_STATUS_FILE` when set.
+- **`Install LUPY.app`** (new, repo root): script-executable bundle
+  (`Contents/MacOS/Install-LUPY`, LUPY icon, bundle id app.lupy.installer). Native
+  osascript dialogues only — welcome, plain-language preflight (kit intact, Apple
+  Silicon, macOS 15+, /Applications writable, Command Line Tools with Apple's own
+  GUI + patient wait), native progress window fed by the build's status file with a
+  working stop button, then `build-no-xcode.sh --install` → /Applications + launch.
+  Every failure ends in a dialogue with a log (`/tmp/lupy-install.log`) and a way
+  out. `Install LUPY.command` unchanged, kept as the Terminal backup.
+- `scripts/make-icon.py` removed: its wolf-pup icon predates the locked LUPY 3
+  character (a branding landmine under the "no character error" law) and its output
+  path (`App/Resources/`) no longer exists; the forge supersedes it.
+- Docs: `README-INSTALL.txt` + `docs/RELEASE_NOTES.md` rewritten for the app-first
+  install; `Mac/LupyAppIcon/README.md` added. Verification: shell syntax, plist
+  parsing, icns container walk (11 entries, PNG dims per type), appiconset dims vs
+  Contents.json, forge `--check`, installer safe-degrade smoke on Linux (no
+  osascript → clean exit, nothing touched). macOS GUI behaviour itself awaits the
+  founder's Mac — the kit download remains the acceptance test.

@@ -35,6 +35,8 @@ node --no-warnings tools/swiftwasm/swiftc-wasm.mjs --run \
 echo "== 6 · picture councils"
 python3 -c "import PIL, numpy" 2>/dev/null || \
   pip install --quiet --break-system-packages pillow numpy
+echo "== 6a · icon forge (the shipped icon IS the locked character, byte for byte)"
+python3 tools/ui/make_appicon.py --check | tail -1
 python3 tools/ui/audit_ui.py | tail -1
 python3 tools/ui/audit_all.py | tail -1
 python3 tools/ui/audit_micro.py | tail -1
