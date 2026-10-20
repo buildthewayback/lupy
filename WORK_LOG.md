@@ -182,3 +182,39 @@ conversation → settings reorg → `--chat-self-test` + CI → docs → build F
   one empty line, `dirname ""` → `.`, which "matched" whenever cwd was the repo;
   fixed by empty-line skip + absolute-path law in looks_like_kit.) macOS-native
   confirmation still rests with the founder's next kit run.
+
+## 2026-10-20 — the installer gets a face that cannot disappear (arena/4798e149)
+
+- **Field report #2:** kit found (translocation fix worked), founder clicked
+  Install, and the installer "disappeared" — the AppleScript progress panel
+  never visibly appeared on his Mac, so minutes of real work looked like
+  nothing. His words govern this fix: show a loading screen with stages and
+  an estimated time, like other apps, so he can tell working from broken.
+- **The face** (`Install LUPY.app/Contents/Resources/LupyProgress.swift`, new):
+  a tiny native AppKit window compiled on the founder's Mac at install time by
+  the same Command Line Tools that then build LUPY (no download, no
+  quarantine). It shows his face, the stage, a progress bar fed by the
+  compiler's own step count (`refine_status` maps SwiftPM's [n/m] lines onto
+  the compile stretch), elapsed + estimated time ticking every second, the
+  live build-text tail, a Cancel button, and a heartbeat that turns the
+  window itself into the witness ("no news for Ns — screenshot me"). The
+  AppleScript progress UI is deleted entirely. If the face cannot compile or
+  dies mid-flight, self-refreshing modal dialogues carry stage + elapsed —
+  including during the Apple-tools wait (which precedes any compiler). Every
+  long stretch now has a visible window; there is no silent path left.
+- **A loss found while fixing this (process lesson, recorded):** two of the
+  three session-1 edits to `scripts/build-no-xcode.sh` never reached the
+  shipped tree — parallel same-file edits raced, one writer survived, and a
+  skimmed truncated diff hid it. The shipped 3.0/3.1 kits therefore never
+  copied AppIcon.icns into the hand-built bundle (a founder-side install
+  would wear the generic icon) and lacked the quarantine-strip/lsregister
+  step; same pattern cost one kit-finder guard in 3.1 (latent). All restored
+  by single-writer rewrites, grep-verified in the tree, and body-checks
+  gained **step 6b** (install-wiring greps) so this class of loss fails the
+  gate instead of shipping silently. Audited the rest of PR #3/#4: forge,
+  plists, NOTICE, docs all intact.
+- **Proofs here:** Swift face parses under the real frontend (swiftwasm);
+  kit-ladder scenarios re-run green on the new script (osascript stubbed);
+  refine_status unit-tested verbatim (fetch→12, 412/980→43%, 980/980→68%,
+  post-70 no-stomp, garbage-safe). The face's runtime on macOS remains the
+  founder's acceptance — with the modal net underneath it either way.

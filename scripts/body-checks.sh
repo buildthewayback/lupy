@@ -37,6 +37,18 @@ python3 -c "import PIL, numpy" 2>/dev/null || \
   pip install --quiet --break-system-packages pillow numpy
 echo "== 6a · icon forge (the shipped icon IS the locked character, byte for byte)"
 python3 tools/ui/make_appicon.py --check | tail -1
+echo "== 6b · install wiring (the icon must actually REACH the app; the face must exist)"
+# These greps are tombstones for a real loss: the icns-copy line once vanished
+# between an editing tool and a merge, and the founder's app shipped faceless
+# while everything reported green. Wiring that is not machine-checked will be
+# lost again; wiring that is, cannot be lost silently.
+grep -q 'cp LupyAppIcon/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"' scripts/build-no-xcode.sh
+grep -q 'lsregister -f /Applications/Lupy.app' scripts/build-no-xcode.sh
+grep -q 'xattr -dr com.apple.quarantine /Applications/Lupy.app' scripts/build-no-xcode.sh
+grep -q 'CFBundleIconFile' Mac/Resources/Info.plist
+grep -q 'face_start' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+test -f "Install LUPY.app/Contents/Resources/LupyProgress.swift"
+echo "INSTALL WIRING: SATISFIED (icon ships, registers, and the installer has a face)"
 python3 tools/ui/audit_ui.py | tail -1
 python3 tools/ui/audit_all.py | tail -1
 python3 tools/ui/audit_micro.py | tail -1

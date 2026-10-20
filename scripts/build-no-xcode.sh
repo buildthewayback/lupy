@@ -7,29 +7,45 @@ set -euo pipefail
 cd "$(dirname "$0")/../Mac"
 mkdir -p ../build-noxcode
 LOG=../build-noxcode/build.log
-# Progress for the double-click installer (Install LUPY.app reads this file to
-# feed its native progress window). Unset = silent; the .command road is unchanged.
-status() { if [ -n "${LUPY_INSTALL_STATUS_FILE:-}" ]; then printf '%s|%s\n' "$1" "$2" > "$LUPY_INSTALL_STATUS_FILE" || true; fi; }
+# Progress for the double-click installer (Install LUPY.app's face reads this
+# file; the installer refines the long compile stretch from build.log itself).
+# Unset = silent; the .command road is unchanged.
+status() { if [ -n "${LUPY_INSTALL_STATUS_FILE:-}" ]; then printf '%s|%s|%s\n' "$1" "$2" "${3:-}" > "$LUPY_INSTALL_STATUS_FILE" || true; fi; }
 echo "== swift build -c release (first run fetches FluidAudio; some minutes of text)"
-status 25 "Compiling LUPY — first time also fetches one small library…"
+status 25 "Compiling LUPY" "first build also downloads one small library (needs internet)"
 if ! swift build -c release > "$LOG" 2>&1; then
   echo "BUILD FAILED — last lines:"; tail -40 "$LOG"; exit 1
 fi
 BIN=$(swift build -c release --show-bin-path)
+status 70 "Assembling Lupy.app" "his face, his sounds, his name"
 APP=../build-noxcode/Lupy.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN/Lupy" "$APP/Contents/MacOS/Lupy"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 printf 'APPL????' > "$APP/Contents/PkgInfo"
+# his face: the forged icon of the locked character (tools/ui/make_appicon.py).
+# Info.plist names it via CFBundleIconFile=AppIcon; without this copy the
+# hand-assembled bundle would wear macOS's generic icon — never, per brand law.
+# (This line was once lost between an editing tool and a merge without anyone
+# noticing; body-checks step 6a now refuses green if it ever goes missing.)
+cp LupyAppIcon/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 # named image lookups read loose files in Resources: give the icon its catalogue name
 cp CoucouAssets/Assets.xcassets/MenuBarIcon.imageset/menubar@2x.png "$APP/Contents/Resources/MenuBarIcon.png"
 cp -R CoucouAssets/sounds "$APP/Contents/Resources/sounds"
 codesign --force -s - "$APP" 2>/dev/null || true
 if [ "${1:-}" = "--install" ]; then
   echo "== installing to /Applications"
+  status 90 "Installing into Applications" "placing him next to your other apps"
   rm -rf /Applications/Lupy.app
   cp -R "$APP" /Applications/Lupy.app
+  # he was compiled on THIS Mac: no quarantine nag, and make Finder/Dock pick up
+  # his icon + name now, not after a logout (stale icon caches are the classic
+  # "generic icon" trap for hand-installed apps).
+  xattr -dr com.apple.quarantine /Applications/Lupy.app 2>/dev/null || true
+  touch /Applications/Lupy.app
+  /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f /Applications/Lupy.app 2>/dev/null || true
+  status 97 "Launching LUPY" "look at the top centre of your screen, under the menu bar"
   open /Applications/Lupy.app
   echo "LUPY is in Applications and running — the pill under your menu bar is him."
   exit 0
