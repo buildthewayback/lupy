@@ -5,6 +5,10 @@ LUPY 3 — INSTALL (three clicks, no Terminal, nothing to type)
    glowing on dark). He has the same face he will wear in your Applications.
    If macOS says it cannot verify it: RIGHT-click it → Open → Open. (Once, ever.)
 3. From there, plain macOS windows walk you through — no Terminal ever opens.
+   An installer window stays on screen the whole time: the stage he is in, a
+   progress bar, the time taken and the time left, even the build text flowing
+   past — so you always know he is working, never a silent screen. If he ever
+   goes quiet, the window itself says so (screenshot it and send it).
    The first install builds for a few minutes: it fetches one small library and
    compiles LUPY with Apple's free tools. If those tools are missing, the
    installer offers Apple's own small download and then carries on by itself.
