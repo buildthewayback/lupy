@@ -5,21 +5,24 @@
 # What it does, in order:
 #   welcome -> find the kit (beside us / search the download places / ask the
 #   founder to point — macOS runs fresh downloads from a hidden copy, so
-#   "beside us" alone once lost the kit on a real machine) -> preflight
-#   (Apple Silicon, macOS 15+, /Applications writable, Apple's free Command
-#   Line Tools, waited out in self-refreshing dialogues) -> put up the FACE
-#   (LupyProgress.swift, compiled here by the same tools: a real window with
-#   stages, a live progress bar, elapsed/estimated time, the flowing build
-#   text and a heartbeat that confesses if we go quiet) -> build via
-#   scripts/build-no-xcode.sh --install (compiles on THIS Mac, installs
-#   /Applications/Lupy.app with his icon + name, launches him) -> done.
+#   "beside us" alone once lost the kit on a real machine) -> SIX NAMED STEPS
+#   shown the whole way by the Setup window (LupyProgress.swift, compiled here
+#   by the same tools): Check this Mac → Apple's free tools → Download one
+#   small library → Compile LUPY → Install into Applications → Launch & prove
+#   he's alive (this installer verifies its own work and only then says done).
 #
-# Founder law after the 3.0/3.1 field test ("it disappeared"): VISIBLE ALWAYS.
-# The AppleScript progress panel never visibly appeared on his Mac, so it is
-# gone. If the compiled face cannot be built or dies, self-refreshing modal
-# dialogues carry the same information. There is no silent stretch left:
-# every minute of work has a window saying what stage it is in, how long it
-# has taken, and roughly how long remains. Full log: /tmp/lupy-install.log
+# Founder law, from three field runs on his Mac:
+#   · VISIBLE ALWAYS (3.0/3.1 "disappeared"): a standard window he can
+#     minimize, with the % on its Dock icon — never glued on top, never gone.
+#   · NO PASSWORD POPUPS (3.2 froze 33 min, then died, on keychain asks):
+#     build-no-xcode.sh silences git + SwiftPM credential lookups — every
+#     download here is public.
+#   · PROOF, NOT CLAIMS: step 6 checks the app, its icon, and that he is
+#     actually running; the window ends as a checklist he can screenshot,
+#     with a plain-words report file for whatever failed.
+# If the compiled window cannot be built or dies, self-refreshing dialogues
+# carry the same information. There is no silent stretch left anywhere.
+# Logs: /tmp/lupy-install.log (everything) · /tmp/lupy-install-report.txt
 # The Terminal twin of this installer is "Install LUPY.command" (kept as backup).
 
 # NOTE: no `set -e` — an abrupt exit would leave the founder staring at nothing.
@@ -32,16 +35,19 @@ APP_BUNDLE="$(cd "$SELF_DIR/../.." 2>/dev/null && pwd)"
 KIT="$(dirname "$APP_BUNDLE")"
 ICON="$APP_BUNDLE/Contents/Resources/AppIcon.icns"
 LOG="/tmp/lupy-install.log"
+REPORT_FILE="/tmp/lupy-install-report.txt"
 STATUS_DIR="$(mktemp -d /tmp/lupy-install.XXXXXX 2>/dev/null || echo /tmp/lupy-install-status)"
 mkdir -p "$STATUS_DIR"
-STATUS_FILE="$STATUS_DIR/status.txt"
+FACE_STATUS_FILE="$STATUS_DIR/face-status.txt"     # v3 line for the window (this script is its only writer)
+BUILD_STATUS_FILE="$STATUS_DIR/build-status.txt"   # PCT|STAGE|DETAIL milestones from build-no-xcode.sh
 DONE_FILE="$STATUS_DIR/done"
 CANCEL_FILE="$STATUS_DIR/cancel"
 HEART_FILE="$STATUS_DIR/heartbeat"
+RESULT_FILE="$STATUS_DIR/result.txt"
 
 : > "$LOG"
 exec >>"$LOG" 2>&1
-echo "== Install LUPY (3.2) — $(date) — kit: $KIT"
+echo "== Install LUPY (3.3) — $(date) — kit: $KIT"
 
 cleanup() {
   touch "$DONE_FILE" 2>/dev/null
@@ -75,7 +81,7 @@ APPLESCRIPT
 
 modal() {
   # Like dialog(), but gives up after $4 seconds and echoes "" — the building
-  # block of every "self-refreshing window" below, so a long wait is always a
+  # block of every self-refreshing fallback window, so a long wait is always a
   # visible window with fresh numbers, never a vanished installer.
   # $1 text · $2 buttons · $3 default · $4 give-up seconds
   /usr/bin/osascript - "$1" "$2" "$3" "$4" "$ICON" <<'APPLESCRIPT' 2>/dev/null
@@ -105,19 +111,178 @@ sorry() {
   exit 0
 }
 
-status() { printf '%s|%s|%s\n' "$1" "$2" "${3:-}" > "$STATUS_FILE"; }   # PCT|STAGE|DETAIL
 cancelled() { [ -f "$CANCEL_FILE" ]; }
 elapsed_txt() { # $1 = start epoch → "N min S sec"
   local s=$(( $(date +%s) - $1 ))
   printf '%s min %s sec' $(( s / 60 )) $(( s % 60 ))
 }
+fmt_dur() { # $1 = seconds → "M:SS" or "-"
+  case "$1" in (*[!0-9]*|'') printf '-'; return 0 ;; esac
+  [ "$1" -ge 0 ] 2>/dev/null || { printf '-'; return 0; }
+  printf '%s:%02d' $(( $1 / 60 )) $(( $1 % 60 ))
+}
+
+# ── step machine (harness-extracted by tools/ui/installer-harness.sh) ───────
+# Six steps, one line for the window: 3|<overallPct>|<......>|<flags>|<detail>
+# Each step char: . waiting · > doing · + done · ! failed · - stopped.
+STEP_COUNT=6
+STEP_NAMES="Check this Mac|Apple's free tools|Download one small library|Compile LUPY|Install into Applications|Launch & prove he's alive"
+STEP_STATES="......"
+OVERALL_PCT=0
+STUCK_FLAG=""
+LAST_DETAIL=""
+STEP_STARTED="0 0 0 0 0 0"
+STEP_ENDED="0 0 0 0 0 0"
+LAST_LOG_SIZE=-1
+LAST_LOG_GROWTH=0
+BUILD_STARTED=0
+STALL_AFTER=150
+
+field_get() { printf '%s' "$1" | cut -d' ' -f"$2"; }
+field_set() { # $1 list · $2 idx · $3 value → echoes the new list
+  local list="$1" idx="$2" val="$3" out="" i=1 tok
+  for tok in $list; do
+    if [ "$i" -eq "$idx" ]; then out="$out$val "; else out="$out$tok "; fi
+    i=$((i + 1))
+  done
+  printf '%s' "${out% }"
+}
+step_name() { printf '%s' "$STEP_NAMES" | cut -d'|' -f"$1"; }
+step_set() { # $1 idx (1-based) · $2 state char
+  local i=$(( $1 - 1 )) t cur
+  cur="$(step_state "$1")"
+  # states never travel backwards: a finished step stays finished
+  case "$cur" in
+    '+') [ "$2" = "+" ] || return 0 ;;
+    '!') [ "$2" = "!" ] || return 0 ;;
+  esac
+  t=$(date +%s)
+  if [ "$2" = ">" ] && [ "$(field_get "$STEP_STARTED" "$1")" = "0" ]; then
+    STEP_STARTED="$(field_set "$STEP_STARTED" "$1" "$t")"
+  fi
+  if [ "$2" = "+" ] || [ "$2" = "!" ] || [ "$2" = "-" ]; then
+    STEP_ENDED="$(field_set "$STEP_ENDED" "$1" "$t")"
+  fi
+  STEP_STATES="${STEP_STATES:0:$i}$2${STEP_STATES:$((i + 1))}"
+}
+step_state() { # $1 idx → its char
+  local s="$STEP_STATES" i=1
+  while [ $i -lt "$1" ]; do s="${s#?}"; i=$((i + 1)); done
+  printf '%s' "${s:0:1}"
+}
+active_step() { # → 1-based index of '>' or 0
+  local i=1 rest="$STEP_STATES"
+  while [ $i -le $STEP_COUNT ]; do
+    case "$rest" in ('>'*) printf '%s' "$i"; return 0 ;; esac
+    rest="${rest#?}"; i=$((i + 1))
+  done
+  printf '0'
+}
+compose_face() { # $1 pct (monotonic) · $2 detail → the v3 line the window renders
+  case "$1" in (*[!0-9]*|'') : ;; (*) [ "$1" -gt "$OVERALL_PCT" ] 2>/dev/null && OVERALL_PCT="$1" ;; esac
+  LAST_DETAIL="$2"
+  printf '3|%s|%s|%s|%s\n' "$OVERALL_PCT" "$STEP_STATES" "$STUCK_FLAG" "$2" > "$FACE_STATUS_FILE"
+}
+refine_and_compose() {
+  # Translate the build's milestones + its own output into steps and percent,
+  # and raise the STUCK flag when the build's text stops moving (the 33-minute
+  # silent freeze behind a hidden password window must never pass unnoticed).
+  local LOGF="$KIT/build-noxcode/build.log" mline mpct mdetail line n m pct detail size now bs
+  now=$(date +%s)
+  mline=""; [ -f "$BUILD_STATUS_FILE" ] && mline="$(head -1 "$BUILD_STATUS_FILE" 2>/dev/null)"
+  mpct="$(printf '%s' "$mline" | cut -d'|' -f1)"
+  case "$mpct" in (*[!0-9]*|'') mpct=0 ;; esac
+  mdetail="$(printf '%s' "$mline" | cut -d'|' -f3)"
+
+  size=0
+  if [ -f "$LOGF" ]; then size="$(wc -c < "$LOGF" 2>/dev/null | tr -d ' ')"; fi
+  case "$size" in (*[!0-9]*|'') size=0 ;; esac
+  if [ "$size" -ne "$LAST_LOG_SIZE" ]; then LAST_LOG_SIZE="$size"; LAST_LOG_GROWTH="$now"; fi
+
+  detail="$mdetail"; pct=10
+  if [ "$mpct" -ge 70 ]; then
+    step_set 3 '+'; step_set 4 '+'; step_set 5 '>'
+    pct="$mpct"
+    [ -n "$detail" ] || detail="assembling him…"
+  else
+    line=""
+    [ -f "$LOGF" ] && line="$(grep -E '^\[[0-9]+/[0-9]+\]' "$LOGF" 2>/dev/null | tail -1)"
+    if [ -n "$line" ]; then
+      bs="$(printf '%s' "$line" | sed -E 's/^\[([0-9]+)\/([0-9]+)\].*/\1 \2/')"
+      n="${bs%% *}"; m="${bs##* }"
+      case "$n$m" in (*[!0-9]*|'') n=0; m=0 ;; esac
+      case "$line" in
+        *Downloading*|*Fetching*)
+          step_set 3 '>'
+          pct=15; [ "$m" -gt 0 ] 2>/dev/null && pct=$(( 15 + (9 * n) / m ))
+          if [ "$m" -gt 1000000 ] 2>/dev/null; then
+            detail="downloading a ready-made piece — $(( n / 1048576 )) of $(( m / 1048576 )) MB"
+          else
+            detail="bringing the library home — $n of $m little pieces"
+          fi
+          ;;
+        *)
+          step_set 3 '+'; step_set 4 '>'
+          pct=25; [ "$m" -gt 0 ] 2>/dev/null && pct=$(( 25 + (43 * n) / m ))
+          detail="$n of $m steps · $(printf '%s' "$line" | sed -E 's/^\[[0-9]+\/[0-9]+\] //')"
+          ;;
+      esac
+    elif [ -f "$LOGF" ] && grep -qiE 'fetching|cloning|resolving|downloading' "$LOGF" 2>/dev/null; then
+      step_set 3 '>'; pct=12
+      detail="bringing the library home (public, needs internet — no password, ever)"
+    else
+      step_set 3 '>'; pct=10
+      [ -n "$detail" ] || detail="warming up the compiler…"
+    fi
+  fi
+
+  STUCK_FLAG=""
+  if [ "$LAST_LOG_GROWTH" -gt 0 ] && [ $(( now - LAST_LOG_GROWTH )) -ge $STALL_AFTER ] \
+     && [ $(( now - BUILD_STARTED )) -ge $STALL_AFTER ]; then
+    STUCK_FLAG="STUCK"
+    detail="No movement for $(( (now - LAST_LOG_GROWTH) / 60 )) min — if a password or permission window is hiding behind other windows, bring it forward. Nothing is lost; LUPY is still waiting."
+  fi
+  compose_face "$pct" "$detail"
+}
+# ── end step machine ──────────────────────────────────────────────────────────
+
+step_dur() { # $1 idx → "M:SS" once ended, "-" otherwise
+  local a b
+  a="$(field_get "$STEP_STARTED" "$1")"; b="$(field_get "$STEP_ENDED" "$1")"
+  if [ "$a" != "0" ] && [ "$b" != "0" ]; then fmt_dur $(( b - a )); else printf '-'; fi
+}
+
+write_report() { # $1 result word · $2 reason (may be "")
+  {
+    echo "LUPY install report — $(date)"
+    echo "Installer 3.3 · macOS $(sw_vers -productVersion 2>/dev/null) · $(uname -m) · kit: $KIT"
+    echo "Result: $1${2:+ — $2}"
+    echo
+    echo "Steps:"
+    local i=1 c word
+    while [ $i -le $STEP_COUNT ]; do
+      c="$(step_state $i)"
+      case "$c" in
+        '+') word="OK" ;; '!') word="FAILED" ;; '-') word="stopped" ;;
+        '>') word="was doing this" ;; *) word="not reached" ;;
+      esac
+      printf '  %s. %-28s %-10s (%s)\n' "$i" "$(step_name $i)" "$word" "$(step_dur $i)"
+      i=$((i + 1))
+    done
+    echo
+    echo "Proof checks (step 6):"
+    printf '%s' "${VERIFY_LINES:-  (not reached)
+}"
+    echo
+    echo "Last build lines:"
+    tail -60 "$KIT/build-noxcode/build.log" 2>/dev/null || echo "(no build log)"
+    echo
+    echo "Full install log: $LOG (still on this Mac)"
+  } > "$REPORT_FILE"
+  echo "report written: $REPORT_FILE"
+}
 
 # ── finding the kit ───────────────────────────────────────────────────────────
-# The kit is the folder this installer arrived in. Usually right beside us —
-# but macOS runs a freshly downloaded app from a hidden randomized copy
-# containing ONLY the app (Gatekeeper "app translocation"), which is exactly
-# what happened on the founder's first run. So: beside us, then search the
-# places a download lands, then ask the founder to point at the folder.
 looks_like_kit() {
   # Absolute paths only (every caller resolves to one). This also refuses the
   # "." a `dirname ""` produces when a find returns nothing — the current
@@ -179,27 +344,27 @@ FACE_PID=""
 face_start() {
   # Compile LupyProgress.swift (in this bundle) with the tools already proven
   # present, and put its window up. While it compiles (seconds), a refreshing
-  # modal says so. Any failure → FACE_PID stays empty and the build phase is
-  # carried by refreshing modals instead. Never silence.
+  # modal says so. Any failure → FACE_PID stays empty and refreshing modals
+  # carry the build instead. Never silence.
   local SRC="$APP_BUNDLE/Contents/Resources/LupyProgress.swift" BIN="$STATUS_DIR/LupyProgress"
   FACE_PID=""
   [ -f "$SRC" ] || { echo "face: source missing — modal fallback"; return 0; }
   command -v swiftc >/dev/null 2>&1 || { echo "face: no swiftc — modal fallback"; return 0; }
   echo "face: compiling…"
-  status 4 "Preparing" "building your installer window…"
   ( swiftc -O -o "$BIN" "$SRC" ) &
   local CPID=$! waited=0 M=""
   while kill -0 "$CPID" 2>/dev/null; do
     M="$(modal "Preparing your installer screen…
 
-(a few seconds, first time only — then a progress window stays with you the whole way)" "Stop" "Stop" 3)"
+(a few seconds, first time only — then a window with the six steps stays with you the whole way, and you can minimize it any time)" "Stop" "Stop" 3)"
     if [ "$M" = "Stop" ]; then kill "$CPID" 2>/dev/null; exit 0; fi
     waited=$((waited + 3))
     [ "$waited" -ge 90 ] && break
   done
   wait "$CPID" 2>/dev/null
   if [ ! -x "$BIN" ]; then echo "face: compile failed — modal fallback"; return 0; fi
-  "$BIN" "$STATUS_FILE" "$DONE_FILE" "$CANCEL_FILE" "$HEART_FILE" "$KIT/build-noxcode/build.log" "$ICON" >/dev/null 2>&1 &
+  "$BIN" "$FACE_STATUS_FILE" "$DONE_FILE" "$CANCEL_FILE" "$HEART_FILE" \
+         "$KIT/build-noxcode/build.log" "$ICON" "$RESULT_FILE" "$REPORT_FILE" >/dev/null 2>&1 &
   FACE_PID=$!
   sleep 1
   if ! kill -0 "$FACE_PID" 2>/dev/null; then
@@ -210,39 +375,54 @@ face_start() {
   echo "face: up (pid $FACE_PID)"
 }
 
-refine_status() {
-  # Turn the compiler's own output into living progress for the face:
-  # SwiftPM prints "[n/m] ..." per step, which maps onto the 25→68 compile
-  # stretch (build-no-xcode.sh owns the milestones around it). Only refines
-  # while the milestone is still the compile one (≤ 25) — never fights later
-  # milestones. Before any [n/m], a fetch in the log means the download stage.
-  local LOGF="$KIT/build-noxcode/build.log" line nm n m pct cur
-  [ -f "$LOGF" ] || return 0
-  cur="$(cut -d'|' -f1 "$STATUS_FILE" 2>/dev/null)"
-  case "$cur" in (*[!0-9-]*|'') cur=25 ;; esac
-  [ "$cur" -le 25 ] 2>/dev/null || return 0
-  line="$(grep -E '^\[[0-9]+/[0-9]+\]' "$LOGF" 2>/dev/null | tail -1)"
-  if [ -n "$line" ]; then
-    nm="$(printf '%s' "$line" | sed -E 's/^\[([0-9]+)\/([0-9]+)\].*/\1 \2/')"
-    n="${nm%% *}"; m="${nm##* }"
-    case "$n$m" in (*[!0-9]*|'') return 0 ;; esac
-    [ "$m" -gt 0 ] 2>/dev/null || return 0
-    pct=$(( 25 + (43 * n) / m ))
-    printf '%s|%s|%s\n' "$pct" "Compiling LUPY" \
-      "$n of $m steps · $(printf '%s' "$line" | sed -E 's/^\[[0-9]+\/[0-9]+\] //')" > "$STATUS_FILE"
-  elif grep -qiE "fetching|cloning|resolving" "$LOGF" 2>/dev/null; then
-    printf '%s|%s|%s\n' 12 "Downloading one small library" "FluidAudio, from GitHub — needs internet" > "$STATUS_FILE"
+# ── step 6: prove he's alive ──────────────────────────────────────────────────
+VERIFY_OK=1
+VERIFY_LINES=""
+VERIFY_REASON=""
+verify_install() {
+  local APP=/Applications/Lupy.app alive=0 waited=0
+  VERIFY_OK=1; VERIFY_LINES=""; VERIFY_REASON=""
+  chk() { # $1 label · $2 1=ok 0=bad
+    if [ "$2" = "1" ]; then
+      VERIFY_LINES="${VERIFY_LINES}  ✓ $1
+"
+    else
+      VERIFY_LINES="${VERIFY_LINES}  ✗ $1
+"
+      VERIFY_OK=0
+      [ -n "$VERIFY_REASON" ] || VERIFY_REASON="$1"
+    fi
+  }
+  if [ -d "$APP" ]; then chk "Lupy.app is in Applications" 1; else chk "Lupy.app is in Applications" 0; fi
+  if [ -x "$APP/Contents/MacOS/Lupy" ]; then chk "his program is inside, ready to run" 1; else chk "his program is inside, ready to run" 0; fi
+  if [ -f "$APP/Contents/Resources/AppIcon.icns" ]; then chk "his face (app icon) is on" 1; else chk "his face (app icon) is on" 0; fi
+  if codesign --verify --deep "$APP" >/dev/null 2>&1; then
+    VERIFY_LINES="${VERIFY_LINES}  · signature check: OK (ad-hoc, as expected for a home-built app)
+"
+  else
+    VERIFY_LINES="${VERIFY_LINES}  · signature check: complained (not counted as failure on its own)
+"
   fi
+  while [ $waited -lt 24 ]; do
+    if pgrep -x Lupy >/dev/null 2>&1 || pgrep -f "Lupy.app/Contents/MacOS/Lupy" >/dev/null 2>&1; then alive=1; break; fi
+    sleep 2; waited=$((waited + 2))
+    touch "$HEART_FILE"
+    compose_face 98 "waiting for him to appear under your menu bar… (${waited}s)"
+  done
+  chk "Lupy is running (the pill under your menu bar)" "$alive"
+  printf '%s' "$VERIFY_LINES"
+  [ "$VERIFY_OK" = "1" ]
 }
 
 # ── welcome ───────────────────────────────────────────────────────────────────
 CHOICE="$(dialog "LUPY installs himself on this Mac — no Xcode, no Terminal, nothing to type.
 
-First time only, this takes a few minutes: he fetches one small library and compiles with Apple's free tools. A progress window stays open the whole time — stage, time elapsed, time left — so you always know he's working. Then he lives in your Applications and launches by himself: the small dark pill under your menu bar." "Not now,Install LUPY" "Install LUPY")"
+You'll watch six steps in a normal Mac window (minimize it any time — the Dock icon shows the %): check this Mac, Apple's free tools, download one small library, compile, install, and finally proof that he's alive. First time takes a few minutes. Then he lives in your Applications and launches by himself: the small dark pill under your menu bar." "Not now,Install LUPY" "Install LUPY")"
 [ "$CHOICE" = "Install LUPY" ] || exit 0
 
-# ── preflight, each with a plain-language way out ─────────────────────────────
-status 5 "Checking this Mac" ""
+# ── steps 1–2: this Mac + Apple's tools ───────────────────────────────────────
+step_set 1 '>'
+compose_face 2 "finding the kit and checking this Mac…"
 echo "self: $0"
 echo "resolved bundle: $APP_BUNDLE"
 echo "first kit guess (beside this app): $KIT"
@@ -251,7 +431,7 @@ case "$APP_BUNDLE" in
 esac
 
 if ! looks_like_kit "$KIT"; then
-  status 6 "Finding the Lupy kit folder" "looking in Downloads, Desktop, Documents…"
+  compose_face 3 "looking for the kit in Downloads, Desktop, Documents…"
   FOUND_KIT="$(find_kit)"
   if [ -n "$FOUND_KIT" ]; then
     KIT="$FOUND_KIT"
@@ -260,7 +440,7 @@ if ! looks_like_kit "$KIT"; then
     echo "kit not found by search — asking the founder to point at it"
     CHOICE="$(dialog "macOS runs freshly downloaded apps from a hidden safe corner, so I've lost sight of the Lupy kit folder I arrived in.
 
-Show me the folder you unzipped (look in Downloads — a long name starting “buildthewayback-lupy-”) and I'll carry on from there. Nothing was changed." "Not now,Choose the kit folder…" "Choose the kit folder…")"
+Show me the folder you unzipped (look in Downloads) and I'll carry on from there. Nothing was changed." "Not now,Choose the kit folder…" "Choose the kit folder…")"
     [ "$CHOICE" = "Choose the kit folder…" ] || exit 0
     CHOSEN="$(choose_kit "Choose the Lupy kit folder — the one you unzipped, with Mac, LupyCore and scripts inside")"
     CHOSEN="${CHOSEN%/}"
@@ -275,14 +455,12 @@ Show me the folder you unzipped (look in Downloads — a long name starting “b
 
 Try this: download the kit zip again, double-click it, and run Install LUPY from inside the folder that appears — don't move him out of it. Nothing was changed."
     fi
-    status 8 "Found the kit" "carrying on…"
   fi
 fi
 echo "kit: $KIT"
 # He arrived from the founder's own GitHub and the founder just clicked
 # "Install LUPY": clear the kit's download-quarantine so macOS never runs
 # this kit (or a re-run of this installer) from the hidden corner again.
-# The installed Lupy.app gets the same treatment in build-no-xcode.sh.
 xattr -dr com.apple.quarantine "$KIT" 2>/dev/null || true
 
 ARCH="$(uname -m)"
@@ -308,22 +486,25 @@ if [ ! -w /Applications ]; then
 
 Sign in with an administrator account (or ask whoever manages this Mac), then double-click me again. Nothing was changed."
 fi
+step_set 1 '+'
+compose_face 4 "this Mac is ready"
+step_set 2 '>'
+compose_face 5 "checking Apple's free tools…"
 
 # Apple's free Command Line Tools carry the compiler (no 8 GB Xcode). The wait
-# is shown in a self-refreshing window — Apple's part can take minutes and the
-# founder must never wonder whether we died.
+# is shown in a self-refreshing window — the face itself needs the compiler.
 if ! xcode-select -p >/dev/null 2>&1 || ! /usr/bin/swift --version >/dev/null 2>&1; then
   CHOICE="$(dialog "One thing first: LUPY is compiled on your Mac with Apple's free Command Line Tools, and they aren't installed yet.
 
 Click “Install Apple's tools” and macOS will offer them (a small download from Apple — not the 8 GB Xcode). Leave everything as it is: when Apple's window finishes, LUPY continues by himself." "Not now,Install Apple's tools" "Install Apple's tools")"
   [ "$CHOICE" = "Install Apple's tools" ] || exit 0
-  status 8 "Waiting for Apple's tools" "click Install in Apple's window…"
   xcode-select --install >/dev/null 2>&1
   T0=$(date +%s)
   until xcode-select -p >/dev/null 2>&1 && /usr/bin/swift --version >/dev/null 2>&1; do
-    M="$(modal "Waiting for Apple's tools to finish installing…
+    compose_face 5 "waiting for Apple's tools… $(elapsed_txt "$T0")"
+    M="$(modal "Step 2 of 6 — Apple's free tools
 
-Click “Install” in Apple's own window if you can see it. This part is Apple's and can take several minutes. LUPY continues automatically the moment it's ready.
+Waiting for Apple's tools to finish installing. Click “Install” in Apple's own window if you can see it. This part is Apple's and can take several minutes; LUPY continues automatically the moment it's ready.
 
 Waited so far: $(elapsed_txt "$T0"). This window refreshes itself — no need to click." "Keep waiting,Not now" "Keep waiting" 15)"
     if [ "$M" = "Not now" ]; then
@@ -337,33 +518,38 @@ If Apple's window is still working, let it finish — then double-click Install 
   done
   echo "Apple's tools ready"
 fi
+step_set 2 '+'
+compose_face 6 "Apple's tools ready"
 
-# ── the face goes up, then the long work starts ───────────────────────────────
+# ── the face goes up, then steps 3–5: the build ───────────────────────────────
 face_start
-status 15 "Starting the build" "first build also downloads one small library (needs internet)"
 touch "$HEART_FILE"
+step_set 3 '>'
+compose_face 8 "starting — first build downloads one small library (needs internet)"
 echo "== build-no-xcode.sh --install"
-( cd "$KIT" && LUPY_INSTALL_STATUS_FILE="$STATUS_FILE" bash scripts/build-no-xcode.sh --install ) &
+BUILD_STARTED=$(date +%s)
+LAST_LOG_GROWTH="$BUILD_STARTED"
+( cd "$KIT" && LUPY_INSTALL_STATUS_FILE="$BUILD_STATUS_FILE" bash scripts/build-no-xcode.sh --install ) &
 BUILD_PID=$!
-BUILD_T0=$(date +%s)
 while kill -0 "$BUILD_PID" 2>/dev/null; do
   touch "$HEART_FILE"
   if cancelled; then
     kill "$BUILD_PID" 2>/dev/null
     break
   fi
-  refine_status
+  refine_and_compose
   if [ -n "$FACE_PID" ] && ! kill -0 "$FACE_PID" 2>/dev/null; then
     echo "face died mid-build — modal fallback takes over"
     FACE_PID=""
   fi
   if [ -z "$FACE_PID" ]; then
-    # no face: BE the window — a refreshing modal with stage + elapsed time
-    STAGE_NOW="$(cut -d'|' -f2 "$STATUS_FILE" 2>/dev/null)"
-    [ -n "$STAGE_NOW" ] || STAGE_NOW="Working"
-    M="$(modal "Still working — $STAGE_NOW…
+    AIDX="$(active_step)"
+    ANAME="Working"; [ "$AIDX" != "0" ] && ANAME="Step $AIDX of 6 — $(step_name "$AIDX")"
+    M="$(modal "$ANAME
 
-Elapsed: $(elapsed_txt "$BUILD_T0"). The first build usually takes 3–6 minutes in total (it downloads one small library, then compiles). This window refreshes itself — no need to click anything." "Keep waiting,Cancel install" "Keep waiting" 15)"
+$LAST_DETAIL
+
+Elapsed: $(elapsed_txt "$BUILD_STARTED"). The first build usually takes 3–6 minutes in total. This window refreshes itself — no need to click anything." "Keep waiting,Cancel install" "Keep waiting" 15)"
     if [ "$M" = "Cancel install" ]; then
       touch "$CANCEL_FILE"
       kill "$BUILD_PID" 2>/dev/null
@@ -375,28 +561,77 @@ Elapsed: $(elapsed_txt "$BUILD_T0"). The first build usually takes 3–6 minutes
 done
 wait "$BUILD_PID" 2>/dev/null
 CODE=$?
-echo "build exit $CODE after $(elapsed_txt "$BUILD_T0")"
-touch "$DONE_FILE"; sleep 2   # the face sees DONE, shows "Finishing…", closes itself
+echo "build exit $CODE after $(elapsed_txt "$BUILD_STARTED")"
 
+# ── the ending: verdict, report, and a final screen that stays ───────────────
+RESULT_LINE=""
 if cancelled && [ "$CODE" -ne 0 ]; then
-  sorry "Install cancelled. LUPY was not installed and nothing was changed — double-click me again any time."
+  AIDX="$(active_step)"; [ "$AIDX" != "0" ] && step_set "$AIDX" '-'
+  RESULT_LINE="CANCELLED"
+  write_report "CANCELLED" "the founder stopped it — nothing was changed"
+elif [ "$CODE" -ne 0 ]; then
+  AIDX="$(active_step)"; [ "$AIDX" = "0" ] && AIDX=4
+  step_set "$AIDX" '!'
+  compose_face "$OVERALL_PCT" "stopped here — the report has the exact words"
+  RESULT_LINE="FAIL|$AIDX|the build stopped (exit $CODE)"
+  write_report "FAILED at step $AIDX ($(step_name "$AIDX"))" "build exit $CODE — exact text at the end of this report"
+else
+  step_set 3 '+'; step_set 4 '+'; step_set 5 '+'
+  step_set 6 '>'
+  compose_face 98 "checking he's really there — app, icon, and running…"
+  if verify_install; then
+    step_set 6 '+'
+    compose_face 100 "he's alive — look under your menu bar"
+    RESULT_LINE="OK"
+    write_report "OK — installed and running" ""
+  else
+    step_set 6 '!'
+    compose_face 99 "installed, but a proof check failed"
+    RESULT_LINE="FAIL|6|proof check failed: $VERIFY_REASON"
+    write_report "FAILED at step 6 (proof)" "$VERIFY_REASON"
+  fi
 fi
 
-if [ "$CODE" -eq 0 ]; then
-  echo "== install OK"
-  dialog "LUPY is installed and running.
+case "$RESULT_LINE" in
+  OK) : ;;
+  *) cp "$REPORT_FILE" "$HOME/Desktop/Lupy install report.txt" 2>/dev/null || true
+     echo "report also copied to Desktop for the founder" ;;
+esac
 
-He's the small dark pill at the top centre of your screen, under the menu bar. Click his typing box to talk to him — or use the menu bar: Lupy → Demo mode shows his approval card.
+printf '%s' "$RESULT_LINE" > "$RESULT_FILE"
+touch "$DONE_FILE"
 
-From now on he lives in Applications, like any app. You can delete this kit folder." "Done" "Done" >/dev/null
+if [ -n "$FACE_PID" ] && kill -0 "$FACE_PID" 2>/dev/null; then
+  # the window is now the final screen (checklist + Save report); wait for
+  # the founder to close it (cap 15 min so we never linger forever)
+  WAITED=0
+  while kill -0 "$FACE_PID" 2>/dev/null && [ "$WAITED" -lt 900 ]; do
+    sleep 2; WAITED=$((WAITED + 2))
+    touch "$HEART_FILE"
+  done
+  echo "face closed (waited ${WAITED}s at the final screen)"
   exit 0
 fi
 
-echo "== install FAILED (exit $CODE)"
-CHOICE="$(dialog "The install didn't finish — nothing is broken, LUPY just isn't installed yet.
+# no face: the final word in dialogues, as before
+case "$RESULT_LINE" in
+  OK)
+    dialog "LUPY is installed and running — all six steps proved green.
 
-The install log says exactly why. Open it, screenshot it, and send it to Arena: a fixed kit comes back. (The file “Install LUPY.command” in this folder does the same job in a Terminal window, if you ever want to watch it work.)" "Not now,Show the log" "Show the log")"
-if [ "$CHOICE" = "Show the log" ]; then
-  /usr/bin/open "$LOG" >/dev/null 2>&1
-fi
+He's the small dark pill at the top centre of your screen, under the menu bar. Click his typing box to talk to him — or menu bar: Lupy → Demo mode shows his approval card.
+
+From now on he lives in Applications, like any app. You can delete this kit folder." "Done" "Done" >/dev/null
+    ;;
+  CANCELLED)
+    sorry "Install cancelled. LUPY was not installed and nothing was changed — double-click me again any time."
+    ;;
+  *)
+    CHOICE="$(dialog "The install didn't finish — nothing is broken, LUPY just isn't installed yet.
+
+I put a plain-words report on your Desktop: “Lupy install report.txt” — it says exactly which step stopped and why. Send that file (or a screenshot of it) to Arena and a fixed kit comes back." "Not now,Show the report" "Show the report")"
+    if [ "$CHOICE" = "Show the report" ]; then
+      /usr/bin/open "$HOME/Desktop/Lupy install report.txt" >/dev/null 2>&1 || /usr/bin/open "$REPORT_FILE" >/dev/null 2>&1
+    fi
+    ;;
+esac
 exit 0

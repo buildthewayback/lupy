@@ -16,6 +16,13 @@
 He is the small dark pill at the top centre of your screen, under the menu bar.
 Menu bar → **Lupy → Demo mode** shows his approval card; click his typing box to talk.
 
+**Kit 3.3 — the proper Setup:** the installer is now a step-by-step setup window
+(six named steps with green ticks, minimize to the Dock with the % on its icon,
+plain-words errors, a stall alarm, and a final proof screen that checks the app,
+its icon, and that he's really running). Downloads are credential-blind: nothing
+will ever ask for a password mid-install. The installer's logic is rehearsed in
+simulation with every build gate.
+
 **What's new in this kit:** LUPY finally wears his own face — the app icon is forged
 from his locked character (pure-white body, tall black capsule eyes, white glow on
 dark), the same geometry the app itself draws, byte-checked by the build. The

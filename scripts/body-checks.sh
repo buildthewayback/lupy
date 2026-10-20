@@ -48,7 +48,26 @@ grep -q 'xattr -dr com.apple.quarantine /Applications/Lupy.app' scripts/build-no
 grep -q 'CFBundleIconFile' Mac/Resources/Info.plist
 grep -q 'face_start' "Install LUPY.app/Contents/MacOS/Install-LUPY"
 test -f "Install LUPY.app/Contents/Resources/LupyProgress.swift"
-echo "INSTALL WIRING: SATISFIED (icon ships, registers, and the installer has a face)"
+# credential-blind builds (3.2's field death): no keychain may ever be asked
+grep -q 'disable-keychain' scripts/build-no-xcode.sh
+grep -q 'GIT_TERMINAL_PROMPT=0' scripts/build-no-xcode.sh
+# the Setup window's standard manners (3.2 floated, unclosable — founder-rejected)
+grep -q 'win.level = .normal' "Install LUPY.app/Contents/Resources/LupyProgress.swift"
+grep -q '.miniaturizable' "Install LUPY.app/Contents/Resources/LupyProgress.swift"
+grep -q 'applicationShouldHandleReopen' "Install LUPY.app/Contents/Resources/LupyProgress.swift"
+grep -q 'badgeLabel' "Install LUPY.app/Contents/Resources/LupyProgress.swift"
+# proof + report + stall watchdog
+grep -q 'verify_install' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+grep -q 'write_report' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+grep -q 'STUCK' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+# the six step names: one source in each language, byte-identical — never drift
+for STEPN in "Check this Mac" "Apple's free tools" "Download one small library" "Compile LUPY" "Install into Applications" "Launch & prove he's alive"; do
+  grep -q "$STEPN" "Install LUPY.app/Contents/MacOS/Install-LUPY"
+  grep -q "$STEPN" "Install LUPY.app/Contents/Resources/LupyProgress.swift"
+done
+echo "INSTALL WIRING: SATISFIED (icon ships, registers; standard Setup window; credential-blind; steps in sync)"
+echo "== 6c · installer rehearsal (the step machine, stress-run in simulation)"
+bash tools/ui/installer-harness.sh | tail -1
 python3 tools/ui/audit_ui.py | tail -1
 python3 tools/ui/audit_all.py | tail -1
 python3 tools/ui/audit_micro.py | tail -1
