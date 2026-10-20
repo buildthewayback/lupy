@@ -3,8 +3,11 @@
 # founder goes through native macOS dialogues (osascript), progress included.
 #
 # What it does, in order:
-#   welcome -> preflight (Apple Silicon, macOS 15+, kit intact, /Applications
-#   writable, Apple's free Command Line Tools) -> build via
+#   welcome -> find the kit (beside us / search the download places / ask the
+#   founder to point — macOS runs fresh downloads from a hidden copy, so
+#   "beside us" alone once lost the kit on a real machine) -> preflight
+#   (Apple Silicon, macOS 15+, /Applications writable, Apple's free
+#   Command Line Tools) -> build via
 #   scripts/build-no-xcode.sh --install (compiles on THIS Mac, installs
 #   /Applications/Lupy.app with his icon + name, launches him) -> done dialogue.
 # Every failure lands in a friendly dialogue with a way out — never a silent
@@ -113,6 +116,65 @@ APPLESCRIPT
 status() { printf '%s|%s\n' "$1" "$2" > "$STATUS_FILE"; }
 cancelled() { [ -f "$CANCEL_FILE" ]; }
 
+# ── finding the kit ───────────────────────────────────────────────────────────
+# The kit is the folder this installer arrived in. Usually it is right beside
+# us — but macOS runs a freshly downloaded app from a hidden randomized copy
+# containing ONLY the app (Gatekeeper "app translocation"), which is exactly
+# what happened on the founder's first run of the 2026-10-20 kit: the dialogue
+# "I can't find the rest of the Lupy kit around me" with the kit sitting right
+# there in Downloads. So: look beside us, then search the places a download
+# lands, then — last resort — ask the founder to point at the folder.
+looks_like_kit() {
+  [ -f "$1/scripts/build-no-xcode.sh" ] && [ -d "$1/Install LUPY.app" ] && [ -f "$1/Mac/Package.swift" ]
+}
+
+kit_under() {
+  # $1 = a folder that may contain the kit a level or two down → echoes the kit
+  local f d
+  while IFS= read -r f; do
+    d="$(dirname "$(dirname "$f")")"
+    if looks_like_kit "$d"; then printf '%s\n' "$d"; return 0; fi
+  done <<KITFIND
+$(find "$1" -maxdepth 3 -type f -name build-no-xcode.sh -path '*/scripts/build-no-xcode.sh' 2>/dev/null | head -10)
+KITFIND
+  return 1
+}
+
+find_kit() {
+  # Search where an unzipped download lives. The newest matching kit wins
+  # (an older clone elsewhere on disk must not beat the one just unzipped;
+  # a pre-2026-10-20 kit has no Install LUPY.app and never matches at all).
+  local root f d m best="" best_m=0
+  for root in "$HOME/Downloads" "$HOME/Desktop" "$HOME/Documents"; do
+    [ -d "$root" ] || continue
+    while IFS= read -r f; do
+      [ -n "$f" ] || continue
+      d="$(dirname "$(dirname "$f")")"
+      looks_like_kit "$d" || continue
+      m="$(stat -f %m "$d" 2>/dev/null || stat -c %Y "$d" 2>/dev/null || echo 0)"
+      case "$m" in (*[!0-9]*|'') m=0 ;; esac
+      if [ -z "$best" ] || [ "$m" -gt "$best_m" ]; then best="$d"; best_m="$m"; fi
+    done <<KITFIND
+$(find "$root" -maxdepth 4 -type f -name build-no-xcode.sh -path '*/scripts/build-no-xcode.sh' 2>/dev/null | head -20)
+KITFIND
+  done
+  [ -n "$best" ] && printf '%s\n' "$best"
+}
+
+choose_kit() {
+  # $1 = prompt → echoes the folder the founder points at ("" if cancelled)
+  /usr/bin/osascript - "$1" <<'APPLESCRIPT' 2>/dev/null
+on run argv
+  try
+    set f to choose folder with prompt (item 1 of argv)
+    return POSIX path of f
+  on error
+    return ""
+  end try
+end run
+APPLESCRIPT
+}
+
 # ── welcome ───────────────────────────────────────────────────────────────────
 CHOICE="$(dialog "LUPY installs himself on this Mac — no Xcode, no Terminal, nothing to type.
 
@@ -123,12 +185,49 @@ progress_start
 
 # ── preflight, each with a plain-language way out ─────────────────────────────
 status 5 "Checking this Mac…"
+echo "self: $0"
+echo "resolved bundle: $APP_BUNDLE"
+echo "first kit guess (beside this app): $KIT"
+case "$APP_BUNDLE" in
+  *AppTranslocation*) echo "note: macOS translocated this launch (fresh-download safe corner) — will hunt for the real kit" ;;
+esac
 
-if [ ! -f "$KIT/scripts/build-no-xcode.sh" ]; then
-  sorry "I can't find the rest of the Lupy kit around me.
+if ! looks_like_kit "$KIT"; then
+  status 6 "Finding the Lupy kit folder…"
+  FOUND_KIT="$(find_kit)"
+  if [ -n "$FOUND_KIT" ]; then
+    KIT="$FOUND_KIT"
+    echo "kit found by search: $KIT"
+  else
+    echo "kit not found by search — asking the founder to point at it"
+    touch "$DONE_FILE"; sleep 1; rm -f "$DONE_FILE"
+    CHOICE="$(dialog "macOS runs freshly downloaded apps from a hidden safe corner, so I've lost sight of the Lupy kit folder I arrived in.
 
-Install LUPY.app has to stay inside the kit folder you unzipped (next to the folders called Mac, LupyCore and scripts). Move me back in there and double-click me again — nothing was changed."
+Show me the folder you unzipped (look in Downloads — a long name starting “buildthewayback-lupy-”) and I'll carry on from there. Nothing was changed." "Not now,Choose the kit folder…" "Choose the kit folder…")"
+    [ "$CHOICE" = "Choose the kit folder…" ] || exit 0
+    CHOSEN="$(choose_kit "Choose the Lupy kit folder — the one you unzipped, with Mac, LupyCore and scripts inside")"
+    CHOSEN="${CHOSEN%/}"
+    if [ -n "$CHOSEN" ] && ! looks_like_kit "$CHOSEN"; then
+      CHOSEN="$(kit_under "$CHOSEN")"
+    fi
+    if [ -n "$CHOSEN" ] && looks_like_kit "$CHOSEN"; then
+      KIT="$CHOSEN"
+      echo "kit chosen by founder: $KIT"
+    else
+      sorry "That folder isn't the Lupy kit (I look for Mac, LupyCore and scripts inside it).
+
+Try this: download the kit zip again, double-click it, and run Install LUPY from inside the folder that appears — don't move him out of it. Nothing was changed."
+    fi
+    progress_start
+    status 8 "Found the kit — carrying on…"
+  fi
 fi
+echo "kit: $KIT"
+# He arrived from the founder's own GitHub and the founder just clicked
+# "Install LUPY": clear the kit's download-quarantine so macOS never runs
+# this kit (or a re-run of this installer) from the hidden corner again.
+# The installed Lupy.app gets the same treatment in build-no-xcode.sh.
+xattr -dr com.apple.quarantine "$KIT" 2>/dev/null || true
 
 ARCH="$(uname -m)"
 if [ "$ARCH" != "arm64" ]; then
