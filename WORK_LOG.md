@@ -306,3 +306,25 @@ or fail compiles — different cause entirely (ours, in the code). Shipped as
 a PR, deliberately NOT merged until the founder approves and (asked) shares
 the Desktop install report, so the compiler's full list can be cross-checked
 against the census before this lands on the tag.
+
+## 2026-10-20 — The founder's report: census confirmed, + a second catch
+
+The founder sent the Desktop "Lupy install report.txt" from his 15:23 run
+(an earlier attempt than his 16:02 screenshot; its step 3 took 4:30 because
+the 87 MB xcframework was really downloading that time — cached for the
+16:02 run, which stepped through in 1:05). Every compiler error in the
+tail sits in LupyIslandShell.swift (rootView/setFrame/frame/orderOut),
+and swiftc's own note prescribes the fix: "add '@MainActor'". The
+isolation census and the one compiler we cannot run agree exactly.
+
+Bonus catch, invisible everywhere but this report: its header reads
+"macOS 15.7.4 · x86_64" — on Apple Silicon. LaunchServices runs a
+script-based .app under Rosetta, so the whole install (and would-be build)
+inherited a pretend-Intel world: SwiftPM builds for the arch it believes
+it's on, so the fixed rebuild could have produced an Intel Lupy or failed
+to link an arm64-only artifact. build-no-xcode.sh now runs the toolchain
+as `arch -arm64 swift` and stamps `file` of the built binary into
+build.log (hence into every future report: "must say arm64"); body-checks
+6b greps for it. The installer's own preflight already tolerated
+translation (sysctl.proc_translated) — now the build no longer believes it.
+Both fixes ride in PR #7, still unmerged pending the founder's approval.

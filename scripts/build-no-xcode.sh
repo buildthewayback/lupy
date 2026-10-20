@@ -25,8 +25,17 @@ export GIT_CONFIG_KEY_0=credential.helper
 export GIT_CONFIG_VALUE_0=
 export GIT_CONFIG_KEY_1=credential.https://github.com.helper
 export GIT_CONFIG_VALUE_1=
+# Native architecture, forced. The founder's first 3.3 field report reads
+# "macOS 15.7.4 · x86_64" on his APPLE SILICON Mac: LaunchServices runs a
+# script-based .app under Rosetta translation, so everything beneath the
+# installer inherited a pretend-Intel world — and SwiftPM builds for the
+# architecture it thinks it is. Left alone, the rebuild would have produced
+# an Intel Lupy (or failed linking an arm64-only component). `arch -arm64`
+# makes the toolchain itself run native whatever the parent shell believes;
+# Intel Macs never reach this line (the installer's preflight refuses them).
+SWIFT="arch -arm64 swift"
 SWIFT_AUTH_FLAGS=""
-if swift build --help 2>/dev/null | grep -q -- '--disable-keychain'; then
+if $SWIFT build --help 2>/dev/null | grep -q -- '--disable-keychain'; then
   SWIFT_AUTH_FLAGS="--disable-keychain"
 fi
 # Progress for the double-click installer (Install LUPY.app's face reads this
@@ -35,10 +44,12 @@ fi
 status() { if [ -n "${LUPY_INSTALL_STATUS_FILE:-}" ]; then printf '%s|%s|%s\n' "$1" "$2" "${3:-}" > "$LUPY_INSTALL_STATUS_FILE" || true; fi; }
 echo "== swift build -c release (first run fetches FluidAudio; some minutes of text)"
 status 25 "Compiling LUPY" "first build also downloads one small library (needs internet)"
-if ! swift build $SWIFT_AUTH_FLAGS -c release > "$LOG" 2>&1; then
+if ! $SWIFT build $SWIFT_AUTH_FLAGS -c release > "$LOG" 2>&1; then
   echo "BUILD FAILED — last lines:"; tail -40 "$LOG"; exit 1
 fi
-BIN=$(swift build $SWIFT_AUTH_FLAGS -c release --show-bin-path)
+BIN=$($SWIFT build $SWIFT_AUTH_FLAGS -c release --show-bin-path)
+# stamp the truth into the log (it lands in the founder's install report):
+{ echo "== built binary (must say arm64):"; file "$BIN/Lupy"; } >> "$LOG" 2>&1 || true
 status 70 "Assembling Lupy.app" "his face, his sounds, his name"
 APP=../build-noxcode/Lupy.app
 rm -rf "$APP"

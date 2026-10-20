@@ -51,6 +51,8 @@ test -f "Install LUPY.app/Contents/Resources/LupyProgress.swift"
 # credential-blind builds (3.2's field death): no keychain may ever be asked
 grep -q 'disable-keychain' scripts/build-no-xcode.sh
 grep -q 'GIT_TERMINAL_PROMPT=0' scripts/build-no-xcode.sh
+# native build even under a Rosetta-translated installer (3.3 report: "x86_64" on Apple Silicon)
+grep -q 'arch -arm64 swift' scripts/build-no-xcode.sh
 # the Setup window's standard manners (3.2 floated, unclosable — founder-rejected)
 grep -q 'win.level = .normal' "Install LUPY.app/Contents/Resources/LupyProgress.swift"
 grep -q '.miniaturizable' "Install LUPY.app/Contents/Resources/LupyProgress.swift"
