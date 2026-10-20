@@ -158,3 +158,27 @@ conversation → settings reorg → `--chat-self-test` + CI → docs → build F
   Contents.json, forge `--check`, installer safe-degrade smoke on Linux (no
   osascript → clean exit, nothing touched). macOS GUI behaviour itself awaits the
   founder's Mac — the kit download remains the acceptance test.
+
+## 2026-10-20 — installer learned to find its own kit (arena/847f264e)
+
+- **Field report (the first real Mac):** the founder downloaded the lupy3-final kit,
+  unzipped, ran Install LUPY.app, and got "I can't find the rest of the Lupy kit
+  around me." Root cause: **App Translocation** — macOS runs a freshly downloaded,
+  quarantined, never-moved app from a hidden randomized copy containing ONLY the
+  bundle, so the installer's "$0 → ../.." kit resolution saw a folder without
+  scripts/Mac/LupyCore. (Buried good news: bundle, icon and osascript dialogues
+  all worked on hardware.)
+- **Fix (installer 3.1/4):** a resolution ladder — (1) beside the app, stricter
+  triple-check (`scripts/build-no-xcode.sh` + `Install LUPY.app` +
+  `Mac/Package.swift`, absolute paths only); (2) search Downloads/Desktop/Documents,
+  newest kit wins (pre-2026-10-20 kits lack Install LUPY.app and never match);
+  (3) native folder picker ("choose folder"), forgiving a pick of the kit's
+  parent. Once resolved and consented, the kit's quarantine is cleared so macOS
+  never translocates it again. Resolution paths are logged.
+- **Proof, Linux-simulated:** the shipped script run with only osascript stubbed
+  through 6 scenarios — normal sibling, translocated + Downloads search (the
+  founder's case), two kits → newest, picker exact, picker parent, cancel — all
+  correct. (The harness caught a real bug pre-ship: an empty `find` fed the loop
+  one empty line, `dirname ""` → `.`, which "matched" whenever cwd was the repo;
+  fixed by empty-line skip + absolute-path law in looks_like_kit.) macOS-native
+  confirmation still rests with the founder's next kit run.

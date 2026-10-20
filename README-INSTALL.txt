@@ -10,6 +10,9 @@ LUPY 3 — INSTALL (three clicks, no Terminal, nothing to type)
    installer offers Apple's own small download and then carries on by itself.
    At the end LUPY launches by himself and lives in Applications from now on —
    his own icon, his own name, like any app.
+   (Keep "Install LUPY" inside this kit folder — he looks for his files around
+   himself. If macOS ever hides the folder from him, he simply asks you to
+   point at it.)
 
 He is the small dark pill at the top centre of your screen, under the menu bar.
 Menu bar → Lupy → Demo mode shows his approval card; click his box to talk to him.
