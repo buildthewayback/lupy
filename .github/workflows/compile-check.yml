@@ -59,6 +59,7 @@ jobs:
             && test -f build-noxcode/Lupy.app/Contents/Resources/AppIcon.icns \
             && test -f build-noxcode/Lupy.app/Contents/Resources/MenuBarIcon.png \
             && test -d build-noxcode/Lupy.app/Contents/Resources/sounds \
+            && [ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' build-noxcode/Lupy.app/Contents/Info.plist)" = "Lupy" ] \
             && codesign --verify --deep --strict build-noxcode/Lupy.app \
             && echo BUNDLE-PROOF-OK; } 2>&1 | tee /tmp/evidence/bundle-proof.txt
           { echo "runner macOS: $(sw_vers -productVersion)"; otool -l build-noxcode/Lupy.app/Contents/MacOS/Lupy | grep -A3 LC_BUILD_VERSION | head -6; } >> /tmp/evidence/bundle-proof.txt 2>&1 || true
