@@ -30,48 +30,52 @@ OK mood-finished
 OK mood-rateLimit
 OK mood-sleeping
 OK mood-dizzy
+OK probe-textfield-idle
+OK probe-textfield-focused
 OK twin-rest
 OK twin-whisper
 OK twin-decision
 OK twin-chat
-SNAPSHOTS: 35 written, 0 failed -> /tmp/evidence/shots
+SNAPSHOTS: 37 written, 0 failed -> /tmp/evidence/shots
 snapshot exit: 0
-total 8176
-drwxr-xr-x  38 runner  wheel    1216 Oct 21 19:07 .
-drwxr-xr-x  12 runner  wheel     384 Oct 21 19:07 ..
--rw-r--r--@  1 runner  wheel    1150 Oct 21 19:07 index.txt
--rw-r--r--   1 runner  wheel  150859 Oct 21 19:07 island-approval-dark.png
--rw-r--r--   1 runner  wheel  150859 Oct 21 19:07 island-approval-light.png
--rw-r--r--   1 runner  wheel   22256 Oct 21 19:07 island-compact-dark.png
--rw-r--r--   1 runner  wheel   22256 Oct 21 19:07 island-compact-light.png
--rw-r--r--   1 runner  wheel   72772 Oct 21 19:07 island-empty-dark.png
--rw-r--r--   1 runner  wheel   72772 Oct 21 19:07 island-empty-light.png
--rw-r--r--   1 runner  wheel  172240 Oct 21 19:07 island-error-dark.png
--rw-r--r--   1 runner  wheel  172240 Oct 21 19:07 island-error-light.png
--rw-r--r--   1 runner  wheel  166787 Oct 21 19:07 island-finished-dark.png
--rw-r--r--   1 runner  wheel  166787 Oct 21 19:07 island-finished-light.png
--rw-r--r--   1 runner  wheel  133863 Oct 21 19:07 island-lupyChat-dark.png
--rw-r--r--   1 runner  wheel  133863 Oct 21 19:07 island-lupyChat-light.png
--rw-r--r--   1 runner  wheel   92620 Oct 21 19:07 island-overview-dark.png
--rw-r--r--   1 runner  wheel   92620 Oct 21 19:07 island-overview-light.png
--rw-r--r--   1 runner  wheel  123095 Oct 21 19:07 island-prompt-dark.png
--rw-r--r--   1 runner  wheel  123095 Oct 21 19:07 island-prompt-light.png
--rw-r--r--   1 runner  wheel  161347 Oct 21 19:07 island-question-dark.png
--rw-r--r--   1 runner  wheel  161347 Oct 21 19:07 island-question-light.png
--rw-r--r--   1 runner  wheel   66658 Oct 21 19:07 island-settings-dark.png
--rw-r--r--   1 runner  wheel   66658 Oct 21 19:07 island-settings-light.png
--rw-r--r--   1 runner  wheel  121010 Oct 21 19:07 mood-approval.png
--rw-r--r--   1 runner  wheel  123365 Oct 21 19:07 mood-dizzy.png
--rw-r--r--   1 runner  wheel  110469 Oct 21 19:07 mood-error.png
--rw-r--r--   1 runner  wheel  111012 Oct 21 19:07 mood-finished.png
--rw-r--r--   1 runner  wheel  107579 Oct 21 19:07 mood-idle.png
--rw-r--r--   1 runner  wheel  118648 Oct 21 19:07 mood-question.png
--rw-r--r--   1 runner  wheel  117474 Oct 21 19:07 mood-rateLimit.png
--rw-r--r--   1 runner  wheel  110795 Oct 21 19:07 mood-searching.png
--rw-r--r--   1 runner  wheel  102909 Oct 21 19:07 mood-sleeping.png
--rw-r--r--   1 runner  wheel  113334 Oct 21 19:07 mood-thinking.png
--rw-r--r--   1 runner  wheel  113073 Oct 21 19:07 mood-working.png
--rw-r--r--   1 runner  wheel  292050 Oct 21 19:07 twin-chat.png
--rw-r--r--   1 runner  wheel  195444 Oct 21 19:07 twin-decision.png
--rw-r--r--   1 runner  wheel   20250 Oct 21 19:07 twin-rest.png
--rw-r--r--   1 runner  wheel   25897 Oct 21 19:07 twin-whisper.png
+total 7872
+drwxr-xr-x  40 runner  wheel    1280 Oct 21 19:32 .
+drwxr-xr-x  12 runner  wheel     384 Oct 21 19:32 ..
+-rw-r--r--@  1 runner  wheel    1223 Oct 21 19:32 index.txt
+-rw-r--r--   1 runner  wheel  141418 Oct 21 19:32 island-approval-dark.png
+-rw-r--r--   1 runner  wheel  141418 Oct 21 19:32 island-approval-light.png
+-rw-r--r--   1 runner  wheel   17463 Oct 21 19:32 island-compact-dark.png
+-rw-r--r--   1 runner  wheel   17463 Oct 21 19:32 island-compact-light.png
+-rw-r--r--   1 runner  wheel   60856 Oct 21 19:32 island-empty-dark.png
+-rw-r--r--   1 runner  wheel   60856 Oct 21 19:32 island-empty-light.png
+-rw-r--r--   1 runner  wheel  162413 Oct 21 19:32 island-error-dark.png
+-rw-r--r--   1 runner  wheel  162413 Oct 21 19:32 island-error-light.png
+-rw-r--r--   1 runner  wheel  156889 Oct 21 19:32 island-finished-dark.png
+-rw-r--r--   1 runner  wheel  156889 Oct 21 19:32 island-finished-light.png
+-rw-r--r--   1 runner  wheel  123650 Oct 21 19:32 island-lupyChat-dark.png
+-rw-r--r--   1 runner  wheel  123650 Oct 21 19:32 island-lupyChat-light.png
+-rw-r--r--   1 runner  wheel   80787 Oct 21 19:32 island-overview-dark.png
+-rw-r--r--   1 runner  wheel   80787 Oct 21 19:32 island-overview-light.png
+-rw-r--r--   1 runner  wheel  113945 Oct 21 19:32 island-prompt-dark.png
+-rw-r--r--   1 runner  wheel  113945 Oct 21 19:32 island-prompt-light.png
+-rw-r--r--   1 runner  wheel  150229 Oct 21 19:32 island-question-dark.png
+-rw-r--r--   1 runner  wheel  150229 Oct 21 19:32 island-question-light.png
+-rw-r--r--   1 runner  wheel   57952 Oct 21 19:32 island-settings-dark.png
+-rw-r--r--   1 runner  wheel   57952 Oct 21 19:32 island-settings-light.png
+-rw-r--r--   1 runner  wheel  121010 Oct 21 19:32 mood-approval.png
+-rw-r--r--   1 runner  wheel  123365 Oct 21 19:32 mood-dizzy.png
+-rw-r--r--   1 runner  wheel  110469 Oct 21 19:32 mood-error.png
+-rw-r--r--   1 runner  wheel  111012 Oct 21 19:32 mood-finished.png
+-rw-r--r--   1 runner  wheel  107579 Oct 21 19:32 mood-idle.png
+-rw-r--r--   1 runner  wheel  118648 Oct 21 19:32 mood-question.png
+-rw-r--r--   1 runner  wheel  117474 Oct 21 19:32 mood-rateLimit.png
+-rw-r--r--   1 runner  wheel  110795 Oct 21 19:32 mood-searching.png
+-rw-r--r--   1 runner  wheel  102909 Oct 21 19:32 mood-sleeping.png
+-rw-r--r--   1 runner  wheel  113334 Oct 21 19:32 mood-thinking.png
+-rw-r--r--   1 runner  wheel  113073 Oct 21 19:32 mood-working.png
+-rw-r--r--   1 runner  wheel   19435 Oct 21 19:32 probe-textfield-focused.png
+-rw-r--r--   1 runner  wheel   19435 Oct 21 19:32 probe-textfield-idle.png
+-rw-r--r--   1 runner  wheel  292050 Oct 21 19:32 twin-chat.png
+-rw-r--r--   1 runner  wheel  195444 Oct 21 19:32 twin-decision.png
+-rw-r--r--   1 runner  wheel   20250 Oct 21 19:32 twin-rest.png
+-rw-r--r--   1 runner  wheel   25897 Oct 21 19:32 twin-whisper.png
