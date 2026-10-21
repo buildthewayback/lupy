@@ -61,6 +61,7 @@ jobs:
             && test -d build-noxcode/Lupy.app/Contents/Resources/sounds \
             && codesign --verify --deep --strict build-noxcode/Lupy.app \
             && echo BUNDLE-PROOF-OK; } 2>&1 | tee /tmp/evidence/bundle-proof.txt
+          { echo "runner macOS: $(sw_vers -productVersion)"; otool -l build-noxcode/Lupy.app/Contents/MacOS/Lupy | grep -A3 LC_BUILD_VERSION | head -6; } >> /tmp/evidence/bundle-proof.txt 2>&1 || true
 
       - name: Native core tests (real swiftc)
         run: |
@@ -70,17 +71,23 @@ jobs:
       - name: Headless self-tests shipped in the binary
         run: |
           BIN=build-noxcode/Lupy.app/Contents/MacOS/Lupy
-          "$BIN" --self-test --report /tmp/evidence/selftest.txt; echo "self-test exit: $?" | tee -a /tmp/evidence/selftest.txt
-          "$BIN" --character-self-test; echo "character exit: $?"
+          OUT=/tmp/evidence/selftest.txt
+          echo "runner macOS: $(sw_vers -productVersion) (app minimum: 15.0)" > "$OUT"
+          timeout 240 "$BIN" --self-test --report /tmp/evidence/selftest-report.txt >> "$OUT" 2>&1; echo "self-test exit: $?" >> "$OUT"
+          timeout 120 "$BIN" --character-self-test >> "$OUT" 2>&1; echo "character exit: $?" >> "$OUT"
+          cat "$OUT"
         continue-on-error: true
 
       - name: Chat self-test + launch smoke (best-effort until mapped)
         run: |
-          timeout 180 build-noxcode/Lupy.app/Contents/MacOS/Lupy --chat-self-test --report /tmp/evidence/chattest.txt || true
-          open build-noxcode/Lupy.app || true
+          echo "chat self-test, runner macOS: $(sw_vers -productVersion)" > /tmp/evidence/chattest.txt
+          timeout 180 build-noxcode/Lupy.app/Contents/MacOS/Lupy --chat-self-test --report /tmp/evidence/chattest-report.txt >> /tmp/evidence/chattest.txt 2>&1; echo "chat exit: $?" >> /tmp/evidence/chattest.txt
+          echo "launch smoke, runner macOS: $(sw_vers -productVersion)" > /tmp/evidence/launch.txt
+          open build-noxcode/Lupy.app >> /tmp/evidence/launch.txt 2>&1 || echo "open failed (exit $?)" >> /tmp/evidence/launch.txt
           sleep 12
-          pgrep -x Lupy && echo "ALIVE: Lupy process is running" | tee /tmp/evidence/launch.txt || echo "no Lupy process" | tee /tmp/evidence/launch.txt
+          if pgrep -x Lupy >/dev/null; then echo "ALIVE: Lupy process is running" >> /tmp/evidence/launch.txt; else echo "no Lupy process after open" >> /tmp/evidence/launch.txt; timeout 8 build-noxcode/Lupy.app/Contents/MacOS/Lupy >> /tmp/evidence/launch.txt 2>&1; echo "direct-run exit: $?" >> /tmp/evidence/launch.txt; fi
           pkill -x Lupy || true
+          cat /tmp/evidence/launch.txt
         continue-on-error: true
 
       - name: Evidence to the ci-evidence branch (readable from anywhere)
