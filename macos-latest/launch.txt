@@ -1,0 +1,3 @@
+launch smoke, runner macOS: 26.6.2
+ALIVE: Lupy process is running
+ALIVE (light): Lupy is running

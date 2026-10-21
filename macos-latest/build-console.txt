@@ -1,0 +1,3 @@
+== swift build -c release (first run fetches FluidAudio; some minutes of text)
+== strings: 6612 entries across 11 languages
+== built (no launch): ../build-noxcode/Lupy.app
