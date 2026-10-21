@@ -471,3 +471,38 @@ new assertion green). A post-stamp `open` ALIVE on a macos-15 runner
 remains at the mercy of GitHub's capacity dice (1 acquisition in 7
 races); if it somehow still failed, installer step 6 reports it
 honestly — silent death is not an available outcome.
+
+## 2026-10-22 — Installed at last; founder's visual verdict; ONE-NOTCH LAW
+
+Run #6 on the founder's M1: **installation works, Lupy opens.** The
+five-run compile war is over. His annotated screenshots then opened
+the quality war: TWO pills on screen (the v0.2 Coucou island in the
+menu bar + the LUPY 3 director's navy capsule below it — the
+never-completed "swap-over"), a "Ready" word showing for no reason,
+UI too small, bleeding, clicks buggy/laggy, installer popping 3 times.
+
+Founder's orders, recorded as law:
+- ONE notch only, Coucou-style, at Coucou's sizes ("coucou one is
+  perfect"); the navy second pill dies. Canvas grows as ONE pill.
+- No always-on word labels. The character speaks visually first
+  (colour/mood — red = needs me); words only when needed, e.g. after
+  no response. Icon only at rest.
+- Installer: one standard Apple-style window, no popup chain.
+- Screenshot-everything QA: observe/test/fail/fix/re-verify loops,
+  micro-level, 100k+ mechanised iterations per council, hours OK.
+
+First moves this session (branch arena/2343e721-lupy):
+- The twin retires: AppDelegate starts the director only under the
+  opt-in `lupy3DirectorIsland` defaults flag (wiring-council law
+  updated to match). One island, and no more .islandCollapse fights.
+- Eyes: `Lupy --snapshot-states <dir>` renders every island state
+  (compact + 9 expanded views, light/dark), all 11 character moods,
+  and the twin for the record, via ImageRenderer at the founder's
+  own no-notch geometry. CI (oracle v4) runs it on macos-15 and
+  files evidence per-OS on ci-evidence (merge push, no more
+  last-writer-wins), plus a best-effort real screencapture.
+- Next loops, in order: grade the photos; Coucou-parity geometry
+  grind (sizes up, no bleeding); icon-first label law with timed
+  word escalation; lag census (full-rate TimelineViews); payload
+  stress shots (long text/emoji/queues); resize/boundary + text
+  councils; installer one-window. Then PR -> approval -> kit.

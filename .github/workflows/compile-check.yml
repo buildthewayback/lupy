@@ -82,6 +82,18 @@ jobs:
           exit 0
         continue-on-error: true
 
+      - name: The island photographs itself (visual QA evidence)
+        run: |
+          set +e
+          mkdir -p /tmp/evidence/shots
+          echo "snapshot harness, runner macOS: $(sw_vers -productVersion)" > /tmp/evidence/snapshots.txt
+          ec=0; build-noxcode/Lupy.app/Contents/MacOS/Lupy --snapshot-states /tmp/evidence/shots >> /tmp/evidence/snapshots.txt 2>&1 || ec=$?
+          echo "snapshot exit: $ec" >> /tmp/evidence/snapshots.txt
+          ls -la /tmp/evidence/shots >> /tmp/evidence/snapshots.txt 2>&1
+          cat /tmp/evidence/snapshots.txt
+          exit 0
+        continue-on-error: true
+
       - name: Chat self-test + launch smoke (best-effort until mapped)
         run: |
           set +e
@@ -93,6 +105,7 @@ jobs:
           open build-noxcode/Lupy.app >> /tmp/evidence/launch.txt 2>&1 || echo "open failed (exit $?)" >> /tmp/evidence/launch.txt
           sleep 12
           if pgrep -x Lupy >/dev/null; then echo "ALIVE: Lupy process is running" >> /tmp/evidence/launch.txt; else echo "no Lupy process after open" >> /tmp/evidence/launch.txt; ec=0; run_capped 8 "$BIN" >> /tmp/evidence/launch.txt 2>&1 || ec=$?; echo "direct-run exit: $ec" >> /tmp/evidence/launch.txt; fi
+          screencapture -x /tmp/evidence/screen.png >> /tmp/evidence/launch.txt 2>&1 || echo "screencapture refused (TCC)" >> /tmp/evidence/launch.txt
           pkill -x Lupy
           cat /tmp/evidence/launch.txt
           exit 0
@@ -101,14 +114,22 @@ jobs:
       - name: Evidence to the ci-evidence branch (readable from anywhere)
         if: always()
         run: |
-          EV=/tmp/ev-$RANDOM; mkdir -p "$EV"
-          cp -f build-noxcode/build.log "$EV/" 2>/dev/null || true
-          cp -rf /tmp/evidence/. "$EV/" 2>/dev/null || true
-          printf 'run %s\njob %s\nos %s\nsha %s\n' "$GITHUB_RUN_ID" "$GITHUB_JOB" "${{ matrix.os }}" "$GITHUB_SHA" > "$EV/RUN.txt"
-          cd "$EV" && git init -q && git add -A \
-            && git -c user.email=ci@lupy.local -c user.name=lupy-ci commit -qm "evidence run $GITHUB_RUN_ID (${{ matrix.os }})" \
-            && git push -fq "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:ci-evidence \
-            || echo "evidence push failed (non-fatal)"
+          set +e
+          OSD=/tmp/ev-os; rm -rf "$OSD"; mkdir -p "$OSD"
+          cp -f build-noxcode/build.log "$OSD/" 2>/dev/null
+          cp -rf /tmp/evidence/. "$OSD/" 2>/dev/null
+          printf 'run %s\njob %s\nos %s\nsha %s\n' "$GITHUB_RUN_ID" "$GITHUB_JOB" "${{ matrix.os }}" "$GITHUB_SHA" > "$OSD/RUN.txt"
+          R=/tmp/evrepo; rm -rf "$R"
+          git clone -q --depth 1 --branch ci-evidence "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "$R" 2>/dev/null
+          if [ ! -d "$R/.git" ]; then mkdir -p "$R"; (cd "$R" && git init -q && git checkout -q -b ci-evidence && git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"); fi
+          mkdir -p "$R/${{ matrix.os }}"
+          rm -rf "$R/${{ matrix.os }}"
+          mkdir -p "$R/${{ matrix.os }}"
+          cp -rf "$OSD/." "$R/${{ matrix.os }}/"
+          cd "$R" && git add -A && git -c user.email=ci@lupy.local -c user.name=lupy-ci commit -qm "evidence run $GITHUB_RUN_ID (${{ matrix.os }})"
+          n=0; while [ $n -lt 4 ]; do git push -q origin HEAD:ci-evidence && break; git fetch -q origin ci-evidence && git rebase -q FETCH_HEAD; if [ $? -ne 0 ]; then git rebase --abort; fi; n=$((n+1)); sleep 3; done
+          echo "evidence push attempts: $n"
+          exit 0
 
       - name: Keep artifacts too
         if: always()
