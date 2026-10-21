@@ -1,0 +1,25 @@
+chat self-test, runner macOS: 15.7.9
+INFO Lupy conversation self-test · macOS Version 15.7.9 (Build 24G830)
+PASS a typed instruction is answered (goal → plan) — Self-test: invoice ACME by Friday then f | Here's my plan — approve it right here,  | Plan for: Self-test: invoice ACME by Fri
+PASS the goal is captured and a plan is proposed — 1 proposed
+PASS the conversation shows a plan card
+PASS the plan has real steps — 2 steps
+PASS “approve it” approves the plan and creates the tasks — 2 new tasks
+PASS the approval answer reports the created steps — Plan approved — 2 steps created and queued. I follow up on each; “done” still ne
+PASS a status question is answered locally from real state — Nothing needs you right now.
+Next up:
+• Self-test: invoice ACME by Friday
+PASS an open question without a model gets the honest no-model answer — I can't answer that on my own — no AI API is set up yet. Paste any key under Lup
+PASS screen work without computer control explains the real blocker — I can't take over the screen yet: Computer control is off. Turn it on in Lupy → Computer c
+PASS “pause” pauses the engine
+PASS “resume” resumes the engine
+PASS a second goal proposes a second plan
+PASS “stop” rejects the waiting plan
+PASS the stop answer reports what was actually stopped — The proposed plan was rejected.
+PASS “stop” with nothing running on screen says so honestly (or pauses follow-ups, for real) — Nothing was running on screen. I paused my follow-ups and model calls — say “resume” to co
+PASS the conversation history is non-empty for follow-ups — 11 turns
+PASS a follow-up turn includes the conversation's history — 13 messages in the request
+PASS the turn stays within the history cap — 13 messages
+PASS the transcript persists to disk and decodes — file 25 vs memory 25
+CHATTEST PASSED (20 checks)
+chat exit: 0

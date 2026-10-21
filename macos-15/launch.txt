@@ -1,0 +1,2 @@
+launch smoke, runner macOS: 15.7.9
+ALIVE: Lupy process is running
