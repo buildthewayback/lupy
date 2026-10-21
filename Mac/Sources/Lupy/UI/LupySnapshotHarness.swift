@@ -8,9 +8,10 @@
 //  type, bleeding rows. It renders with ImageRenderer, the same idiom the
 //  character self-test already proves headless on the CI Macs.
 //
-//  v1 deliberately seeds NO payload data: first prove every state's frame,
-//  empty-state face, and the character at rest. Payload-seeded shots (long
-//  text, emoji, queues) layer on once the harness itself is field-proven.
+//  v1 shot every state empty; v2 (this version) seeds founder-shaped payloads
+//  (a long shell command, a 4-option question, task ledgers, a chat with a
+//  wall of text + emoji + URLs) so overflow, truncation and bleeding show
+//  themselves in the photographs instead of on the founder's screen.
 
 import AppKit
 import SwiftUI
@@ -26,6 +27,28 @@ enum LupySnapshotHarness {
         }
         let dir = URL(fileURLWithPath: arguments[i + 1], isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+
+        // Seed the conversation file BEFORE LupyChat.shared first wakes (its
+        // init loads it). Throwaway runner only — the founder's Mac never runs
+        // this harness, and the next CI job is a fresh machine.
+        struct ConvoFile: Codable { var messages: [LupyChatMessage] }
+        let convo: [LupyChatMessage] = [
+            .init(role: .user,
+                  text: "Invoice ACME by Friday, then chase them if they don't pay 🙏"),
+            .init(role: .assistant,
+                  text: "Here's my plan — approve it right here, or change it in Today. First I'll draft invoice #1042 from the June receipts (Rent 450,00 € · Software 89,99 € · Travel 1.204,50 €), total 1.744,49 €. Then I'll send it to billing@acme-example.com and watch for the payment confirmation. If nothing lands in 5 days I'll remind you before writing to them. Nothing is sent until you approve."),
+            .init(role: .user,
+                  text: "looks good — and what about the €2,450 from March?? also check https://billing.example.com/invoices/2026/march/final-final-v3.pdf"),
+            .init(role: .assistant,
+                  text: "March is still open: €2,450 since 14 Mar — that's 221 days, with two unanswered threads. Want me to prepare a polite chase email for your OK?"),
+        ]
+        if let data = try? JSONEncoder().encode(ConvoFile(messages: convo)) {
+            let url = LupyModel.shared.dataURL.appendingPathComponent("conversation.json")
+            try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(),
+                                                     withIntermediateDirectories: true)
+            try? data.write(to: url)
+            print("SEEDED conversation.json (\(data.count)B)")
+        }
 
         _ = NSApplication.shared
         NSApp.setActivationPolicy(.accessory)
@@ -93,6 +116,86 @@ enum LupySnapshotHarness {
             snap("island-\(v.rawValue)-light",
                  IslandContainer(state: state).environment(\.colorScheme, .light), size)
         }
+
+        // — LIVE payloads: founder-shaped data at stress lengths —
+        func liveReset() {
+            state.pendingApproval = nil
+            state.pendingQuestion = nil
+            state.tasks = []
+            state.focusId = nil
+            state.stateOverride = nil
+        }
+        func liveSnap(_ name: String, _ v: IslandView) {
+            state.mode = .expanded
+            state.view = v
+            let (w, h) = islandSize(mode: .expanded, view: v,
+                                    nw: state.notchWidth, nh: state.notchHeight)
+            snap(name, IslandContainer(state: state).environment(\.colorScheme, .dark),
+                 CGSize(width: w, height: h + 40))
+        }
+
+        liveReset()
+        state.pendingApproval = ApprovalInfo(
+            sessionId: "sess-7f3a", tool: "Bash",
+            command: "cd ~/Projects/displate && npm run build && rsync -avz --delete dist/ marky@ssh.example.com:/var/www/html/ && curl -s https://example.com/health | head -c 200",
+            inputKey: "", pillId: "agent_codex", queueCount: 3, projectName: "displate")
+        state.stateOverride = .approval
+        liveSnap("live-approval", .approval)
+
+        liveReset()
+        state.pendingQuestion = AskQuestion(questions: [
+            AskQuestionItem(
+                question: "The deploy script wants to replace the live site (2,314 files) with tonight's build. Ship it now, or wait until morning when you can watch it?",
+                header: "Deploy",
+                options: [
+                    .init(label: "Ship now", description: "The site updates in about 40 seconds; rollback is one click."),
+                    .init(label: "Tomorrow 9:00", description: ""),
+                    .init(label: "Show me the diff first, every file", description: "Slower, but you see exactly what changes."),
+                    .init(label: "Cancel", description: ""),
+                ],
+                multiSelect: false)])
+        state.stateOverride = .question
+        liveSnap("live-question", .question)
+
+        liveReset()
+        let working = AgentTask(id: "shot-work", name: "Publish June invoice pack",
+                                color: "#38BDF8", state: .working, stepIndex: 2,
+                                steps: ["Gather receipts", "Draft invoice", "Send to ACME", "Watch for payment", "File in Drive"],
+                                source: .agent)
+        let errored = AgentTask(id: "shot-err", name: "Sync Displate payouts",
+                                color: "#F4505E", state: .error, steps: [], source: .agent,
+                                finalLine: "The payout file stopped at row 1,024 of 9,870: column 'net_amount' is missing in march_final_FINAL.csv")
+        let doneT = AgentTask(id: "shot-done", name: "Back up the studio folder",
+                              color: "#34D399", state: .finished, steps: [], source: .agent,
+                              finalLine: "4.2 GB copied to the external drive; checksums match.")
+        state.tasks = [working, errored, doneT]
+        state.focusId = working.id
+        liveSnap("live-overview", .overview)
+
+        state.focusId = errored.id
+        state.stateOverride = .error
+        liveSnap("live-error", .error)
+
+        state.focusId = doneT.id
+        state.stateOverride = .finished
+        liveSnap("live-finished", .finished)
+
+        state.stateOverride = nil
+        liveSnap("live-chat", .lupyChat)
+
+        // The pill at work and in trouble: the light talks, no words, no badge noise.
+        state.mode = .compact
+        state.view = .empty
+        state.stateOverride = .working
+        snap("live-compact-working",
+             IslandContainer(state: state).environment(\.colorScheme, .dark),
+             CGSize(width: cw, height: ch + 40))
+        state.stateOverride = .error
+        snap("live-compact-error",
+             IslandContainer(state: state).environment(\.colorScheme, .dark),
+             CGSize(width: cw, height: ch + 40))
+        liveReset()
+        state.mode = .expanded
 
         // — The character alone: every mood, WITH its word label (the exhibit) —
         for mood in LupyCharacterState.allCases {
