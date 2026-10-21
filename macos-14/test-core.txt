@@ -1,0 +1,112 @@
+[test-core] native swiftc swift-driver version: 1.115.1 Apple Swift version 6.0.3 (swiftlang-6.0.3.1.10 clang-1600.0.30.1)
+LupyCore tests — 108 cases
+  ✓ Primitives.json round trip with escapes and unicode
+  ✓ Primitives.json rejects malformed input
+  ✓ Primitives.json depth limit defends against hostile nesting
+  ✓ Primitives.json writer is deterministic (sorted keys) and integral numbers have no fraction
+  ✓ Primitives.codable bridge round-trips nested models, enums with payloads, optionals, raw json
+  ✓ Primitives.codable bridge reports missing keys and type mismatches
+  ✓ Primitives.timestamp civil conversion and ISO-8601 parsing
+  ✓ Primitives.sha256 matches FIPS test vectors
+  ✓ Primitives.fnv1a and ids
+  ✓ Primitives.text helpers
+  ✓ Store.append then reload reproduces identical state
+  ✓ Store.torn final write is truncated; earlier batches survive; new writes work
+  ✓ Store.disk failure leaves state unchanged and reports a clear error
+  ✓ Store.corrupt middle line is skipped and reported; later batches still applied
+  ✓ Store.snapshot rotates journal; reload uses snapshot + new journal
+  ✓ Store.corrupt snapshot falls back to full replay from archive
+  ✓ Store.crash during snapshot write keeps the previous snapshot and cleans up
+  ✓ Store.crash between snapshot and rotation: duplicates are skipped
+  ✓ Store.idempotency keys reject repeats, including after restart and snapshot
+  ✓ Store.valid final batch without newline is kept and terminated
+  ✓ Store.v0 events are migrated on load
+  ✓ Store.actions executing at crash time are reported as interrupted
+  ✓ Store.full backup round-trips, detects tampering, restore archives instead of deleting
+  ✓ Store.project export contains only that project; import remaps IDs on collision
+  ✓ SafetyPolicy.redactor removes keys, labelled secrets, private keys and card numbers
+  ✓ SafetyPolicy.redactor leaves normal prose alone
+  ✓ SafetyPolicy.injection detector flags instruction-like text; fence neutralizes closing tags
+  ✓ SafetyPolicy.forbidden kinds are denied in every mode, even for the founder
+  ✓ SafetyPolicy.global pause denies actions but not reading
+  ✓ SafetyPolicy.model- or worker-originated access changes are denied outright
+  ✓ SafetyPolicy.autonomy modes: observe asks, prepare drafts freely, bounded acts on low/medium
+  ✓ SafetyPolicy.standing approvals: narrow scope, expiry, uses, revocation, cost caps
+  ✓ SafetyPolicy.grant validation keeps standing approvals narrow and founder-only
+  ✓ SafetyPolicy.project never-automate rules override standing approvals
+  ✓ SafetyPolicy.model calls need an approved provider and respect budget verdicts
+  ✓ SafetyPolicy.file policy rejects traversal and paths outside approved folders
+  ✓ Work.a worker's claim alone never verifies
+  ✓ Work.independent supporting evidence verifies; newer contradiction wins; ties are ambiguous
+  ✓ Work.inconclusive evidence is ambiguous, not contradiction; stale evidence is ignored
+  ✓ Work.elevated and strict oversight demand fresher / corroborated evidence
+  ✓ Work.founder confirmation criteria and automated checks
+  ✓ Work.lifecycle guards: no verified without evidence, no completed without acceptance
+  ✓ Work.reliability is per worker × task kind, explained, and decays with good results
+  ✓ Work.model plan JSON is validated: unknown deps, cycles, empty titles, caps, defaults
+  ✓ Work.heuristic planner splits steps, guesses kinds, finds deadlines and income signals
+  ✓ Work.deadline phrases resolve in the founder's local time zone
+  ✓ Work.dependency readiness and unblock counts
+  ✓ Work.priority is explainable: deadline, income weight, pins and unblocking matter
+  ✓ Work.scheduler: follow-ups back off, escalate after the limit, and respect idempotency keys
+  ✓ Work.notification budget: quiet hours, hourly cap, dedupe, urgent passes
+  ✓ Work.retry policy: bounded backoff, honours retry-after, switches route, escalates auth
+  ✓ Providers.OpenAI request shape: bearer placement, max_completion_tokens, json mode, no key in body
+  ✓ Providers.Anthropic and Gemini request shapes
+  ✓ Providers.parse successful responses from all four API styles
+  ✓ Providers.error taxonomy across providers, with secrets scrubbed from messages
+  ✓ Providers.model list refresh parsing
+  ✓ Providers.routing uses only founder-approved providers with keys; respects preferences
+  ✓ Providers.budget guard: daily/monthly hard caps, per-task and per-call approvals
+  ✓ Providers.context builder: project isolation, sensitive withheld, secrets redacted, untrusted fenced
+  ✓ Providers.GitHub evidence: existing PR supports, missing branch contradicts, failing CI contradicts, errors are inconclusive
+  ✓ Providers.claim extraction finds PRs, commits, branches and status words
+  ✓ Providers.handoff brief lists scope, rules, acceptance, evidence and the reference
+  ✓ Engine.bootstrap creates the founder's projects, honest workers and connectors — once
+  ✓ Engine.offline goal → plan → approval → dependent tasks become ready as work completes
+  ✓ Engine.agent says done, GitHub disagrees: Lupy refuses, escalates, tightens oversight, then verifies real work
+  ✓ Engine.pending CI is re-checked later (bounded) instead of bothering the founder
+  ✓ Engine.manual relay never pretends delivery; reply = acknowledgement, claims stay self-reported
+  ✓ Engine.approvals: ask, approve, narrow standing approval, use counting, revoke
+  ✓ Engine.model plan: consent, budget, keyless request, usage recorded exactly once
+  ✓ Engine.model failures: bounded retries, provider fallback, then graceful offline plan
+  ✓ Engine.unusable model JSON gets one repair attempt, then an offline plan
+  ✓ Engine.budget: hard cap blocks, big calls need approval, denial falls back offline
+  ✓ Engine.global pause stops model calls and dispatches
+  ✓ Engine.prompt injection in a worker reply changes nothing about permissions
+  ✓ Engine.memory: conflicts surface for the founder; model-sourced memory cannot become a rule
+  ✓ Engine.project isolation in search and exports
+  ✓ Engine.crash mid-write and restart: state intact, no duplicate notices, interrupted work visible
+  ✓ Engine.pause/resume, cancel closes handoffs, reopen makes old evidence stale
+  ✓ Engine.cloud-model worker: draft, deterministic checks, founder review, acceptance
+  ✓ Engine.action ledger: founder-initiated action is verified, duplicates skipped, crash leaves outcome unknown
+  ✓ Engine.notices are bounded in memory (journal keeps everything)
+  ✓ Engine.demo seeding is idempotent and exercises the main attention kinds
+  ✓ Engine.brief, attention and diagnostics are informative without any model
+  ✓ Conversation.a plain instruction is a goal
+  ✓ Conversation.questions are recognised with and without a question mark
+  ✓ Conversation.status questions are answered locally
+  ✓ Conversation.short commands pause, resume and stop
+  ✓ Conversation.longer messages are never mistaken for commands
+  ✓ Conversation.screen work is routed to computer control
+  ✓ Conversation.while a plan waits, confirmations decide it; afterwards they do not
+  ✓ Conversation.the status answer reflects real engine state and stays honest
+  ✓ Conversation.a conversation turn includes the history, through the policy gate
+  ✓ Conversation.conversation history never grows without bound
+  ✓ Conversation.any key just works: a custom provider is usable right after adding it
+  ✓ Conversation.auto-failover: a rate-limited API moves over to another allowed one
+  ✓ Control.matcher finds the named element, prefers exact text, and never guesses
+  ✓ Control.matcher picks the main text field when the query names none, and never a password field
+  ✓ Control.safety: consequential clicks are classified for the policy gate
+  ✓ Control.safety: typing, keys and pages
+  ✓ Control.safety: a CAPTCHA or two-factor screen stops every action (Lupy never bypasses it)
+  ✓ Control.policy gate: typing flows, operating asks in Prepare mode, consequential always asks, pause and bypass deny
+  ✓ Control.run: stop cancels everything still queued; nothing new starts afterwards
+  ✓ Control.run: a failed step stops the run and the rest is not attempted; pause holds the queue
+  ✓ Control.agent: replies are parsed strictly against what is on screen
+  ✓ Control.agent: the screen is fenced as untrusted data and passwords are never shown
+  ✓ Control.delivery: open, find the box, type, then Send (which waits for the founder)
+  ✓ Control.engine: a computer-control delivery is recorded honestly (seen → sent; unseen → unconfirmed)
+  ✓ Control.engine: a model-driven step needs an approved cloud model (offline: unavailable, no call)
+
+RESULT: 108/108 tests passed, 668 checks, 0 failed

@@ -1,0 +1,4 @@
+INSTALLER REHEARSAL: SATISFIED (34 checks)
+COUNCIL, ISOLATION: SATISFIED (101 window/view sites, all isolated)
+COUNCIL, DECLARATIONS: SATISFIED (646 top-level types, all unique)
+COUNCIL, CROSS-REFERENCE: SATISFIED (905 static refs resolve across 646 declared types)

@@ -1,0 +1,11 @@
+runner macOS: 14.8.9 (app minimum: 15.0)
+dyld[6107]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
+  Referenced from: <7B0570E1-08E4-3CE3-A79E-3E1E7678D37B> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
+  Reason: tried: '/usr/lib/swift/libswift_errno.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/usr/lib/swift/libswift_errno.dylib' (no such file), '/usr/lib/swift/libswift_errno.dylib' (no such file, not in dyld cache)
+/Users/runner/work/_temp/cb1cc04e-307a-4e94-9605-8966b3b5a230.sh: line 4:  6107 Abort trap: 6           "$@"
+self-test exit: 134
+dyld[6111]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
+  Referenced from: <7B0570E1-08E4-3CE3-A79E-3E1E7678D37B> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
+  Reason: tried: '/usr/lib/swift/libswift_errno.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/usr/lib/swift/libswift_errno.dylib' (no such file), '/usr/lib/swift/libswift_errno.dylib' (no such file, not in dyld cache)
+/Users/runner/work/_temp/cb1cc04e-307a-4e94-9605-8966b3b5a230.sh: line 4:  6111 Abort trap: 6           "$@"
+character exit: 134

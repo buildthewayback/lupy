@@ -1,0 +1,2 @@
+== swift build -c release (first run fetches FluidAudio; some minutes of text)
+== built (no launch): ../build-noxcode/Lupy.app
