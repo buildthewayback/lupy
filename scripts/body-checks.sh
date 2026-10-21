@@ -49,6 +49,9 @@ grep -q 'xattr -dr com.apple.quarantine /Applications/Lupy.app' scripts/build-no
 # installed app cannot be opened at all (oracle-proven, macOS 15.7.9)
 grep -q 'PlistBuddy -c "Set :CFBundleExecutable Lupy"' scripts/build-no-xcode.sh
 grep -q 'PlistBuddy -c "Set :CFBundleDevelopmentRegion en"' scripts/build-no-xcode.sh
+# the string catalog must reach the bundle as .lproj, or raw keys show in the UI
+grep -q 'Localizable.xcstrings' scripts/build-no-xcode.sh
+grep -q 'lproj' scripts/build-no-xcode.sh
 grep -q 'CFBundleIconFile' Mac/Resources/Info.plist
 grep -q 'face_start' "Install LUPY.app/Contents/MacOS/Install-LUPY"
 test -f "Install LUPY.app/Contents/Resources/LupyProgress.swift"

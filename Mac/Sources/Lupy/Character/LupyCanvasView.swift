@@ -235,7 +235,8 @@ enum LupyRenderer {
         // Pinned to the character's right edge, half on him and half off: a dark ring
         // separates the bright disc from the white body, and this state's own glyph
         // sits inside it.
-        if let drawnState, let icon = drawnState.icon {
+        if let drawnState, let icon = drawnState.icon,
+           Double(frame.unit) * 2 >= LupyComposition.badgeMinBodyWidth {
             drawBadge(icon, state: drawnState, in: &context, frame: frame)
         }
     }

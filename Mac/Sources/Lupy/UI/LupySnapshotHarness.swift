@@ -102,6 +102,14 @@ enum LupySnapshotHarness {
                  CGSize(width: 220, height: 260))
         }
 
+        // — Probe: is the yellow composer bar real, or an ImageRenderer quirk? —
+        snap("probe-textfield-idle",
+             LupyProbeField().frame(width: 420, height: 36),
+             CGSize(width: 440, height: 76))
+        snap("probe-textfield-focused",
+             LupyProbeField(autoFocus: true).frame(width: 420, height: 36),
+             CGSize(width: 440, height: 76))
+
         // — The retired twin, photographed once for the record —
         let twinNeeds: [(String, LupyCanvasNeed, LupyCharacterState)] = [
             ("twin-rest", .rest, .idle),
@@ -121,5 +129,26 @@ enum LupySnapshotHarness {
                              atomically: true, encoding: .utf8)
         print("SNAPSHOTS: \(index.count) written, \(failed) failed -> \(dir.path)")
         return failed == 0 && !index.isEmpty ? 0 : 1
+    }
+}
+
+
+/// The chat composer in isolation — settles renderer-artifact questions.
+private struct LupyProbeField: View {
+    @State private var text = ""
+    @FocusState private var focused: Bool
+    var autoFocus = false
+
+    var body: some View {
+        TextField("Tell Lupy anything…", text: $text, axis: .vertical)
+            .textFieldStyle(.plain)
+            .font(.system(size: 12.5))
+            .lineLimit(1...3)
+            .focused($focused)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Color.white.opacity(0.07))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .onAppear { if autoFocus { focused = true } }
     }
 }
