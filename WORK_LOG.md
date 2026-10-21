@@ -446,3 +446,28 @@ The oracle drew blood, then went quiet — in the good way.
 - Remaining before "sellable": first-launch visual check on the
   founder's Mac (one screenshot) and, when a macos-15 runner deigns
   to appear, the binary's own self-tests + launch smoke in CI.
+
+## 2026-10-21 (night) — Runtime proven on macOS 15; the oracle earns its keep
+
+The PR #10 run finally won a macos-15 runner (macOS 15.7.9) and the
+binary told the truth about itself: `--self-test` PASSED (store,
+bootstrap, torn-write recovery, 400 durable writes @2ms, Keychain
+round-trip; 18.8MB resident), `--character-self-test` PASSED (all
+sizes/moods/glows, 11 island states), `--chat-self-test` PASSED
+(20 checks: plan→approve→tasks, honest stop/pause answers, transcript
+persistence). Every local gate green too.
+
+Then the launch smoke caught what would have been founder run #6
+dying at the finish line: `open Lupy.app` → "cannot be opened because
+its executable is missing". The no-Xcode road copied Info.plist
+verbatim — Xcode variables and all — so LaunchServices hunted for a
+program literally named `$(EXECUTABLE_NAME)`. The binary itself ran
+fine when exec'd directly (8s alive until the watchdog). Fix (e1a1dd7):
+build-no-xcode.sh stamps CFBundleExecutable=Lupy and
+CFBundleDevelopmentRegion=en via PlistBuddy, failing loudly if it
+can't; gate 6b and the CI bundle-proof both refuse green without the
+stamp. Re-proven on macos-14 (build #5 green, bundle-proof with the
+new assertion green). A post-stamp `open` ALIVE on a macos-15 runner
+remains at the mercy of GitHub's capacity dice (1 acquisition in 7
+races); if it somehow still failed, installer step 6 reports it
+honestly — silent death is not an available outcome.
