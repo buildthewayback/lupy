@@ -335,9 +335,13 @@ struct LupyCanvasView: View {
 }
 
 #if DEBUG
+// #Preview needs Xcode's PreviewsMacros plugin, which the founder's CLT-only
+// build does not carry (kit 3.3 field error) — DEBUG keeps it for Xcode users.
+#if DEBUG
 #Preview("Lupy — idle") {
     LupyCanvasView()
         .frame(width: 320, height: 300)
         .background(Color(red: 0.07, green: 0.07, blue: 0.08))
 }
+#endif
 #endif

@@ -364,3 +364,26 @@ What changed structurally this round:
 Honest residue: SwiftUI builder/generic/instance errors in view bodies are
 compiler-only catches. The frontier is audited as far as static analysis
 reaches; if anything remains, the new report enumerates it in ONE run.
+
+## 2026-10-21 — Field run 4: complete list in hand; the build personality was the bug
+
+The improved report paid off exactly as designed: ONE file carried all 39
+errors. ~30 were one disease — Swift 6 strict-concurrency hard errors in
+the inherited, already-shipped code (AppDelegate, IslandWindowController,
+SettingsView: NotificationCenter closures touching @MainActor state they
+only ever reach on the main queue). Root cause was ours: a Lupy-era session
+had set the SwiftPM manifest to tools 6.0 + `-strict-concurrency=complete`
+claiming to "mirror" project.yml, but the Xcode road (SWIFT_VERSION 6.0,
+no strict-concurrency setting) compiles this code in Swift 5 language mode
+with default checking — the personality it shipped under. The header
+comment now records the false mirror. Fix: `.swiftLanguageMode(.v5)`, the
+strict flag deleted — NO code surgery in Louis Raillé 2000-line state machine
+(the founder needs output, not a blind refactor of proven logic).
+Mode-independent errors fixed individually: CombineLatest5 doesn't exist
+(Combine stops at 4; the fifth signal now nests), three `#Preview` blocks
+wrapped in #if DEBUG (CLT-only toolchains lack the PreviewsMacros plugin),
+and BotCanvasView's solver-timing-out body had its 99-line Canvas closure
+moved verbatim into drawFrame(). The founder cannot pay for GitHub Actions
+("i dont have or cant pay") — the compile-oracle stays parked in the repo;
+this sandbox-side stack (censuses + audits + full-error reports) is the
+testing road, and each field run now converges by a whole layer at a time.

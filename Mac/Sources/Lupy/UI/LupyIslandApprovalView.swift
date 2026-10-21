@@ -134,6 +134,9 @@ struct LupyChipFace: View {
 
 // MARK: - Proof that it builds and reads
 
+// #Preview needs Xcode's PreviewsMacros plugin, which the founder's CLT-only
+// build does not carry (kit 3.3 field error) — DEBUG keeps it for Xcode users.
+#if DEBUG
 #Preview("Needs your OK") {
     LupyIslandApprovalView(
         payload: .init(
@@ -153,3 +156,4 @@ struct LupyChipFace: View {
     .padding(40)
     .background(Color.black)
 }
+#endif

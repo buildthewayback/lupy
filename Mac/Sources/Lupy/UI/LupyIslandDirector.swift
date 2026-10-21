@@ -28,15 +28,12 @@ final class LupyIslandDirector: NSObject {
     var onAsk: ((String) -> Void)?
 
     func start() {
-        Publishers.CombineLatest5(
-            state.$pendingApproval,
-            state.$pendingQuestion,
-            state.$tasks,
-            state.$chatHistory,
-            state.$view
-        )
-        .receive(on: RunLoop.main)
-        .sink { [weak self] (_: (ApprovalInfo?, AskQuestion?, [AgentTask], [ChatMessage], IslandView)) in self?.refresh() }
+        // Combine has no CombineLatest5 (it stops at 4) — nest the fifth signal.
+        state.$pendingApproval
+            .combineLatest(state.$pendingQuestion, state.$tasks, state.$chatHistory)
+            .combineLatest(state.$view)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in self?.refresh() }
         .store(in: &bag)
 
         // ⌘Y / ⌘N answer the approval without touching the mouse — the shortcuts
