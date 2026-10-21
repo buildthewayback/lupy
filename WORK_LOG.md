@@ -387,3 +387,35 @@ moved verbatim into drawFrame(). The founder cannot pay for GitHub Actions
 ("i dont have or cant pay") — the compile-oracle stays parked in the repo;
 this sandbox-side stack (censuses + audits + full-error reports) is the
 testing road, and each field run now converges by a whole layer at a time.
+
+## 2026-10-21 — Repo public; the cloud-Mac campaign (sellable-quality bar)
+
+Run 4's report: **39 errors -> 1** — Swift 5 mode downgraded every strict
+error to a warning exactly as intended; the last error was BotCanvasView's
+body still timing out the solver through its 14-modifier chain. The founder
+(no GitHub money, ever) demanded a free online Mac instead of his machine,
+accepted Road A with conditions — public for visibility, NOT MIT, personal
+use only, branding his, and check everything for private data first.
+
+Privacy audit before the flip (tree + deepened 156-commit history): zero
+secrets and zero founder identifiers; only FAKE-labelled redaction test
+fixtures, Louis Raillé public email, localized "sk-ant-…" placeholder labels.
+Founder flipped the repo public himself (Danger Zone), verified from
+outside without a login. LICENSE added on his terms: all rights reserved,
+no usage rights granted, third parties keep their notices.
+
+BotCanvasView split #2: body -> canvasWithObservers + remaining chain, fat
+handlers named (handleViewChange/handleModeChange/appear), verbatim code.
+
+The oracle's road so far: runs 1-2 died un-acquired (GitHub arm64 free-pool
+capacity starvation, 15-min give-ups); a 3-label matrix [macos-latest,
+macos-15, macos-14] fixed that — macos-14 acquired and the installer
+rehearsal + all three councils PASSED on real macOS/bash 3.2, then
+test-core died in seconds (default Xcode's Swift 5.10 vs -swift-version 6 /
+tools-6.0 manifests) blocking the build step; also learned Actions log
+hosts are unreachable from the sandbox. Oracle v3 answers all three: pick
+newest Xcode 16 first, BUILD before test-core, and push every step's
+evidence to the `ci-evidence` branch (readable via git).
+Founder's benchmark, stated plainly: sellable quality, user-tested, no
+complaints — the campaign does not hand back a kit until a cloud Mac has
+compiled the exact tree green.
