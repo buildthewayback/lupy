@@ -15,7 +15,16 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15   # explicit arm64 label: macos-latest queue gave up acquiring twice over
+    # Free arm64 pools starve in waves (two 15-min acquisition give-ups on
+    # 2026-10-21): race all three standard arm64 labels — first Mac that
+    # materializes gives the verdict. Public-repo minutes are free, so the
+    # duplicate runs cost nothing. Intel labels are out on purpose: the
+    # founder's road builds arm64 (`arch -arm64 swift`).
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-15, macos-14]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
