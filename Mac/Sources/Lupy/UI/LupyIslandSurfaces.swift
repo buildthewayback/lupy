@@ -140,7 +140,11 @@ struct LupyChatTurn: Identifiable {
     let text: String
 }
 
-struct LupyIslandChatView: View {
+/// The director's read-only conversation renderer. NOT LupyIslandChatView —
+/// that name belongs to the interactive chat surface in Sources/Lupy (draft
+/// field, dictation, quick jumps); the two once collided and the first field
+/// compile (kit 3.3) was the first compiler ever to see either.
+struct LupyIslandTranscriptView: View {
     let turns: [LupyChatTurn]
     let meta: String
     let state: LupyCharacterState

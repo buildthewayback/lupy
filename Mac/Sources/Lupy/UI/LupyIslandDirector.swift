@@ -36,7 +36,7 @@ final class LupyIslandDirector: NSObject {
             state.$view
         )
         .receive(on: RunLoop.main)
-        .sink { [weak self] _, _, _, _, _ in self?.refresh() }
+        .sink { [weak self] (_: (ApprovalInfo?, AskQuestion?, [AgentTask], [ChatMessage], IslandView)) in self?.refresh() }
         .store(in: &bag)
 
         // ⌘Y / ⌘N answer the approval without touching the mouse — the shortcuts
@@ -88,7 +88,7 @@ final class LupyIslandDirector: NSObject {
         }
 
         // A question from an agent: his capsule eyes, the choices as chips.
-        if let q = state.pendingQuestion, let item = q.items.first {
+        if let q = state.pendingQuestion, let item = q.questions.first {
             let chips = item.options.prefix(4).map { LupyApprovalChip(label: $0.label) }
             let payload = LupyApprovalPayload(
                 meta: "awaiting your choice",
@@ -101,10 +101,11 @@ final class LupyIslandDirector: NSObject {
                  need: .decision(options: chips.count, hasEvidence: true, queue: 1),
                  character: .question) {
                 LupyIslandApprovalView(payload: payload) { [weak self] i in
-                    guard let opts = state.pendingQuestion?.items.first?.options,
+                    guard let self,
+                          let opts = self.state.pendingQuestion?.questions.first?.options,
                           i < opts.count else { return }
-                    self?.hooks.sendQuestionAnswers([item.header: opts[i].label])
-                    self?.refresh()
+                    self.hooks.sendQuestionAnswers([item.header: opts[i].label])
+                    self.refresh()
                 }
             }
             return
@@ -133,7 +134,7 @@ final class LupyIslandDirector: NSObject {
         // Finished with something to say: the answer card, calm and green.
         if state.view == .finished,
            let t = state.tasks.first(where: { $0.state == .finished
-                                              && !(t.finalLine ?? "").isEmpty }) {
+                                              && !($0.finalLine ?? "").isEmpty }) {
             show(screen: screen,
                  need: .answer(lines: 2, chips: 0, provenance: true),
                  character: .finished) {
@@ -174,7 +175,7 @@ final class LupyIslandDirector: NSObject {
             show(screen: screen,
                  need: .chat(turns: turns.count, streaming: true),
                  character: .thinking) {
-                LupyIslandChatView(turns: turns, meta: "streaming", state: .thinking)
+                LupyIslandTranscriptView(turns: turns, meta: "streaming", state: .thinking)
             }
             return
         }

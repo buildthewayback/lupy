@@ -1,0 +1,40 @@
+# COMPILE ORACLE — a clean GitHub Mac builds the founder's exact no-Xcode road
+# (scripts/build-no-xcode.sh --no-launch) and reports green/red with the full
+# build log as an artifact. No release, no side effects. Born 2026-10-21 after
+# the founder's Mac served as the project's only real compiler for three field
+# runs in a row ("u need test unltra big testing of instalation before giing
+# me"): the sandbox gates can parse the AppKit target but cannot type-check it.
+# If this account's macOS runners provision again, this workflow is how every
+# future kit gets proven BEFORE it reaches his machine.
+name: compile-check
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain present (runners carry Command Line Tools)
+        run: |
+          swift --version
+          uname -m
+
+      - name: The founder's road, verbatim — swift build, bundle, sign, no launch
+        run: bash scripts/build-no-xcode.sh --no-launch
+
+      - name: Prove the binary
+        run: |
+          file build-noxcode/Lupy.app/Contents/MacOS/Lupy
+          ls build-noxcode/Lupy.app/Contents/Resources/AppIcon.icns
+          codesign --verify --deep build-noxcode/Lupy.app || true
+
+      - name: Keep the full build log either way
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build-noxcode/build.log
+          if-no-files-found: ignore

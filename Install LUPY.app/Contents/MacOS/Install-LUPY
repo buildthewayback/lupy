@@ -274,6 +274,9 @@ write_report() { # $1 result word · $2 reason (may be "")
     printf '%s' "${VERIFY_LINES:-  (not reached)
 }"
     echo
+    echo "Compile errors (the complete list, so ONE report carries them all):"
+    grep -E 'error:' "$KIT/build-noxcode/build.log" 2>/dev/null | head -200 || echo "(no error lines — the build may not have been reached)"
+    echo
     echo "Last build lines:"
     tail -60 "$KIT/build-noxcode/build.log" 2>/dev/null || echo "(no build log)"
     echo
