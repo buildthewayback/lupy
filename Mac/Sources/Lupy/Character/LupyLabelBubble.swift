@@ -207,6 +207,9 @@ struct LupyThreeDots: View {
 }
 
 #if DEBUG
+// #Preview needs Xcode's PreviewsMacros plugin, which the founder's CLT-only
+// build does not carry (kit 3.3 field error) — DEBUG keeps it for Xcode users.
+#if DEBUG
 #Preview("Status bubbles") {
     VStack(alignment: .leading, spacing: 16) {
         LupyStatusBubble(state: .working, detail: "CPU 84 % · Xcode, node")
@@ -217,4 +220,5 @@ struct LupyThreeDots: View {
     .padding(24)
     .background(Color(red: 0.07, green: 0.07, blue: 0.08))
 }
+#endif
 #endif

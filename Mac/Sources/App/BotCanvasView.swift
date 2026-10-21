@@ -22,7 +22,81 @@ struct BotCanvasView: View {
             // The Canvas must capture the frame's date: a closure that doesn't change from
             // one tick to the next is not redrawn, and Mochi froze.
             let frame = timeline.date
-            Canvas { context, size in
+            Canvas { context, size in drawFrame(context: context, size: size, frame: frame) }
+        }
+        .onChange(of: state.effectiveState) { _, newState in
+            engine.setState(newState)
+        }
+        #if !APPSTORE
+        .onChange(of: state.voiceActive) { _, on in
+            if on { engine.enterVoiceCompact() } else { engine.exitVoiceCompact() }
+        }
+        #endif
+        .onChange(of: state.view) { oldView, newView in
+            // Morph up when upload view is active
+            if state.mode == .expanded && newView == .upload {
+                engine.anim("morph", keys: [TweenKey(target: 1, duration: 550, ease: Ease.inOut)])
+            } else if newView != .upload && newView != .uploading && engine.morph > 0.01 {
+                // Any other view (not mid-gulp): morph back
+                engine.anim("morph", keys: [TweenKey(target: 0, duration: 550, ease: Ease.inOut)])
+            }
+            #if !APPSTORE
+            if newView == .listening {
+                engine.enterListening()
+            } else if oldView == .listening {
+                engine.exitListening(hadCommand: !VoiceEngine.shared.commandTranscript.isEmpty)
+            }
+            #endif
+        }
+        .onChange(of: state.mode) { _, newMode in
+            // Hard-reset morph when island collapses
+            if newMode != .expanded {
+                engine.tweens.removeValue(forKey: "morph")
+                engine.locks.remove("morph")
+                engine.morph = 0
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .triggerEmote)) { notif in
+            if let emote = notif.object as? BotEmote {
+                engine.triggerEmote(emote)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .triggerSlap)) { _ in
+            engine.slap()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .botBlink)) { _ in
+            engine.blink()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .botSetTgEs)) { notif in
+            if let v = notif.object as? CGFloat {
+                engine.tgEs = v
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .botGulp)) { _ in
+            engine.gulp()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .botMorphTo)) { notif in
+            if let target = notif.object as? CGFloat {
+                let dur: CGFloat = target > 0.5 ? 550 : 650
+                engine.anim("morph", keys: [TweenKey(target: target, duration: dur, ease: Ease.inOut)])
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .botGreet)) { _ in
+            engine.greet()
+        }
+        .onAppear {
+            engine.setState(state.effectiveState, force: true)
+            let isWardrobe = state.mode == .expanded && state.view == .wardrobe
+            let isFocusMain = state.focusId == state.mainPillId || state.focusId == nil
+            let showOutfit = isFocusMain || state.mode != .expanded || isWardrobe
+            engine.setOutfit(showOutfit ? state.resolvedOutfit : .none, animated: false)
+        }
+    }
+
+    /// One frame of Mochi, verbatim out of `body`'s Canvas closure: the whole
+    /// TimelineView body in one expression timed the type-checker out under the
+    /// CLT toolchain (kit 3.3 field compile), so the closure now calls this.
+    private func drawFrame(context: GraphicsContext, size: CGSize, frame: Date) {
                 _ = frame
                 let look = lookXY(state: state)
                 engine.lookX = look.x
@@ -122,75 +196,6 @@ struct BotCanvasView: View {
                     engine.drawOutfitFront(context: ctx, size: size)
                 }
                 engine.drawHandsAndExtras(context: ctx, size: size)
-            }
-        }
-        .onChange(of: state.effectiveState) { _, newState in
-            engine.setState(newState)
-        }
-        #if !APPSTORE
-        .onChange(of: state.voiceActive) { _, on in
-            if on { engine.enterVoiceCompact() } else { engine.exitVoiceCompact() }
-        }
-        #endif
-        .onChange(of: state.view) { oldView, newView in
-            // Morph up when upload view is active
-            if state.mode == .expanded && newView == .upload {
-                engine.anim("morph", keys: [TweenKey(target: 1, duration: 550, ease: Ease.inOut)])
-            } else if newView != .upload && newView != .uploading && engine.morph > 0.01 {
-                // Any other view (not mid-gulp): morph back
-                engine.anim("morph", keys: [TweenKey(target: 0, duration: 550, ease: Ease.inOut)])
-            }
-            #if !APPSTORE
-            if newView == .listening {
-                engine.enterListening()
-            } else if oldView == .listening {
-                engine.exitListening(hadCommand: !VoiceEngine.shared.commandTranscript.isEmpty)
-            }
-            #endif
-        }
-        .onChange(of: state.mode) { _, newMode in
-            // Hard-reset morph when island collapses
-            if newMode != .expanded {
-                engine.tweens.removeValue(forKey: "morph")
-                engine.locks.remove("morph")
-                engine.morph = 0
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .triggerEmote)) { notif in
-            if let emote = notif.object as? BotEmote {
-                engine.triggerEmote(emote)
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .triggerSlap)) { _ in
-            engine.slap()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .botBlink)) { _ in
-            engine.blink()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .botSetTgEs)) { notif in
-            if let v = notif.object as? CGFloat {
-                engine.tgEs = v
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .botGulp)) { _ in
-            engine.gulp()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .botMorphTo)) { notif in
-            if let target = notif.object as? CGFloat {
-                let dur: CGFloat = target > 0.5 ? 550 : 650
-                engine.anim("morph", keys: [TweenKey(target: target, duration: dur, ease: Ease.inOut)])
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .botGreet)) { _ in
-            engine.greet()
-        }
-        .onAppear {
-            engine.setState(state.effectiveState, force: true)
-            let isWardrobe = state.mode == .expanded && state.view == .wardrobe
-            let isFocusMain = state.focusId == state.mainPillId || state.focusId == nil
-            let showOutfit = isFocusMain || state.mode != .expanded || isWardrobe
-            engine.setOutfit(showOutfit ? state.resolvedOutfit : .none, animated: false)
-        }
     }
 
     /// Where Mochi looks (the pointer), both axes at once: the island geometry and the
