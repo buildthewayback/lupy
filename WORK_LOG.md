@@ -419,3 +419,30 @@ evidence to the `ci-evidence` branch (readable via git).
 Founder's benchmark, stated plainly: sellable quality, user-tested, no
 complaints — the campaign does not hand back a kit until a cloud Mac has
 compiled the exact tree green.
+
+## 2026-10-21 (evening) — BUILD GREEN ON A REAL MAC
+
+The oracle drew blood, then went quiet — in the good way.
+
+- First full verdict (run 39632578177, macos-14, Swift 6.0.3/Xcode 16.2):
+  exactly ONE error in ~220 files — `escaping closure captures
+  non-escaping parameter 'surface'` in LupyIslandDirector's `show()`
+  (LupyIslandMorph stores the builder). Fix: one token, `@escaping`.
+  BotCanvasView split #2 compiled clean — the five-run saga's last
+  error class is dead. (6fdd556)
+- Runs 39634037015 and 39637827158: **full founder-road build green
+  twice on real Macs** — 0 errors, `Mach-O 64-bit executable arm64`,
+  BUNDLE-PROOF-OK (icons/sounds/plist/codesign), installer rehearsal
+  34/34 + councils on real bash 3.2, native core tests 108/108
+  (668 checks). Evidence on the `ci-evidence` branch.
+- Runtime steps on macos-14 abort with dyld exit 134 BEFORE main():
+  the binary's LC_BUILD_VERSION says minos 15.0, runner is 14.8.9.
+  By design (Package.swift `.macOS(.v15)`); the founder's Mac runs
+  15.7.4. Runtime proof needs a macos-15/latest acquisition — those
+  pools have refused 4/4 races so far; macos-14 is the label that runs.
+- Oracle self-inflicted wounds, fixed in v3.2: Actions runs steps
+  under `bash -e` (`;` is no shield — use `set +e` + `|| ec=$?`), and
+  macOS has no GNU `timeout` (bash watchdog instead).
+- Remaining before "sellable": first-launch visual check on the
+  founder's Mac (one screenshot) and, when a macos-15 runner deigns
+  to appear, the binary's own self-tests + launch smoke in CI.

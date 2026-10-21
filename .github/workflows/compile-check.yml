@@ -70,24 +70,31 @@ jobs:
 
       - name: Headless self-tests shipped in the binary
         run: |
+          set +e
           BIN=build-noxcode/Lupy.app/Contents/MacOS/Lupy
           OUT=/tmp/evidence/selftest.txt
+          run_capped() { cap=$1; shift; "$@" & pid=$!; ( sleep "$cap"; kill -9 $pid 2>/dev/null ) & dog=$!; ec=0; wait $pid || ec=$?; kill $dog 2>/dev/null; wait $dog 2>/dev/null; return $ec; }
           echo "runner macOS: $(sw_vers -productVersion) (app minimum: 15.0)" > "$OUT"
-          timeout 240 "$BIN" --self-test --report /tmp/evidence/selftest-report.txt >> "$OUT" 2>&1; echo "self-test exit: $?" >> "$OUT"
-          timeout 120 "$BIN" --character-self-test >> "$OUT" 2>&1; echo "character exit: $?" >> "$OUT"
+          ec=0; run_capped 240 "$BIN" --self-test --report /tmp/evidence/selftest-report.txt >> "$OUT" 2>&1 || ec=$?; echo "self-test exit: $ec" >> "$OUT"
+          ec=0; run_capped 120 "$BIN" --character-self-test >> "$OUT" 2>&1 || ec=$?; echo "character exit: $ec" >> "$OUT"
           cat "$OUT"
+          exit 0
         continue-on-error: true
 
       - name: Chat self-test + launch smoke (best-effort until mapped)
         run: |
+          set +e
+          BIN=build-noxcode/Lupy.app/Contents/MacOS/Lupy
+          run_capped() { cap=$1; shift; "$@" & pid=$!; ( sleep "$cap"; kill -9 $pid 2>/dev/null ) & dog=$!; ec=0; wait $pid || ec=$?; kill $dog 2>/dev/null; wait $dog 2>/dev/null; return $ec; }
           echo "chat self-test, runner macOS: $(sw_vers -productVersion)" > /tmp/evidence/chattest.txt
-          timeout 180 build-noxcode/Lupy.app/Contents/MacOS/Lupy --chat-self-test --report /tmp/evidence/chattest-report.txt >> /tmp/evidence/chattest.txt 2>&1; echo "chat exit: $?" >> /tmp/evidence/chattest.txt
+          ec=0; run_capped 180 "$BIN" --chat-self-test --report /tmp/evidence/chattest-report.txt >> /tmp/evidence/chattest.txt 2>&1 || ec=$?; echo "chat exit: $ec" >> /tmp/evidence/chattest.txt
           echo "launch smoke, runner macOS: $(sw_vers -productVersion)" > /tmp/evidence/launch.txt
           open build-noxcode/Lupy.app >> /tmp/evidence/launch.txt 2>&1 || echo "open failed (exit $?)" >> /tmp/evidence/launch.txt
           sleep 12
-          if pgrep -x Lupy >/dev/null; then echo "ALIVE: Lupy process is running" >> /tmp/evidence/launch.txt; else echo "no Lupy process after open" >> /tmp/evidence/launch.txt; timeout 8 build-noxcode/Lupy.app/Contents/MacOS/Lupy >> /tmp/evidence/launch.txt 2>&1; echo "direct-run exit: $?" >> /tmp/evidence/launch.txt; fi
-          pkill -x Lupy || true
+          if pgrep -x Lupy >/dev/null; then echo "ALIVE: Lupy process is running" >> /tmp/evidence/launch.txt; else echo "no Lupy process after open" >> /tmp/evidence/launch.txt; ec=0; run_capped 8 "$BIN" >> /tmp/evidence/launch.txt 2>&1 || ec=$?; echo "direct-run exit: $ec" >> /tmp/evidence/launch.txt; fi
+          pkill -x Lupy
           cat /tmp/evidence/launch.txt
+          exit 0
         continue-on-error: true
 
       - name: Evidence to the ci-evidence branch (readable from anywhere)
