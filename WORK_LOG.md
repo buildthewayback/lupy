@@ -328,3 +328,39 @@ build.log (hence into every future report: "must say arm64"); body-checks
 6b greps for it. The installer's own preflight already tolerated
 translation (sysctl.proc_translated) — now the build no longer believes it.
 Both fixes ride in PR #7, still unmerged pending the founder's approval.
+
+## 2026-10-21 — Field run 3 (kit 3.3 + PR #7): past the isolation wall, into the never-compiled layer
+
+Founder's run cleared steps 1–3 (0:26–3:02) and died again at step 4 (2:37)
+— new errors, all in LupyIslandDirector.swift, a Lupy-era file written
+against imagined APIs and never compiled anywhere: AskQuestion.items (the
+member is `questions`) x2 + a self-capture, first(where:) reading
+t.finalLine before t exists, and a CombineLatest5 sink whose five bare
+'_' parameters the solver cannot infer. The census also found — before the
+compiler even had to — LupyIslandChatView DECLARED TWICE (the real
+interactive chat vs the director's read-only renderer, renamed
+LupyIslandTranscriptView). His verdict, just: "u need test unltra big
+testing of instalation before giving me ... 3rd time and wasting time".
+
+What changed structurally this round:
+- Director repaired; its whole ~40-symbol external surface verified
+  against real declarations (AppState/ApprovalInfo/AgentTask/BotState/
+  IslandView/ChatMessage/hooks/all Lupy view+payload types).
+- THREE new gate councils approximating a symbol resolver over the
+  never-compiled frontier: 6e declarations (645 types unique), 6f
+  cross-reference (899 static refs resolve), 6d isolation (101 sites);
+  plus a one-off instance-call audit (LupyModel->engine 23 names,
+  pages/chat->model 68 names: all resolve; 35/35 LupyCore types exist).
+- The install report now carries the COMPLETE grep of `error:` lines —
+  never another 60-line tail hiding earlier files. Its chip line reads
+  the true CPU brand instead of the installer's translated `uname -m`.
+- A real compile oracle exists on paper: .github/workflows/compile-check.yml
+  builds build-no-xcode.sh on a clean macOS runner. It cannot run today:
+  dispatch needs the file on main AND this account's Actions are blocked
+  by billing ("The job was not started because recent account payments
+  have failed", runs 39251799153/39252101964: 5-7s failures). Only the
+  founder can flip that (GitHub Settings -> Billing); the day he does,
+  kits get proven on a cloud Mac before they reach his.
+Honest residue: SwiftUI builder/generic/instance errors in view bodies are
+compiler-only catches. The frontier is audited as far as static analysis
+reaches; if anything remains, the new report enumerates it in ONE run.

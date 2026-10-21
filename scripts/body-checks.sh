@@ -75,6 +75,8 @@ echo "== 6d · isolation census (the sandbox can parse AppKit, not type-check it
 python3 tools/ui/audit_isolation.py | tail -1
 echo "== 6e · declaration census (one module, one name: the two-LupyIslandChatView collision)"
 python3 tools/ui/audit_decls.py | tail -1
+echo "== 6f · cross-reference audit (no imagined APIs in the never-compiled frontier)"
+python3 tools/ui/audit_xref.py | tail -1
 python3 tools/ui/audit_ui.py | tail -1
 python3 tools/ui/audit_all.py | tail -1
 python3 tools/ui/audit_micro.py | tail -1

@@ -255,7 +255,7 @@ step_dur() { # $1 idx → "M:SS" once ended, "-" otherwise
 write_report() { # $1 result word · $2 reason (may be "")
   {
     echo "LUPY install report — $(date)"
-    echo "Installer 3.3 · macOS $(sw_vers -productVersion 2>/dev/null) · $(uname -m) · kit: $KIT"
+    echo "Installer 3.3 · macOS $(sw_vers -productVersion 2>/dev/null) · $(sysctl -n machdep.cpu.brand_string 2>/dev/null || uname -m) · kit: $KIT"
     echo "Result: $1${2:+ — $2}"
     echo
     echo "Steps:"
