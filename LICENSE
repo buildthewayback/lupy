@@ -1,0 +1,23 @@
+LUPY — ALL RIGHTS RESERVED
+
+Copyright (c) 2026 The Way Back (buildthewayback). All rights reserved.
+
+This repository is public for transparency and development purposes only.
+Publication here grants NO license. Except as required to view this
+repository on GitHub, no part of this software — including its source code,
+documentation, the Lupy name, branding, character design, artwork, icons,
+sounds authored for this project, and any other assets — may be used,
+copied, modified, merged, published, distributed, sublicensed, or sold,
+in whole or in part, without the prior written permission of the copyright
+holder.
+
+This is deliberately NOT an open-source license (not MIT, not Apache, not
+GPL). A public product release with its own terms may follow later; until
+then, personal evaluation by the copyright holder is the only permitted use.
+
+Third-party components remain under their own terms and are credited in
+THIRD_PARTY_NOTICES.md — including Coucou by Louis Raillé (see
+Mac/CoucouAssets/NOTICE.md and Mac/CoucouAssets/LICENSE-ASSETS.md) and the
+FluidAudio library. Nothing in this notice claims rights over those works.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
