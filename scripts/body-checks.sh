@@ -45,6 +45,10 @@ echo "== 6b · install wiring (the icon must actually REACH the app; the face mu
 grep -q 'cp LupyAppIcon/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"' scripts/build-no-xcode.sh
 grep -q 'lsregister -f /Applications/Lupy.app' scripts/build-no-xcode.sh
 grep -q 'xattr -dr com.apple.quarantine /Applications/Lupy.app' scripts/build-no-xcode.sh
+# the plist's Xcode variables must be stamped on the no-Xcode road, or the
+# installed app cannot be opened at all (oracle-proven, macOS 15.7.9)
+grep -q 'PlistBuddy -c "Set :CFBundleExecutable Lupy"' scripts/build-no-xcode.sh
+grep -q 'PlistBuddy -c "Set :CFBundleDevelopmentRegion en"' scripts/build-no-xcode.sh
 grep -q 'CFBundleIconFile' Mac/Resources/Info.plist
 grep -q 'face_start' "Install LUPY.app/Contents/MacOS/Install-LUPY"
 test -f "Install LUPY.app/Contents/Resources/LupyProgress.swift"

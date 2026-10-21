@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # LUPY without Xcode — the founder's low-data road. See Mac/Package.swift's header:
 # Command Line Tools carry the compiler; this script builds with SwiftPM and assembles
-# the .app bundle by hand (Info.plist verbatim, menu-bar icon + sounds as loose
+# the .app bundle by hand (Info.plist stamped below, menu-bar icon + sounds as loose
 # resources), ad-hoc signs, launches. Xcode stays the reference build; same binary.
 set -euo pipefail
 cd "$(dirname "$0")/../Mac"
@@ -56,6 +56,14 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN/Lupy" "$APP/Contents/MacOS/Lupy"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
+# the plist carries Xcode variables; Xcode expands them at build time, this
+# road must stamp the same values by hand. Without this, LaunchServices looks
+# for a program literally named "$(EXECUTABLE_NAME)" and the installed app
+# "cannot be opened because its executable is missing" — proven by the CI
+# oracle on macOS 15.7.9 (2026-10-21) BEFORE it could cost a founder run.
+# No "|| true": if the stamp fails, the build must fail loudly here.
+/usr/libexec/PlistBuddy -c "Set :CFBundleExecutable Lupy" "$APP/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleDevelopmentRegion en" "$APP/Contents/Info.plist"
 printf 'APPL????' > "$APP/Contents/PkgInfo"
 # his face: the forged icon of the locked character (tools/ui/make_appicon.py).
 # Info.plist names it via CFBundleIconFile=AppIcon; without this copy the

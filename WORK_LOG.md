@@ -387,3 +387,87 @@ moved verbatim into drawFrame(). The founder cannot pay for GitHub Actions
 ("i dont have or cant pay") — the compile-oracle stays parked in the repo;
 this sandbox-side stack (censuses + audits + full-error reports) is the
 testing road, and each field run now converges by a whole layer at a time.
+
+## 2026-10-21 — Repo public; the cloud-Mac campaign (sellable-quality bar)
+
+Run 4's report: **39 errors -> 1** — Swift 5 mode downgraded every strict
+error to a warning exactly as intended; the last error was BotCanvasView's
+body still timing out the solver through its 14-modifier chain. The founder
+(no GitHub money, ever) demanded a free online Mac instead of his machine,
+accepted Road A with conditions — public for visibility, NOT MIT, personal
+use only, branding his, and check everything for private data first.
+
+Privacy audit before the flip (tree + deepened 156-commit history): zero
+secrets and zero founder identifiers; only FAKE-labelled redaction test
+fixtures, Louis Raillé public email, localized "sk-ant-…" placeholder labels.
+Founder flipped the repo public himself (Danger Zone), verified from
+outside without a login. LICENSE added on his terms: all rights reserved,
+no usage rights granted, third parties keep their notices.
+
+BotCanvasView split #2: body -> canvasWithObservers + remaining chain, fat
+handlers named (handleViewChange/handleModeChange/appear), verbatim code.
+
+The oracle's road so far: runs 1-2 died un-acquired (GitHub arm64 free-pool
+capacity starvation, 15-min give-ups); a 3-label matrix [macos-latest,
+macos-15, macos-14] fixed that — macos-14 acquired and the installer
+rehearsal + all three councils PASSED on real macOS/bash 3.2, then
+test-core died in seconds (default Xcode's Swift 5.10 vs -swift-version 6 /
+tools-6.0 manifests) blocking the build step; also learned Actions log
+hosts are unreachable from the sandbox. Oracle v3 answers all three: pick
+newest Xcode 16 first, BUILD before test-core, and push every step's
+evidence to the `ci-evidence` branch (readable via git).
+Founder's benchmark, stated plainly: sellable quality, user-tested, no
+complaints — the campaign does not hand back a kit until a cloud Mac has
+compiled the exact tree green.
+
+## 2026-10-21 (evening) — BUILD GREEN ON A REAL MAC
+
+The oracle drew blood, then went quiet — in the good way.
+
+- First full verdict (run 39632578177, macos-14, Swift 6.0.3/Xcode 16.2):
+  exactly ONE error in ~220 files — `escaping closure captures
+  non-escaping parameter 'surface'` in LupyIslandDirector's `show()`
+  (LupyIslandMorph stores the builder). Fix: one token, `@escaping`.
+  BotCanvasView split #2 compiled clean — the five-run saga's last
+  error class is dead. (6fdd556)
+- Runs 39634037015 and 39637827158: **full founder-road build green
+  twice on real Macs** — 0 errors, `Mach-O 64-bit executable arm64`,
+  BUNDLE-PROOF-OK (icons/sounds/plist/codesign), installer rehearsal
+  34/34 + councils on real bash 3.2, native core tests 108/108
+  (668 checks). Evidence on the `ci-evidence` branch.
+- Runtime steps on macos-14 abort with dyld exit 134 BEFORE main():
+  the binary's LC_BUILD_VERSION says minos 15.0, runner is 14.8.9.
+  By design (Package.swift `.macOS(.v15)`); the founder's Mac runs
+  15.7.4. Runtime proof needs a macos-15/latest acquisition — those
+  pools have refused 4/4 races so far; macos-14 is the label that runs.
+- Oracle self-inflicted wounds, fixed in v3.2: Actions runs steps
+  under `bash -e` (`;` is no shield — use `set +e` + `|| ec=$?`), and
+  macOS has no GNU `timeout` (bash watchdog instead).
+- Remaining before "sellable": first-launch visual check on the
+  founder's Mac (one screenshot) and, when a macos-15 runner deigns
+  to appear, the binary's own self-tests + launch smoke in CI.
+
+## 2026-10-21 (night) — Runtime proven on macOS 15; the oracle earns its keep
+
+The PR #10 run finally won a macos-15 runner (macOS 15.7.9) and the
+binary told the truth about itself: `--self-test` PASSED (store,
+bootstrap, torn-write recovery, 400 durable writes @2ms, Keychain
+round-trip; 18.8MB resident), `--character-self-test` PASSED (all
+sizes/moods/glows, 11 island states), `--chat-self-test` PASSED
+(20 checks: plan→approve→tasks, honest stop/pause answers, transcript
+persistence). Every local gate green too.
+
+Then the launch smoke caught what would have been founder run #6
+dying at the finish line: `open Lupy.app` → "cannot be opened because
+its executable is missing". The no-Xcode road copied Info.plist
+verbatim — Xcode variables and all — so LaunchServices hunted for a
+program literally named `$(EXECUTABLE_NAME)`. The binary itself ran
+fine when exec'd directly (8s alive until the watchdog). Fix (e1a1dd7):
+build-no-xcode.sh stamps CFBundleExecutable=Lupy and
+CFBundleDevelopmentRegion=en via PlistBuddy, failing loudly if it
+can't; gate 6b and the CI bundle-proof both refuse green without the
+stamp. Re-proven on macos-14 (build #5 green, bundle-proof with the
+new assertion green). A post-stamp `open` ALIVE on a macos-15 runner
+remains at the mercy of GitHub's capacity dice (1 acquisition in 7
+races); if it somehow still failed, installer step 6 reports it
+honestly — silent death is not an available outcome.

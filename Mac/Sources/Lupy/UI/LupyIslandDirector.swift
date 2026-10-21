@@ -196,7 +196,7 @@ final class LupyIslandDirector: NSObject {
     private func show<Surface: View>(screen: NSScreen,
                                      need: LupyCanvasNeed,
                                      character: LupyCharacterState,
-                                     @ViewBuilder surface: () -> Surface) {
+                                     @ViewBuilder surface: @escaping () -> Surface) {
         let canvas = LupyIslandLayout.canvas(need)
         shell.show(canvas: canvas, on: screen) {
             LupyIslandMorph(canvas: canvas) { surface() }

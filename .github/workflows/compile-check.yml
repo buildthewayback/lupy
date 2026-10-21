@@ -1,40 +1,121 @@
-# COMPILE ORACLE — a clean GitHub Mac builds the founder's exact no-Xcode road
-# (scripts/build-no-xcode.sh --no-launch) and reports green/red with the full
-# build log as an artifact. No release, no side effects. Born 2026-10-21 after
-# the founder's Mac served as the project's only real compiler for three field
-# runs in a row ("u need test unltra big testing of instalation before giing
-# me"): the sandbox gates can parse the AppKit target but cannot type-check it.
-# If this account's macOS runners provision again, this workflow is how every
-# future kit gets proven BEFORE it reaches his machine.
+# COMPILE ORACLE — a clean GitHub Mac proves the product before the founder
+# ever runs the installer: his exact no-Xcode road, bundle proof, native core
+# tests, bash-3.2 installer rehearsal, the sandbox councils on real macOS,
+# and the app's own headless self-tests. Evidence is pushed to the
+# `ci-evidence` branch (Actions log hosts are unreachable from the dev
+# sandbox; git is). Live since the repo went public (2026-10-21) — standard
+# runners are free for public repositories.
 name: compile-check
 on:
+  push:
+    branches: ["arena/**"]
+  pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: write   # the ci-evidence push only
 
 jobs:
   build:
-    runs-on: macos-latest
-    timeout-minutes: 45
+    # Free arm64 pools starve in waves: race all three standard arm64
+    # labels — first Mac that materializes gives the verdict (macos-14 won
+    # the first race). Intel labels are out: the founder's road is arm64.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-15, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
-      - name: Toolchain present (runners carry Command Line Tools)
+      - name: Pick a Swift 6 Xcode (older defaults can't read tools-6.0 manifests)
         run: |
-          swift --version
-          uname -m
+          mkdir -p /tmp/evidence
+          ls /Applications | grep -i xcode | tee /tmp/evidence/xcodes.txt || true
+          NEWEST=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$NEWEST" ]; then sudo xcode-select -s "$NEWEST"; fi
+          { swift --version; uname -m; bash --version | head -1; python3 --version; xcode-select -p; } 2>&1 | tee /tmp/evidence/toolchain.txt
+
+      - name: Installer rehearsal + councils on real macOS (bash 3.2 is the law)
+        run: |
+          set -o pipefail
+          { bash -n "Install LUPY.app/Contents/MacOS/Install-LUPY" scripts/build-no-xcode.sh scripts/body-checks.sh scripts/beta-checks.sh \
+            && bash tools/ui/installer-harness.sh | tail -1 \
+            && python3 tools/ui/audit_isolation.py | tail -1 \
+            && python3 tools/ui/audit_decls.py | tail -1 \
+            && python3 tools/ui/audit_xref.py | tail -1; } 2>&1 | tee /tmp/evidence/rehearsal.txt
 
       - name: The founder's road, verbatim — swift build, bundle, sign, no launch
-        run: bash scripts/build-no-xcode.sh --no-launch
-
-      - name: Prove the binary
         run: |
-          file build-noxcode/Lupy.app/Contents/MacOS/Lupy
-          ls build-noxcode/Lupy.app/Contents/Resources/AppIcon.icns
-          codesign --verify --deep build-noxcode/Lupy.app || true
+          set -o pipefail
+          bash scripts/build-no-xcode.sh --no-launch 2>&1 | tee /tmp/evidence/build-console.txt
 
-      - name: Keep the full build log either way
+      - name: Prove the bundle
+        run: |
+          { file build-noxcode/Lupy.app/Contents/MacOS/Lupy \
+            && file build-noxcode/Lupy.app/Contents/MacOS/Lupy | grep -q arm64 \
+            && plutil -lint build-noxcode/Lupy.app/Contents/Info.plist \
+            && test -f build-noxcode/Lupy.app/Contents/Resources/AppIcon.icns \
+            && test -f build-noxcode/Lupy.app/Contents/Resources/MenuBarIcon.png \
+            && test -d build-noxcode/Lupy.app/Contents/Resources/sounds \
+            && [ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' build-noxcode/Lupy.app/Contents/Info.plist)" = "Lupy" ] \
+            && codesign --verify --deep --strict build-noxcode/Lupy.app \
+            && echo BUNDLE-PROOF-OK; } 2>&1 | tee /tmp/evidence/bundle-proof.txt
+          { echo "runner macOS: $(sw_vers -productVersion)"; otool -l build-noxcode/Lupy.app/Contents/MacOS/Lupy | grep -A3 LC_BUILD_VERSION | head -6; } >> /tmp/evidence/bundle-proof.txt 2>&1 || true
+
+      - name: Native core tests (real swiftc)
+        run: |
+          set -o pipefail
+          bash scripts/test-core.sh 2>&1 | tee /tmp/evidence/test-core.txt | tail -3
+
+      - name: Headless self-tests shipped in the binary
+        run: |
+          set +e
+          BIN=build-noxcode/Lupy.app/Contents/MacOS/Lupy
+          OUT=/tmp/evidence/selftest.txt
+          run_capped() { cap=$1; shift; "$@" & pid=$!; ( sleep "$cap"; kill -9 $pid 2>/dev/null ) & dog=$!; ec=0; wait $pid || ec=$?; kill $dog 2>/dev/null; wait $dog 2>/dev/null; return $ec; }
+          echo "runner macOS: $(sw_vers -productVersion) (app minimum: 15.0)" > "$OUT"
+          ec=0; run_capped 240 "$BIN" --self-test --report /tmp/evidence/selftest-report.txt >> "$OUT" 2>&1 || ec=$?; echo "self-test exit: $ec" >> "$OUT"
+          ec=0; run_capped 120 "$BIN" --character-self-test >> "$OUT" 2>&1 || ec=$?; echo "character exit: $ec" >> "$OUT"
+          cat "$OUT"
+          exit 0
+        continue-on-error: true
+
+      - name: Chat self-test + launch smoke (best-effort until mapped)
+        run: |
+          set +e
+          BIN=build-noxcode/Lupy.app/Contents/MacOS/Lupy
+          run_capped() { cap=$1; shift; "$@" & pid=$!; ( sleep "$cap"; kill -9 $pid 2>/dev/null ) & dog=$!; ec=0; wait $pid || ec=$?; kill $dog 2>/dev/null; wait $dog 2>/dev/null; return $ec; }
+          echo "chat self-test, runner macOS: $(sw_vers -productVersion)" > /tmp/evidence/chattest.txt
+          ec=0; run_capped 180 "$BIN" --chat-self-test --report /tmp/evidence/chattest-report.txt >> /tmp/evidence/chattest.txt 2>&1 || ec=$?; echo "chat exit: $ec" >> /tmp/evidence/chattest.txt
+          echo "launch smoke, runner macOS: $(sw_vers -productVersion)" > /tmp/evidence/launch.txt
+          open build-noxcode/Lupy.app >> /tmp/evidence/launch.txt 2>&1 || echo "open failed (exit $?)" >> /tmp/evidence/launch.txt
+          sleep 12
+          if pgrep -x Lupy >/dev/null; then echo "ALIVE: Lupy process is running" >> /tmp/evidence/launch.txt; else echo "no Lupy process after open" >> /tmp/evidence/launch.txt; ec=0; run_capped 8 "$BIN" >> /tmp/evidence/launch.txt 2>&1 || ec=$?; echo "direct-run exit: $ec" >> /tmp/evidence/launch.txt; fi
+          pkill -x Lupy
+          cat /tmp/evidence/launch.txt
+          exit 0
+        continue-on-error: true
+
+      - name: Evidence to the ci-evidence branch (readable from anywhere)
+        if: always()
+        run: |
+          EV=/tmp/ev-$RANDOM; mkdir -p "$EV"
+          cp -f build-noxcode/build.log "$EV/" 2>/dev/null || true
+          cp -rf /tmp/evidence/. "$EV/" 2>/dev/null || true
+          printf 'run %s\njob %s\nos %s\nsha %s\n' "$GITHUB_RUN_ID" "$GITHUB_JOB" "${{ matrix.os }}" "$GITHUB_SHA" > "$EV/RUN.txt"
+          cd "$EV" && git init -q && git add -A \
+            && git -c user.email=ci@lupy.local -c user.name=lupy-ci commit -qm "evidence run $GITHUB_RUN_ID (${{ matrix.os }})" \
+            && git push -fq "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:ci-evidence \
+            || echo "evidence push failed (non-fatal)"
+
+      - name: Keep artifacts too
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-log
-          path: build-noxcode/build.log
+          name: build-evidence-${{ matrix.os }}
+          path: |
+            build-noxcode/build.log
+            /tmp/evidence/**
           if-no-files-found: ignore
