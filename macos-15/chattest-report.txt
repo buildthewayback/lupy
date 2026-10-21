@@ -19,5 +19,5 @@ PASS “stop” with nothing running on screen says so honestly (or pauses follo
 PASS the conversation history is non-empty for follow-ups — 11 turns
 PASS a follow-up turn includes the conversation's history — 13 messages in the request
 PASS the turn stays within the history cap — 13 messages
-PASS the transcript persists to disk and decodes — file 25 vs memory 25
+PASS the transcript persists to disk and decodes — file 28 vs memory 28
 CHATTEST PASSED (20 checks)
