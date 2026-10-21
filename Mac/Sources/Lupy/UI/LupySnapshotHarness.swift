@@ -183,6 +183,28 @@ enum LupySnapshotHarness {
         state.stateOverride = nil
         liveSnap("live-chat", .lupyChat)
 
+        // The bubbles themselves, minus the ScrollView (a static renderer can
+        // leave a ScrollView blank; bubble layout is where overflow lives).
+        // Build them from values directly so this shot can never lie about seeding.
+        let convoShots: [LupyChatMessage] = [
+            .init(role: .user,
+                  text: "Invoice ACME by Friday, then chase them if they don't pay 🙏"),
+            .init(role: .assistant,
+                  text: "Here's my plan — approve it right here, or change it in Today. First I'll draft invoice #1042 from the June receipts (Rent 450,00 € · Software 89,99 € · Travel 1.204,50 €), total 1.744,49 €. Then I'll send it to billing@acme-example.com and watch for the payment confirmation. If nothing lands in 5 days I'll remind you before writing to them. Nothing is sent until you approve."),
+            .init(role: .user,
+                  text: "looks good — and what about the €2,450 from March?? also check https://billing.example.com/invoices/2026/march/final-final-v3.pdf"),
+            .init(role: .assistant,
+                  text: "March is still open: €2,450 since 14 Mar — that's 221 days, with two unanswered threads. Want me to prepare a polite chase email for your OK?"),
+        ]
+        print("CHAT shared messages after file seed: \(LupyChat.shared.messages.count)")
+        snap("live-chatbubbles",
+             VStack(alignment: .leading, spacing: 6) {
+                 ForEach(convoShots) { m in LupyChatBubble(message: m) }
+             }
+             .frame(width: 500, alignment: .leading)
+             .padding(12),
+             CGSize(width: 524, height: 470))
+
         // The pill at work and in trouble: the light talks, no words, no badge noise.
         state.mode = .compact
         state.view = .empty

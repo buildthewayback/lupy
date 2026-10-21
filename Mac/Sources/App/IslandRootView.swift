@@ -702,14 +702,16 @@ struct CompactMiniGrid: View {
     }
 
     var body: some View {
-        let cols = [GridItem(.fixed(12), spacing: 4), GridItem(.fixed(12), spacing: 4)]
+        // True-size minis: bodyWidth 10 draws a 13.9pt frame (unitFraction 0.72),
+        // laid out in 14pt cells — the old 24pt canvas squeezed into a 12pt box
+        // cropped and bled over its neighbours (photographed 2026-10-22).
+        let cols = [GridItem(.fixed(14), spacing: 4), GridItem(.fixed(14), spacing: 4)]
         LazyVGrid(columns: cols, spacing: 4) {
             ForEach(others) { task in
-                MiniBotCanvasView(task: task, bodyWidth: 15)
-                    .frame(width: 12 / 0.6, height: 12 / 0.6)
-                    .frame(width: 12, height: 12, alignment: .center)
+                MiniBotCanvasView(task: task, bodyWidth: 10)
+                    .frame(width: 14, height: 14, alignment: .center)
             }
         }
-        .frame(width: 28, height: 28)
+        .frame(width: 32, height: 32)
     }
 }
