@@ -2,8 +2,11 @@ launch smoke, runner macOS: 14.8.9
 The application cannot be opened for an unexpected reason, error=Error Domain=NSOSStatusErrorDomain Code=-10825 "kLSIncompatibleSystemVersionErr: The app cannot run on the current OS version" UserInfo={_LSLine=4200, _LSFunction=_LSOpenStuffCallLocal}
 open failed (exit 1)
 no Lupy process after open
-dyld[6826]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
-  Referenced from: <7F4AB7BC-C56F-3610-8290-63EF8C5A7DAD> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
+dyld[4652]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
+  Referenced from: <8F8F4461-3A9D-330A-B6B4-96AD5745CD88> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
   Reason: tried: '/usr/lib/swift/libswift_errno.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/usr/lib/swift/libswift_errno.dylib' (no such file), '/usr/lib/swift/libswift_errno.dylib' (no such file, not in dyld cache)
-/Users/runner/work/_temp/7f0b4525-587d-4b1a-9c25-3558e6374627.sh: line 3:  6826 Abort trap: 6           "$@"
+/Users/runner/work/_temp/71c4a8fd-6d9d-40b5-bcf0-f07e36721f5b.sh: line 3:  4652 Abort trap: 6           "$@"
 direct-run exit: 134
+The application cannot be opened for an unexpected reason, error=Error Domain=NSOSStatusErrorDomain Code=-10825 "kLSIncompatibleSystemVersionErr: The app cannot run on the current OS version" UserInfo={_LSLine=4200, _LSFunction=_LSOpenStuffCallLocal}
+light relaunch failed
+no Lupy process in light appearance

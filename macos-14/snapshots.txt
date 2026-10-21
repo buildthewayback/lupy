@@ -1,8 +1,8 @@
 snapshot harness, runner macOS: 14.8.9
-dyld[6685]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
-  Referenced from: <7F4AB7BC-C56F-3610-8290-63EF8C5A7DAD> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
+dyld[4456]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
+  Referenced from: <8F8F4461-3A9D-330A-B6B4-96AD5745CD88> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
   Reason: tried: '/usr/lib/swift/libswift_errno.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/usr/lib/swift/libswift_errno.dylib' (no such file), '/usr/lib/swift/libswift_errno.dylib' (no such file, not in dyld cache)
 snapshot exit: 134
 total 0
-drwxr-xr-x   2 runner  wheel   64 Oct 21 19:34 .
-drwxr-xr-x  11 runner  wheel  352 Oct 21 19:34 ..
+drwxr-xr-x   2 runner  wheel   64 Oct 21 22:41 .
+drwxr-xr-x  11 runner  wheel  352 Oct 21 22:41 ..

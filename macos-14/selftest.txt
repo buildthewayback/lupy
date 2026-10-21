@@ -1,11 +1,11 @@
 runner macOS: 14.8.9 (app minimum: 15.0)
-dyld[6675]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
-  Referenced from: <7F4AB7BC-C56F-3610-8290-63EF8C5A7DAD> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
+dyld[4446]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
+  Referenced from: <8F8F4461-3A9D-330A-B6B4-96AD5745CD88> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
   Reason: tried: '/usr/lib/swift/libswift_errno.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/usr/lib/swift/libswift_errno.dylib' (no such file), '/usr/lib/swift/libswift_errno.dylib' (no such file, not in dyld cache)
-/Users/runner/work/_temp/a6f81d3d-fec9-4dd0-a103-cc664296d3fa.sh: line 4:  6675 Abort trap: 6           "$@"
+/Users/runner/work/_temp/08f3a471-734f-4d79-8949-2e865f04b2f8.sh: line 4:  4446 Abort trap: 6           "$@"
 self-test exit: 134
-dyld[6678]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
-  Referenced from: <7F4AB7BC-C56F-3610-8290-63EF8C5A7DAD> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
+dyld[4449]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
+  Referenced from: <8F8F4461-3A9D-330A-B6B4-96AD5745CD88> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
   Reason: tried: '/usr/lib/swift/libswift_errno.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/usr/lib/swift/libswift_errno.dylib' (no such file), '/usr/lib/swift/libswift_errno.dylib' (no such file, not in dyld cache)
-/Users/runner/work/_temp/a6f81d3d-fec9-4dd0-a103-cc664296d3fa.sh: line 4:  6678 Abort trap: 6           "$@"
+/Users/runner/work/_temp/08f3a471-734f-4d79-8949-2e865f04b2f8.sh: line 4:  4449 Abort trap: 6           "$@"
 character exit: 134
