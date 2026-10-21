@@ -105,6 +105,23 @@ struct IslandCharacterView: View {
 
     @StateObject private var driver = IslandSampler()
     @State private var bubbleWidth: CGFloat = 0
+    @State private var needsYouSince: Date?
+
+    /// The rig state, translated once.
+    private var rigState: LupyCharacterState { LupyStateMapping.state(from: state.effectiveState) }
+
+    /// States that are waiting on the founder. Only these may ever grow words.
+    private var needsYou: Bool { rigState == .approval || rigState == .question || rigState == .error }
+
+    /// FOUNDER'S ICON-FIRST LAW (2026-10-22): no word label at rest — the face
+    /// and its light talk (red = needs you). Only if a needs-you state goes
+    /// unanswered this long does the word escalate in. The sampler's 1 Hz
+    /// tick re-evaluates the body, so no extra timer exists for this.
+    private static let bubbleEscalationDelay: TimeInterval = 15
+    private var bubbleDue: Bool {
+        guard needsYou, state.mode == .expanded, let since = needsYouSince else { return false }
+        return Date().timeIntervalSince(since) >= Self.bubbleEscalationDelay
+    }
 
     /// The frame is larger than the body: 1/unitFraction, so the glow is never clipped
     /// and the badge's reach is inside the view.
@@ -116,7 +133,8 @@ struct IslandCharacterView: View {
         ZStack(alignment: .topLeading) {
             LupyCanvasView(state: LupyStateMapping.state(from: state.effectiveState),
                            vitals: paused ? nil : driver.sampler.vitals,
-                           busySamples: paused ? 0 : driver.sampler.busyStreak)
+                           busySamples: paused ? 0 : driver.sampler.busyStreak,
+                           paused: paused || state.mode == .hidden)
             // The status bubble is not drawn by the canvas — it is a SwiftUI view, so
             // it has to be placed here, and only when there is room for its text.
             //
@@ -124,8 +142,8 @@ struct IslandCharacterView: View {
             // the island's rounded corner, so a label that sits at the frame's left
             // edge gets sliced ("…your OK"). Inside the island band the label has to
             // sit inboard of the character; in a window of his own it can float free.
-            if showsStatusBubble {
-                LupyStatusBubble(state: LupyStateMapping.state(from: state.effectiveState),
+            if showsStatusBubble && bubbleDue {
+                LupyStatusBubble(state: rigState,
                                  bodyWidth: bodyWidth)
                     .fixedSize()
                     .background(GeometryReader { b in
@@ -141,7 +159,13 @@ struct IslandCharacterView: View {
         }
             .frame(width: frame, height: frame)
             .opacity(paused ? 0 : 1)
-            .onAppear { if !paused { driver.start() } }
+            .onAppear {
+                if !paused { driver.start() }
+                if needsYou, needsYouSince == nil { needsYouSince = Date() }
+            }
+            .onChange(of: needsYou) { _, waiting in
+                needsYouSince = waiting ? Date() : nil
+            }
             .onDisappear { driver.stop() }
             .onChange(of: paused) { _, isPaused in
                 if isPaused { driver.stop() } else { driver.start() }

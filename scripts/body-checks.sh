@@ -49,8 +49,20 @@ grep -q 'xattr -dr com.apple.quarantine /Applications/Lupy.app' scripts/build-no
 # installed app cannot be opened at all (oracle-proven, macOS 15.7.9)
 grep -q 'PlistBuddy -c "Set :CFBundleExecutable Lupy"' scripts/build-no-xcode.sh
 grep -q 'PlistBuddy -c "Set :CFBundleDevelopmentRegion en"' scripts/build-no-xcode.sh
+# LAG LAW: the character rig never renders at full rate unseen (founder lag,
+# 2026-10-22) — every island face must carry a real pause.
+grep -q "TimelineView(.animation(paused: paused))" Mac/Sources/Lupy/Character/LupyCanvasView.swift
+grep -q "paused: paused || state.mode == .hidden" Mac/Sources/Lupy/Character/IslandCharacterView.swift
+grep -q "paused: !viewActive" Mac/Sources/App/BotCanvasView.swift
+# the string catalog must reach the bundle as .lproj, or raw keys show in the UI
+grep -q 'Localizable.xcstrings' scripts/build-no-xcode.sh
+grep -q 'lproj' scripts/build-no-xcode.sh
 grep -q 'CFBundleIconFile' Mac/Resources/Info.plist
 grep -q 'face_start' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+# ONE-WINDOW LAW (founder 2026-10-22): the face compiles behind the welcome
+# and the window carries steps 2-6; the 3-second popup train stays dead.
+grep -q 'face_precompile' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+! grep -q '"Stop" "Stop" 3)' "Install LUPY.app/Contents/MacOS/Install-LUPY"
 test -f "Install LUPY.app/Contents/Resources/LupyProgress.swift"
 # credential-blind builds (3.2's field death): no keychain may ever be asked
 grep -q 'disable-keychain' scripts/build-no-xcode.sh
@@ -81,6 +93,8 @@ echo "== 6e · declaration census (one module, one name: the two-LupyIslandChatV
 python3 tools/ui/audit_decls.py | tail -1
 echo "== 6f · cross-reference audit (no imagined APIs in the never-compiled frontier)"
 python3 tools/ui/audit_xref.py | tail -1
+echo "== 6g · text bounds council (dynamic text declares its bound)"
+python3 tools/ui/audit_text.py | tail -2
 python3 tools/ui/audit_ui.py | tail -1
 python3 tools/ui/audit_all.py | tail -1
 python3 tools/ui/audit_micro.py | tail -1

@@ -95,6 +95,7 @@ struct OverviewView: View {
                                     .foregroundColor(Color(hex: "#8E939C"))
                                     .lineLimit(1)
                                     .truncationMode(.tail)
+                                    .fixedSize()   // never a dangling "/" crumb (photographed 2026-10-22)
                                 Spacer(minLength: 2)
                                 if agent.steps.count > 1 {
                                     Text("\(min(agent.stepIndex + 1, agent.steps.count))/\(agent.steps.count)")
@@ -352,6 +353,14 @@ struct ApprovalView: View {
         return task
     }
 
+    /// The card always says WHO is asking: project, else tool, else the bare ask.
+    private var askLabel: String {
+        if asker != nil { return "needs permission" }
+        if let p = approval?.projectName, !p.isEmpty { return "\(p) needs permission" }
+        if let t = approval?.tool, !t.isEmpty { return "\(t) needs permission" }
+        return "needs permission"
+    }
+
     var body: some View {
         // Captured when the card is drawn: a click answers the request that was on screen,
         // and is ignored if the card has moved on to the next one since.
@@ -360,7 +369,7 @@ struct ApprovalView: View {
             CardBackground(wash: .amber)
             VStack(alignment: .leading, spacing: 5) {
                 HStack(spacing: 7) {
-                    AgentWho(task: asker, label: "needs permission")
+                    AgentWho(task: asker, label: askLabel)
                     // Other requests waiting behind this one: "1/3".
                     if let count = approval?.queueCount, count > 1 {
                         Text(verbatim: "1/\(count)")
@@ -624,19 +633,38 @@ struct QuestionView: View {
 struct ErrorView: View {
     @ObservedObject var state: AppState
 
+    /// Where the focus task came from, in the island's own vocabulary.
+    private var sourceLabel: String {
+        switch state.focusTask?.source {
+        case .claudeCode: return "Claude Code"
+        case .n8n: return "n8n"
+        default: return "Agent"
+        }
+    }
+
     var body: some View {
         ZStack {
             CardBackground(wash: .red)
             VStack(alignment: .leading, spacing: 5) {
-                AgentWho(task: state.focusTask, label: "n8n")
-                Text("Workflow stopped.")
+                AgentWho(task: state.focusTask, label: sourceLabel)
+                // Honest by construction: the real task, its real last line, and no
+                // invented story (this card used to claim a Gmail timeout for every
+                // error, with buttons wired to comments — photographed 2026-10-22).
+                Text(state.focusTask?.source == .n8n ? "Workflow stopped." : "Something stopped.")
                     .font(.system(size: 15, weight: .semibold))
-                Text("Gmail node timed out after 30s. Retry or open n8n.")
+                Text(state.focusTask?.finalLine ?? "No details were reported — open Today to see the task and its steps.")
                     .font(.system(size: 12))
                     .foregroundColor(Color(hex: "#FF8D97"))
+                    .lineLimit(3)
+                    .truncationMode(.tail)
                 HStack(spacing: 8) {
-                    PrimaryButton("Retry") { /* retry */ }
-                    SecondaryButton("Open in n8n") { /* open */ }
+                    PrimaryButton("See it in Today") {
+                        LupyModel.shared.open(.lupyToday)
+                        NotificationCenter.default.post(name: .islandCollapse, object: nil)
+                    }
+                    SecondaryButton("Dismiss") {
+                        NotificationCenter.default.post(name: .islandCollapse, object: nil)
+                    }
                 }
             }
             .padding(.leading, 116)
@@ -4098,6 +4126,9 @@ struct AgentPill: View {
                     }
                     Text(displayName)
                         .font(.system(size: 10, weight: .semibold))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .padding(.horizontal, 30)   // keep the name out from under the mini + its glow
                         .foregroundColor(isHovered
                                          ? Color(hex: effectiveColor).lighter(by: 0.3)
                                          : Color(hex: "#6B7079"))
@@ -4760,15 +4791,48 @@ struct AgentWho: View {
 
 struct CodeBlock: View {
     let text: String
+    @State private var expanded = false
+
+    /// Nothing gets approved half-read: collapsed shows two lines, the chevron
+    /// (or a click anywhere on the block) opens the whole command in place.
+    private var isLong: Bool { text.count > 60 }
 
     var body: some View {
-        Text(text)
-            .font(.system(size: 12, design: .monospaced))
-            .padding(.horizontal, 10).padding(.vertical, 5)
-            .background(Color.white.opacity(0.07))
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.06)))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .foregroundColor(Color(hex: "#E8E9EC"))
+        HStack(alignment: .top, spacing: 6) {
+            if expanded {
+                ScrollView(.vertical, showsIndicators: false) {
+                    Text(text)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(height: 34)
+            } else {
+                Text(text)
+                    .lineLimit(2)
+                    .truncationMode(.tail)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            if isLong {
+                Button {
+                    expanded.toggle()
+                } label: {
+                    Image(systemName: expanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(Color(hex: "#8E939C"))
+                        .frame(width: 16, height: 16)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help(expanded ? "Show less" : "Show the whole command before you decide")
+            }
+        }
+        .font(.system(size: 12, design: .monospaced))
+        .padding(.horizontal, 10).padding(.vertical, 5)
+        .background(Color.white.opacity(0.07))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.06)))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .foregroundColor(Color(hex: "#E8E9EC"))
+        .contentShape(Rectangle())
+        .onTapGesture { if isLong { expanded.toggle() } }
     }
 }
 

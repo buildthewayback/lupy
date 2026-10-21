@@ -21,6 +21,7 @@ struct LupyChatPanel: View {
                 Circle().fill(Color(hex: chat.statusColor)).frame(width: 8, height: 8)
                 Text(chat.statusLine)
                     .font(.system(size: 12)).foregroundColor(LupyTheme.secondary)
+                    .lineLimit(1)
                 Spacer()
                 if LupyControlCenter.shared.isActive {
                     Button("Watch the cursor") { model.open(.lupyControl) }.buttonStyle(LupySecondaryButtonStyle())

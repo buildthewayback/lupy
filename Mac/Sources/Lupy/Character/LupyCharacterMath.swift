@@ -328,6 +328,10 @@ enum LupyComposition {
     /// the ring straddles the rim: half its ink on white, half in the air. He asked
     /// for "half in character inside and half out".
     static let badgeOverlap: Double = 0.0175
+    /// Below this body width (pt) the badge glyph is noise, not information —
+    /// a white bullseye at pill size, photographed 2026-10-22. The glow's
+    /// colour carries the state there; the badge appears when it can be read.
+    static let badgeMinBodyWidth: Double = 40
 
     /// The badge's centre, on the right rim of whatever silhouette we ship. Computed
     /// from the real body path, so it stays on the shoulder at every body shape.

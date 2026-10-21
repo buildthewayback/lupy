@@ -265,7 +265,7 @@ struct MiniBotCanvasView: View {
     @Environment(\.islandViewActive) private var viewActive
 
     var body: some View {
-        LupyCanvasView(state: LupyStateMapping.state(from: task.state))
+        LupyCanvasView(state: LupyStateMapping.state(from: task.state), paused: !viewActive)
             .frame(width: frame, height: frame)
             .opacity(viewActive ? 1 : 0)
             // The rig animates on its own clock; the island's active flag only decides

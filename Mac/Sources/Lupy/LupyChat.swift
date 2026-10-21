@@ -68,7 +68,7 @@ final class LupyChat {
         let a = model.attention
         if !a.items.isEmpty { return "\(a.items.count) thing\(a.items.count == 1 ? "" : "s") need you" }
         if a.activeCount > 0 { return "\(a.activeCount) task\(a.activeCount == 1 ? "" : "s") active" }
-        return "Listening"
+        return "All quiet"   // never "Listening": the mic is off until the founder taps it
     }
 
     /// The dot colour that goes with `statusLine` — same conditions, same honesty.
@@ -81,7 +81,7 @@ final class LupyChat {
         let a = model.attention
         if !a.items.isEmpty { return "#FB7185" }     // rose: decisions are waiting for you
         if a.activeCount > 0 { return "#34D399" }    // green: work is running
-        return "#A5B4FC"                             // soft indigo: listening
+        return "#A5B4FC"                             // soft indigo: all quiet
     }
 
     // MARK: Sending — the interaction loop

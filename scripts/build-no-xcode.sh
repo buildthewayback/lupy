@@ -64,6 +64,33 @@ cp Resources/Info.plist "$APP/Contents/Info.plist"
 # No "|| true": if the stamp fails, the build must fail loudly here.
 /usr/libexec/PlistBuddy -c "Set :CFBundleExecutable Lupy" "$APP/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleDevelopmentRegion en" "$APP/Contents/Info.plist"
+# Xcode compiles the string catalog into .lproj folders; this road has no
+# Xcode, so generate them from the catalog JSON with the python3 the Command
+# Line Tools already gave this Mac. Without this, the app shows raw keys
+# ("hub.page.dictation") wherever a string's key is not its own English text
+# — photographed on a real Mac, 2026-10-22. set -e keeps any failure loud.
+python3 - "$APP/Contents/Resources" <<'LUPY_STRINGS_EOF'
+import json, os, sys
+out_root = sys.argv[1]
+catalog = json.load(open("Resources/Localizable.xcstrings", encoding="utf-8"))
+def esc(t):
+    return t.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r")
+per_lang = {}
+for key, entry in catalog.get("strings", {}).items():
+    for lang, loc in entry.get("localizations", {}).items():
+        unit = loc.get("stringUnit")
+        if unit and unit.get("value"):
+            per_lang.setdefault(lang, []).append((key, unit["value"]))
+count = 0
+for lang, pairs in sorted(per_lang.items()):
+    d = os.path.join(out_root, lang + ".lproj")
+    os.makedirs(d, exist_ok=True)
+    with open(os.path.join(d, "Localizable.strings"), "w", encoding="utf-8") as f:
+        for k, v in sorted(pairs):
+            f.write('"%s" = "%s";\n' % (esc(k), esc(v)))
+    count += len(pairs)
+print("== strings: %d entries across %d languages" % (count, len(per_lang)))
+LUPY_STRINGS_EOF
 printf 'APPL????' > "$APP/Contents/PkgInfo"
 # his face: the forged icon of the locked character (tools/ui/make_appicon.py).
 # Info.plist names it via CFBundleIconFile=AppIcon; without this copy the

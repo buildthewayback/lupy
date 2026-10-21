@@ -99,7 +99,7 @@ DEFS = {
     "composerView": ("Mac/Sources/Lupy/UI/LupyIslandCanvas.swift", r"struct LupyComposer"),
     "statusLine": ("Mac/Sources/Lupy/UI/LupyIslandCanvas.swift", r"struct LupyStatusLine"),
     "characterView": ("Mac/Sources/Lupy/UI/LupyIslandCanvas.swift", r"LupyCanvasView"),
-    "legacyFlag": ("Mac/Sources/App/AppDelegate.swift", r"lupy3LegacyIsland"),
+    "legacyFlag": ("Mac/Sources/App/AppDelegate.swift", r"lupy3DirectorIsland"),
     "directorLaunch": ("Mac/Sources/App/AppDelegate.swift", r"LupyIslandDirector\(\)"),
     "collapseNote": ("Mac/Sources/App/IslandWindowController.swift", r"static let islandCollapse"),
 }

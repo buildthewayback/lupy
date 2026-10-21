@@ -25,6 +25,9 @@ enum LupyMain {
         if args.contains("--character-self-test") {
             exit(LupyCharacterSelfTest.run(arguments: args))
         }
+        if args.contains("--snapshot-states") {
+            exit(LupySnapshotHarness.run(arguments: args))
+        }
         if args.contains("--character-preview") {
             // Look at the character rig on its own, with a real mouse (LupyCanvasView).
             LupyCharacterPreview.run()

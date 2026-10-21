@@ -235,7 +235,8 @@ enum LupyRenderer {
         // Pinned to the character's right edge, half on him and half off: a dark ring
         // separates the bright disc from the white body, and this state's own glyph
         // sits inside it.
-        if let drawnState, let icon = drawnState.icon {
+        if let drawnState, let icon = drawnState.icon,
+           Double(frame.unit) * 2 >= LupyComposition.badgeMinBodyWidth {
             drawBadge(icon, state: drawnState, in: &context, frame: frame)
         }
     }
@@ -291,12 +292,18 @@ struct LupyCanvasView: View {
 
     /// Some call sites have no room for the status label (a 22 pt pill).
     var showsStatusLabel: Bool = true
+    /// Stop the render clock entirely when nobody can see him (island hidden,
+    /// an inactive stacked view, Lupy living on the desktop instead). Before
+    /// this the rig redrew at full display rate forever — bot + every mini,
+    /// glow blur included — a photographed-in-code source of the founder's
+    /// lag (2026-10-22). Coucou's canvas always paused; now the rig does too.
+    var paused: Bool = false
 
     @StateObject private var driver = LupyCharacterDriver()
 
     var body: some View {
         GeometryReader { geo in
-            TimelineView(.animation) { timeline in
+            TimelineView(.animation(paused: paused)) { timeline in
                 // Stepping happens here, not inside the Canvas closure: the closure
                 // must stay a pure function of the snapshot it receives.
                 let frame = driver.snapshot(at: timeline.date, size: geo.size)

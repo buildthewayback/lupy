@@ -28,6 +28,7 @@ struct LupyIslandCardView: View {
             VStack(alignment: .leading, spacing: LupyIslandLayout.padInner) {
                 Text(payload.meta)
                     .font(LupyType.provenanceFont)
+                    .lineLimit(1)
                     .foregroundStyle(LupyPalette.textBody.colour)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .frame(height: LupyIslandLayout.headlineRow)
@@ -92,6 +93,7 @@ struct LupyIslandTaskView: View {
             VStack(alignment: .leading, spacing: LupyIslandLayout.padInner) {
                 Text(payload.meta)
                     .font(LupyType.provenanceFont)
+                    .lineLimit(1)
                     .foregroundStyle(LupyPalette.textBody.colour)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .frame(height: LupyIslandLayout.headlineRow)
@@ -105,6 +107,7 @@ struct LupyIslandTaskView: View {
                         HStack(spacing: LupyIslandLayout.chipIconGap) {
                             Text("\(i + 1)")
                                 .font(LupyType.font(LupyType.body, weight: .medium))
+                                .fixedSize()
                                 .foregroundStyle(i < payload.stepIndex
                                                  ? LupyPalette.accent.colour
                                                  : LupyPalette.iconography.colour)
@@ -156,6 +159,7 @@ struct LupyIslandTranscriptView: View {
             VStack(alignment: .leading, spacing: LupyIslandLayout.padInner) {
                 Text(meta)
                     .font(LupyType.provenanceFont)
+                    .lineLimit(1)
                     .foregroundStyle(LupyPalette.textBody.colour)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .frame(height: LupyIslandLayout.headlineRow)

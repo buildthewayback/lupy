@@ -298,10 +298,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         islandController?.showWindow(nil)
         islandController?.fsm.launch()
         HookServer.shared.start()
-        // LUPY 3: the director hosts the new island and keeps the v0.2 one collapsed
-        // with a notification the old FSM already obeys. `lupy3LegacyIsland` in
-        // defaults brings the old island back, untouched, if ever needed.
-        if !UserDefaults.standard.bool(forKey: "lupy3LegacyIsland") {
+        // ONE-NOTCH LAW (founder, 2026-10-22 — after seeing two pills on his own
+        // screen): the v0.2 Coucou island above is the ONLY island. The LUPY 3
+        // director's twin window is retired; it still compiles and can be revived
+        // for development with `lupy3DirectorIsland` in defaults, but a founder
+        // build never shows two faces again. Retiring it also stops its
+        // .islandCollapse posts, which were making the two islands fight.
+        if UserDefaults.standard.bool(forKey: "lupy3DirectorIsland") {
             lupy3Director = LupyIslandDirector()
             lupy3Director?.onAsk = { [weak self] text in
                 Task { await self?.askClaude(text) }

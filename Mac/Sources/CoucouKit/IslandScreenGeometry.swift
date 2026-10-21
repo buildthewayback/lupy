@@ -35,7 +35,7 @@ struct IslandRestingLayout {
     let width: CGFloat
     let height: CGFloat
 
-    var botDiameter: CGFloat { min(20, max(0, height - 6)) }
+    var botDiameter: CGFloat { min(26, max(0, height - 6)) }   // 20 read as a dot (founder, 2026-10-22); 26 fills the 32pt band
     var botCenterY: CGFloat { height / 2 }
     var miniGridScale: CGFloat { min(1, max(0, height - 4) / 28) }
     var miniGridCenterX: CGFloat { width - 40 }
