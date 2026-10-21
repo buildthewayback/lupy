@@ -506,3 +506,30 @@ First moves this session (branch arena/2343e721-lupy):
   word escalation; lag census (full-rate TimelineViews); payload
   stress shots (long text/emoji/queues); resize/boundary + text
   councils; installer one-window. Then PR -> approval -> kit.
+
+## 2026-10-22 (later) — Loops 2-6: the photographed grind
+
+Run #6 installed; the founder's screenshots set the laws (one notch,
+Coucou sizes, icon-first, one installer window, screenshot QA at
+100k-mechanised scale). Work since, every claim photographed in CI:
+
+- ONE-NOTCH: director twin retired (opt-in flag only). The "Ready"
+  bubble extinct at rest; words escalate only for unanswered
+  needs-you states (15s). Badge only at readable sizes. Resting bot
+  20→26pt. Strings: the no-Xcode road now compiles .lproj from the
+  catalog (719 keys × 11 languages were silently dropped).
+- Loop 3: ErrorView was a hardcoded fake — now honest (real task,
+  real last line, working buttons). Approval names its asker; the
+  command expands in place before deciding. Mini bots true-size; no
+  name-crumb bleeding. Chat bubbles flawless under wall-of-text.
+- Lag: the rig ran TimelineView(.animation) unpaused forever (bot +
+  every mini). Now paused when hidden/inactive/on-desktop; gated.
+- Council 6g (TEXT): dynamic text in fixed-geometry surfaces must
+  declare lineLimit/truncation/fixedSize. 21/21 bounded; window
+  pages+Coucou island censused report-only (98) for per-surface
+  burn-down with photographs.
+- Installer ONE-WINDOW: the face compiles behind the welcome dialog;
+  the window rises after step 1 and carries steps 2–6; the 3-second
+  popup train is dead (gated). Fresh-Mac tools path keeps the honest
+  modal wait; with the window up, the wait happens inside it.
+- CI photographs Dark AND Light appearances (real screencaptures).

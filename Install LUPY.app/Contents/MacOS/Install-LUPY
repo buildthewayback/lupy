@@ -344,28 +344,57 @@ APPLESCRIPT
 
 # ── the face ──────────────────────────────────────────────────────────────────
 FACE_PID=""
-face_start() {
-  # Compile LupyProgress.swift (in this bundle) with the tools already proven
-  # present, and put its window up. While it compiles (seconds), a refreshing
-  # modal says so. Any failure → FACE_PID stays empty and refreshing modals
-  # carry the build instead. Never silence.
-  local SRC="$APP_BUNDLE/Contents/Resources/LupyProgress.swift" BIN="$STATUS_DIR/LupyProgress"
-  FACE_PID=""
-  [ -f "$SRC" ] || { echo "face: source missing — modal fallback"; return 0; }
-  command -v swiftc >/dev/null 2>&1 || { echo "face: no swiftc — modal fallback"; return 0; }
-  echo "face: compiling…"
-  ( swiftc -O -o "$BIN" "$SRC" ) &
-  local CPID=$! waited=0 M=""
-  while kill -0 "$CPID" 2>/dev/null; do
-    M="$(modal "Preparing your installer screen…
+FACE_CPID=""
+face_precompile() {
+  # Compile the face NOW, in the background behind the welcome dialog, so the
+  # window is ready the moment the founder clicks Install. The old order
+  # compiled it after step 2 behind a train of 3-second refreshing popups —
+  # the founder's "pop up 3 times then appear big install" (2026-10-22).
+  # ONE dialog, then ONE window. Harmless when the tools aren't there yet:
+  # face_start retries after Apple's tools step.
+  local SRC="$APP_BUNDLE/Contents/Resources/LupyProgress.swift"
+  FACE_CPID=""
+  [ -f "$SRC" ] || return 0
+  command -v swiftc >/dev/null 2>&1 || return 0
+  ( swiftc -O -o "$STATUS_DIR/LupyProgress" "$SRC" ) &
+  FACE_CPID=$!
+}
 
-(a few seconds, first time only — then a window with the six steps stays with you the whole way, and you can minimize it any time)" "Stop" "Stop" 3)"
-    if [ "$M" = "Stop" ]; then kill "$CPID" 2>/dev/null; exit 0; fi
-    waited=$((waited + 3))
-    [ "$waited" -ge 90 ] && break
+face_compile_wait() {
+  # Wait out a compile behind ONE calm window (20s refresh instead of the
+  # old 3s popup flicker). Only seen when the founder clicked through the
+  # welcome faster than the compiler.
+  local waited=0 M=""
+  while kill -0 "$FACE_CPID" 2>/dev/null; do
+    M="$(modal "Preparing your installer window…
+
+(a few more seconds — then one window with the six steps stays with you the whole way, and you can minimize it any time)" "Stop" "Stop" 20)"
+    if [ "$M" = "Stop" ]; then kill "$FACE_CPID" 2>/dev/null; exit 0; fi
+    waited=$((waited + 20))
+    [ "$waited" -ge 100 ] && break
   done
-  wait "$CPID" 2>/dev/null
-  if [ ! -x "$BIN" ]; then echo "face: compile failed — modal fallback"; return 0; fi
+  wait "$FACE_CPID" 2>/dev/null
+  FACE_CPID=""
+}
+
+face_start() {
+  # Put the face window up — once. Called after step 1 (the window then
+  # carries steps 2–6) and again after Apple's tools for Macs where the
+  # compiler only arrived there. Any failure → FACE_PID stays empty and
+  # refreshing modals carry the build instead. Never silence.
+  [ -n "$FACE_PID" ] && return 0
+  local SRC="$APP_BUNDLE/Contents/Resources/LupyProgress.swift" BIN="$STATUS_DIR/LupyProgress"
+  [ -f "$SRC" ] || { echo "face: source missing — modal fallback"; return 0; }
+  if [ ! -x "$BIN" ]; then
+    command -v swiftc >/dev/null 2>&1 || { echo "face: no swiftc yet — retry after Apple's tools"; return 0; }
+    if [ -z "$FACE_CPID" ]; then
+      echo "face: compiling…"
+      ( swiftc -O -o "$BIN" "$SRC" ) &
+      FACE_CPID=$!
+    fi
+    face_compile_wait
+  fi
+  [ -x "$BIN" ] || { echo "face: compile failed — modal fallback"; return 0; }
   "$BIN" "$FACE_STATUS_FILE" "$DONE_FILE" "$CANCEL_FILE" "$HEART_FILE" \
          "$KIT/build-noxcode/build.log" "$ICON" "$RESULT_FILE" "$REPORT_FILE" >/dev/null 2>&1 &
   FACE_PID=$!
@@ -418,6 +447,7 @@ verify_install() {
 }
 
 # ── welcome ───────────────────────────────────────────────────────────────────
+face_precompile
 CHOICE="$(dialog "LUPY installs himself on this Mac — no Xcode, no Terminal, nothing to type.
 
 You'll watch six steps in a normal Mac window (minimize it any time — the Dock icon shows the %): check this Mac, Apple's free tools, download one small library, compile, install, and finally proof that he's alive. First time takes a few minutes. Then he lives in your Applications and launches by himself: the small dark pill under your menu bar." "Not now,Install LUPY" "Install LUPY")"
@@ -491,6 +521,11 @@ Sign in with an administrator account (or ask whoever manages this Mac), then do
 fi
 step_set 1 '+'
 compose_face 4 "this Mac is ready"
+# The window goes up NOW and carries everything from here — tools, download,
+# compile, install, proof. On a Mac without Apple's tools yet this is a
+# no-op; the face_start after step 2 (kept, idempotent) puts it up then.
+face_start
+touch "$HEART_FILE"
 step_set 2 '>'
 compose_face 5 "checking Apple's free tools…"
 
@@ -505,6 +540,18 @@ Click “Install Apple's tools” and macOS will offer them (a small download fr
   T0=$(date +%s)
   until xcode-select -p >/dev/null 2>&1 && /usr/bin/swift --version >/dev/null 2>&1; do
     compose_face 5 "waiting for Apple's tools… $(elapsed_txt "$T0")"
+    if [ -n "$FACE_PID" ]; then
+      # The window is already up: wait inside it — no popup on top of it.
+      touch "$HEART_FILE"
+      if cancelled; then echo "stopped by founder during tools wait"; exit 0; fi
+      if [ $(( $(date +%s) - T0 )) -ge 1800 ]; then
+        sorry "Apple's tools still aren't there after 30 minutes, so I've stopped waiting.
+
+If Apple's window is still working, let it finish — then double-click Install LUPY again and he picks up from here."
+      fi
+      sleep 5
+      continue
+    fi
     M="$(modal "Step 2 of 6 — Apple's free tools
 
 Waiting for Apple's tools to finish installing. Click “Install” in Apple's own window if you can see it. This part is Apple's and can take several minutes; LUPY continues automatically the moment it's ready.

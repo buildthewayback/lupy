@@ -133,7 +133,8 @@ struct IslandCharacterView: View {
         ZStack(alignment: .topLeading) {
             LupyCanvasView(state: LupyStateMapping.state(from: state.effectiveState),
                            vitals: paused ? nil : driver.sampler.vitals,
-                           busySamples: paused ? 0 : driver.sampler.busyStreak)
+                           busySamples: paused ? 0 : driver.sampler.busyStreak,
+                           paused: paused || state.mode == .hidden)
             // The status bubble is not drawn by the canvas — it is a SwiftUI view, so
             // it has to be placed here, and only when there is room for its text.
             //

@@ -44,7 +44,8 @@ jobs:
             && bash tools/ui/installer-harness.sh | tail -1 \
             && python3 tools/ui/audit_isolation.py | tail -1 \
             && python3 tools/ui/audit_decls.py | tail -1 \
-            && python3 tools/ui/audit_xref.py | tail -1; } 2>&1 | tee /tmp/evidence/rehearsal.txt
+            && python3 tools/ui/audit_xref.py | tail -1 \
+            && python3 tools/ui/audit_text.py | tail -1; } 2>&1 | tee /tmp/evidence/rehearsal.txt
 
       - name: The founder's road, verbatim — swift build, bundle, sign, no launch
         run: |
@@ -107,6 +108,13 @@ jobs:
           sleep 12
           if pgrep -x Lupy >/dev/null; then echo "ALIVE: Lupy process is running" >> /tmp/evidence/launch.txt; else echo "no Lupy process after open" >> /tmp/evidence/launch.txt; ec=0; run_capped 8 "$BIN" >> /tmp/evidence/launch.txt 2>&1 || ec=$?; echo "direct-run exit: $ec" >> /tmp/evidence/launch.txt; fi
           screencapture -x /tmp/evidence/screen.png >> /tmp/evidence/launch.txt 2>&1 || echo "screencapture refused (TCC)" >> /tmp/evidence/launch.txt
+          pkill -x Lupy
+          sleep 2
+          defaults delete -g AppleInterfaceStyle >/dev/null 2>&1
+          open build-noxcode/Lupy.app >> /tmp/evidence/launch.txt 2>&1 || echo "light relaunch failed" >> /tmp/evidence/launch.txt
+          sleep 10
+          if pgrep -x Lupy >/dev/null; then echo "ALIVE (light): Lupy is running" >> /tmp/evidence/launch.txt; else echo "no Lupy process in light appearance" >> /tmp/evidence/launch.txt; fi
+          screencapture -x /tmp/evidence/screen-light.png >> /tmp/evidence/launch.txt 2>&1 || echo "light screencapture refused" >> /tmp/evidence/launch.txt
           pkill -x Lupy
           cat /tmp/evidence/launch.txt
           exit 0

@@ -186,7 +186,7 @@ struct LupyIslandChatView: View {
         Button(action: action) {
             HStack(spacing: 3) {
                 Image(systemName: icon).font(.system(size: 8.5))
-                Text(label).font(.system(size: 10.5))
+                Text(label).font(.system(size: 10.5)).lineLimit(1)
             }
             .foregroundColor(Color(hex: "#C5C8CD"))
             .padding(.horizontal, 8).padding(.vertical, 3)

@@ -55,6 +55,7 @@ struct LupyIslandApprovalView: View {
                 // owns the left half; the row is never dead space.
                 Text(payload.meta)
                     .font(LupyType.provenanceFont)
+                    .lineLimit(1)
                     .foregroundStyle(LupyPalette.textBody.colour)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .frame(height: LupyIslandLayout.headlineRow)
@@ -108,9 +109,11 @@ struct LupyChipFace: View {
             if let key = chip.key {
                 Text(key)                       // "⌘Y" — the glyph, at icon size
                     .font(.system(size: 12, weight: .medium))
+                    .lineLimit(1)
             }
             Text(chip.label)
                 .font(LupyType.chipFont)
+                .lineLimit(1)
         }
         .padding(.horizontal, LupyIslandLayout.chipPadH)
         .frame(height: LupyIslandLayout.chipHeight)
