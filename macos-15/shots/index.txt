@@ -18,13 +18,11 @@ island-lupyChat-dark 640x320 123016B
 island-lupyChat-light 640x320 123016B
 island-settings-dark 640x200 57952B
 island-settings-light 640x200 57952B
-window-settings-dark 980x640 244598B
-window-hub-general-dark 760x640 201869B
 face-greeting-dark 640x150 84030B
 face-desktop-dark 220x220 99897B
 live-approval 640x200 156491B
 live-question 640x376 205874B
-live-overview 640x200 76956B
+live-overview 640x200 76864B
 live-error 640x200 169755B
 live-finished 640x200 168035B
 live-chat 640x320 124954B
