@@ -1,6 +1,6 @@
 chat self-test, runner macOS: 14.8.9
-dyld[7928]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
-  Referenced from: <D0599171-BF77-36B1-A627-350CF5B9843B> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
+dyld[12701]: Library not loaded: /usr/lib/swift/libswift_errno.dylib
+  Referenced from: <D67489FF-DB15-3D80-A505-1F42EBA58977> /Users/runner/work/lupy/lupy/build-noxcode/Lupy.app/Contents/MacOS/Lupy (built for macOS 15.0 which is newer than running OS)
   Reason: tried: '/usr/lib/swift/libswift_errno.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/usr/lib/swift/libswift_errno.dylib' (no such file), '/usr/lib/swift/libswift_errno.dylib' (no such file, not in dyld cache)
-/Users/runner/work/_temp/46ce4f9e-0677-4b25-9ac0-bda75bdc9888.sh: line 3:  7928 Abort trap: 6           "$@"
+/Users/runner/work/_temp/a4e307a4-8f5c-408f-a542-0a88edd0df25.sh: line 3: 12701 Abort trap: 6           "$@"
 chat exit: 134
