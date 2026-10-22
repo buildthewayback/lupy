@@ -1,19 +1,19 @@
 Fetching https://github.com/FluidInference/FluidAudio
 [1/48391] Fetching fluidaudio
-Fetched https://github.com/FluidInference/FluidAudio from cache (12.13s)
+Fetched https://github.com/FluidInference/FluidAudio from cache (14.71s)
 Computing version for https://github.com/FluidInference/FluidAudio
-Computed https://github.com/FluidInference/FluidAudio at 0.17.7 (18.80s)
+Computed https://github.com/FluidInference/FluidAudio at 0.17.7 (19.66s)
 Creating working copy for https://github.com/FluidInference/FluidAudio
 Working copy of https://github.com/FluidInference/FluidAudio resolved at 0.17.7
 Downloading binary artifact https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
 [16375/87267919] Downloading https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
-Downloaded https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip (5.53s)
+Downloaded https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip (5.75s)
 Building for production...
 [0/11] Copying libtext_processing_rs.a
 [1/11] Write sources
 [2/11] Copying luxtts_en_us_lexicon.tsv.zz
 [2/11] Copying luxtts_en_us_g2p_aux.json
-[2/11] Write sources
+[5/11] Write sources
 [6/11] Write swift-version-7974D3F7F03D5E95.txt
 [7/12] Compiling MachTaskSelfWrapper MachTaskSelf.c
 [8/12] Compiling FastClusterWrapper FastClusterWrapper.cpp
@@ -28,13 +28,13 @@ Building for production...
 331 |             self?.checkMondayRecap()
 332 |         }
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/DesktopMochi.swift:251:10: note: calls to instance method 'launchFlyIfNeeded()' from outside of its actor context are implicitly asynchronous
-249 |     /// Fly a new panel from the notch to the saved desktop position.
-250 |     /// Called by AppDelegate after `.greetComplete`, and by the alert-return path.
-251 |     func launchFlyIfNeeded() {
+/Users/runner/work/lupy/lupy/Mac/Sources/App/DesktopMochi.swift:198:10: note: calls to instance method 'launchFlyIfNeeded()' from outside of its actor context are implicitly asynchronous
+196 |     /// Fly a new panel from the notch to the saved desktop position.
+197 |     /// Called by AppDelegate after `.greetComplete`, and by the alert-return path.
+198 |     func launchFlyIfNeeded() {
     |          `- note: calls to instance method 'launchFlyIfNeeded()' from outside of its actor context are implicitly asynchronous
-252 |         guard UserDefaults.standard.bool(forKey: DesktopMochiController.enabledKey) else { return }
-253 |         guard phase == .home else { return }
+199 |         guard UserDefaults.standard.bool(forKey: DesktopMochiController.enabledKey) else { return }
+200 |         guard phase == .home else { return }
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:330:36: warning: main actor-isolated static property 'shared' can not be referenced from a Sendable closure
 328 |         // After the greeting ends, fly Mochi back to the desktop if it was there at last quit
@@ -44,13 +44,13 @@ Building for production...
 331 |             self?.checkMondayRecap()
 332 |         }
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/DesktopMochi.swift:107:16: note: static property declared here
-105 | @MainActor
-106 | final class DesktopMochiController {
-107 |     static let shared = DesktopMochiController()
+/Users/runner/work/lupy/lupy/Mac/Sources/App/DesktopMochi.swift:54:16: note: static property declared here
+ 52 | @MainActor
+ 53 | final class DesktopMochiController {
+ 54 |     static let shared = DesktopMochiController()
     |                `- note: static property declared here
-108 |     private init() {
-109 |         observeScreenSleep()
+ 55 |     private init() {
+ 56 |         observeScreenSleep()
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:331:19: warning: call to main actor-isolated instance method 'checkMondayRecap()' in a synchronous nonisolated context [#ActorIsolatedCall]
 254 |     /// On Monday ≥ 8 am, show the recap card once (if there is activity to display).
@@ -129,13 +129,13 @@ Building for production...
  230 |             } else {
  231 |                 NSWorkspace.shared.open(URL(fileURLWithPath: "/Applications/Visual Studio Code.app"))
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandViewContent.swift:2415:40: warning: 'activateIgnoringOtherApps' was deprecated in macOS 14.0: ignoringOtherApps is deprecated in macOS 14 and will have no effect. [#DeprecatedDeclaration]
-2413 |             NSWorkspace.shared.runningApplications.first { $0.bundleIdentifier == id }
-2414 |         }).first {
-2415 |             running.activate(options: .activateIgnoringOtherApps)
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandViewContent.swift:2418:40: warning: 'activateIgnoringOtherApps' was deprecated in macOS 14.0: ignoringOtherApps is deprecated in macOS 14 and will have no effect. [#DeprecatedDeclaration]
+2416 |             NSWorkspace.shared.runningApplications.first { $0.bundleIdentifier == id }
+2417 |         }).first {
+2418 |             running.activate(options: .activateIgnoringOtherApps)
      |                                        `- warning: 'activateIgnoringOtherApps' was deprecated in macOS 14.0: ignoringOtherApps is deprecated in macOS 14 and will have no effect. [#DeprecatedDeclaration]
-2416 |             return
-2417 |         }
+2419 |             return
+2420 |         }
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:399:79: warning: main actor-isolated static property 'fastPoll' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
  389 |     // is elsewhere, so a hidden island costs next to nothing (CLAUDE.md: 0 % CPU when hidden).
@@ -168,21 +168,21 @@ Building for production...
 179 |         guard state == .coucou else { return }
 180 |         // If mouse entered before this fires (hover timer already running), don't override it
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:780:45: warning: use '#selector' instead of explicitly constructing a 'Selector'
- 778 |         // ⎋ Escape — focused views (.onExitCommand) have first crack; fall back to collapse
- 779 |         if event.keyCode == 53 && raw.isEmpty {
- 780 |             let consumed = NSApp.sendAction(Selector(("cancelOperation:")), to: nil, from: nil)
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:783:45: warning: use '#selector' instead of explicitly constructing a 'Selector'
+ 781 |         // ⎋ Escape — focused views (.onExitCommand) have first crack; fall back to collapse
+ 782 |         if event.keyCode == 53 && raw.isEmpty {
+ 783 |             let consumed = NSApp.sendAction(Selector(("cancelOperation:")), to: nil, from: nil)
      |                                             `- warning: use '#selector' instead of explicitly constructing a 'Selector'
- 781 |             let canCollapse = !state.isPinned || state.pendingApproval != nil
- 782 |             if !consumed && state.mode == .expanded && canCollapse {
+ 784 |             let canCollapse = !state.isPinned || state.pendingApproval != nil
+ 785 |             if !consumed && state.mode == .expanded && canCollapse {
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:869:22: warning: call to main actor-isolated instance method 'openedExternally()' in a synchronous nonisolated context [#ActorIsolatedCall]
- 867 |         NotificationCenter.default.addObserver(forName: .hookExpand, object: nil, queue: .main) { [weak self] note in
- 868 |             guard let self, let view = note.object as? IslandView else { return }
- 869 |             self.fsm.openedExternally()
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:872:22: warning: call to main actor-isolated instance method 'openedExternally()' in a synchronous nonisolated context [#ActorIsolatedCall]
+ 870 |         NotificationCenter.default.addObserver(forName: .hookExpand, object: nil, queue: .main) { [weak self] note in
+ 871 |             guard let self, let view = note.object as? IslandView else { return }
+ 872 |             self.fsm.openedExternally()
      |                      `- warning: call to main actor-isolated instance method 'openedExternally()' in a synchronous nonisolated context [#ActorIsolatedCall]
- 870 |             self.expand(to: view)
- 871 |         }
+ 873 |             self.expand(to: view)
+ 874 |         }
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/IslandStateMachine.swift:141:10: note: calls to instance method 'openedExternally()' from outside of its actor context are implicitly asynchronous
 139 |     /// Cancel timers and sync state to `.home` without firing `onTransition`, so the
@@ -192,7 +192,7 @@ Building for production...
 142 |         cancelTimers()
 143 |         openedByHover = false
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:870:18: warning: call to main actor-isolated instance method 'expand(to:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:873:18: warning: call to main actor-isolated instance method 'expand(to:)' in a synchronous nonisolated context [#ActorIsolatedCall]
  603 |     }
  604 | 
  605 |     func expand(to view: IslandView) {
@@ -200,20 +200,20 @@ Building for production...
  606 |         state.view = view
  607 |         if state.mode == .expanded {
      :
- 868 |             guard let self, let view = note.object as? IslandView else { return }
- 869 |             self.fsm.openedExternally()
- 870 |             self.expand(to: view)
+ 871 |             guard let self, let view = note.object as? IslandView else { return }
+ 872 |             self.fsm.openedExternally()
+ 873 |             self.expand(to: view)
      |                  `- warning: call to main actor-isolated instance method 'expand(to:)' in a synchronous nonisolated context [#ActorIsolatedCall]
- 871 |         }
- 872 | 
+ 874 |         }
+ 875 | 
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:876:22: warning: call to main actor-isolated instance method 'reveal()' in a synchronous nonisolated context [#ActorIsolatedCall]
- 874 |         NotificationCenter.default.addObserver(forName: .hookReveal, object: nil, queue: .main) { [weak self] _ in
- 875 |             guard let self else { return }
- 876 |             self.fsm.reveal()
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:879:22: warning: call to main actor-isolated instance method 'reveal()' in a synchronous nonisolated context [#ActorIsolatedCall]
+ 877 |         NotificationCenter.default.addObserver(forName: .hookReveal, object: nil, queue: .main) { [weak self] _ in
+ 878 |             guard let self else { return }
+ 879 |             self.fsm.reveal()
      |                      `- warning: call to main actor-isolated instance method 'reveal()' in a synchronous nonisolated context [#ActorIsolatedCall]
- 877 |         }
- 878 | 
+ 880 |         }
+ 881 | 
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/IslandStateMachine.swift:197:10: note: calls to instance method 'reveal()' from outside of its actor context are implicitly asynchronous
 195 | 
@@ -223,7 +223,7 @@ Building for production...
 198 |         guard state == .hidden else { return }
 199 |         cancelTimers()
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:882:18: warning: main actor-isolated property 'silentNextReveal' can not be mutated from a Sendable closure
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:885:18: warning: main actor-isolated property 'silentNextReveal' can not be mutated from a Sendable closure
   37 | 
   38 |     // Suppress peek sound on next reveal (e.g. musicReveal)
   39 |     var silentNextReveal = false
@@ -231,20 +231,20 @@ Building for production...
   40 | 
   41 |     // Finished-pin timer
      :
- 880 |         NotificationCenter.default.addObserver(forName: .musicReveal, object: nil, queue: .main) { [weak self] _ in
- 881 |             guard let self else { return }
- 882 |             self.silentNextReveal = true
+ 883 |         NotificationCenter.default.addObserver(forName: .musicReveal, object: nil, queue: .main) { [weak self] _ in
+ 884 |             guard let self else { return }
+ 885 |             self.silentNextReveal = true
      |                  `- warning: main actor-isolated property 'silentNextReveal' can not be mutated from a Sendable closure
- 883 |             self.fsm.reveal()
- 884 |             self.silentNextReveal = false
+ 886 |             self.fsm.reveal()
+ 887 |             self.silentNextReveal = false
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:883:22: warning: call to main actor-isolated instance method 'reveal()' in a synchronous nonisolated context [#ActorIsolatedCall]
- 881 |             guard let self else { return }
- 882 |             self.silentNextReveal = true
- 883 |             self.fsm.reveal()
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:886:22: warning: call to main actor-isolated instance method 'reveal()' in a synchronous nonisolated context [#ActorIsolatedCall]
+ 884 |             guard let self else { return }
+ 885 |             self.silentNextReveal = true
+ 886 |             self.fsm.reveal()
      |                      `- warning: call to main actor-isolated instance method 'reveal()' in a synchronous nonisolated context [#ActorIsolatedCall]
- 884 |             self.silentNextReveal = false
- 885 |         }
+ 887 |             self.silentNextReveal = false
+ 888 |         }
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/IslandStateMachine.swift:197:10: note: calls to instance method 'reveal()' from outside of its actor context are implicitly asynchronous
 195 | 
@@ -254,7 +254,7 @@ Building for production...
 198 |         guard state == .hidden else { return }
 199 |         cancelTimers()
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:884:18: warning: main actor-isolated property 'silentNextReveal' can not be mutated from a Sendable closure
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:887:18: warning: main actor-isolated property 'silentNextReveal' can not be mutated from a Sendable closure
   37 | 
   38 |     // Suppress peek sound on next reveal (e.g. musicReveal)
   39 |     var silentNextReveal = false
@@ -262,20 +262,20 @@ Building for production...
   40 | 
   41 |     // Finished-pin timer
      :
- 882 |             self.silentNextReveal = true
- 883 |             self.fsm.reveal()
- 884 |             self.silentNextReveal = false
+ 885 |             self.silentNextReveal = true
+ 886 |             self.fsm.reveal()
+ 887 |             self.silentNextReveal = false
      |                  `- warning: main actor-isolated property 'silentNextReveal' can not be mutated from a Sendable closure
- 885 |         }
- 886 | 
+ 888 |         }
+ 889 | 
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:890:22: warning: call to main actor-isolated instance method 'openedExternally()' in a synchronous nonisolated context [#ActorIsolatedCall]
- 888 |         NotificationCenter.default.addObserver(forName: .voiceShowMailCard, object: nil, queue: .main) { [weak self] _ in
- 889 |             guard let self else { return }
- 890 |             self.fsm.openedExternally()
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:893:22: warning: call to main actor-isolated instance method 'openedExternally()' in a synchronous nonisolated context [#ActorIsolatedCall]
+ 891 |         NotificationCenter.default.addObserver(forName: .voiceShowMailCard, object: nil, queue: .main) { [weak self] _ in
+ 892 |             guard let self else { return }
+ 893 |             self.fsm.openedExternally()
      |                      `- warning: call to main actor-isolated instance method 'openedExternally()' in a synchronous nonisolated context [#ActorIsolatedCall]
- 891 |             self.expand(to: .mail)
- 892 |         }
+ 894 |             self.expand(to: .mail)
+ 895 |         }
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/IslandStateMachine.swift:141:10: note: calls to instance method 'openedExternally()' from outside of its actor context are implicitly asynchronous
 139 |     /// Cancel timers and sync state to `.home` without firing `onTransition`, so the
@@ -285,7 +285,7 @@ Building for production...
 142 |         cancelTimers()
 143 |         openedByHover = false
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:891:18: warning: call to main actor-isolated instance method 'expand(to:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:894:18: warning: call to main actor-isolated instance method 'expand(to:)' in a synchronous nonisolated context [#ActorIsolatedCall]
  603 |     }
  604 | 
  605 |     func expand(to view: IslandView) {
@@ -293,14 +293,14 @@ Building for production...
  606 |         state.view = view
  607 |         if state.mode == .expanded {
      :
- 889 |             guard let self else { return }
- 890 |             self.fsm.openedExternally()
- 891 |             self.expand(to: .mail)
+ 892 |             guard let self else { return }
+ 893 |             self.fsm.openedExternally()
+ 894 |             self.expand(to: .mail)
      |                  `- warning: call to main actor-isolated instance method 'expand(to:)' in a synchronous nonisolated context [#ActorIsolatedCall]
- 892 |         }
- 893 | 
+ 895 |         }
+ 896 | 
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:896:19: warning: call to main actor-isolated instance method 'collapse(allowPendingApproval:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:899:19: warning: call to main actor-isolated instance method 'collapse(allowPendingApproval:)' in a synchronous nonisolated context [#ActorIsolatedCall]
  613 |     }
  614 | 
  615 |     func collapse(allowPendingApproval: Bool = false) {
@@ -308,20 +308,20 @@ Building for production...
  616 |         let keepsApprovalPending = allowPendingApproval && state.pendingApproval != nil
  617 |         guard fsm.isHeldOpen?() != true || keepsApprovalPending else { return }
      :
- 894 |         // Collapse requests from views (OK button, etc.)
- 895 |         NotificationCenter.default.addObserver(forName: .islandCollapse, object: nil, queue: .main) { [weak self] _ in
- 896 |             self?.collapse()
+ 897 |         // Collapse requests from views (OK button, etc.)
+ 898 |         NotificationCenter.default.addObserver(forName: .islandCollapse, object: nil, queue: .main) { [weak self] _ in
+ 899 |             self?.collapse()
      |                   `- warning: call to main actor-isolated instance method 'collapse(allowPendingApproval:)' in a synchronous nonisolated context [#ActorIsolatedCall]
- 897 |         }
- 898 | 
+ 900 |         }
+ 901 | 
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:902:27: warning: main actor-isolated property 'mode' can not be referenced from a Sendable closure
- 900 |         NotificationCenter.default.addObserver(forName: .openWardrobeFromDesktop, object: nil, queue: .main) { [weak self] _ in
- 901 |             guard let self else { return }
- 902 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:906:27: warning: main actor-isolated property 'mode' can not be referenced from a Sendable closure
+ 904 |             guard let self else { return }
+ 905 |             guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { return }   // white-label: wardrobe is the donor play layer
+ 906 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
      |                           `- warning: main actor-isolated property 'mode' can not be referenced from a Sendable closure
- 903 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
- 904 |                     self.state.view = .overview
+ 907 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+ 908 |                     self.state.view = .overview
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/AppState.swift:11:20: note: property declared here
   9 | 
@@ -331,7 +331,7 @@ Building for production...
  12 |     @Published var view: IslandView = .overview
  13 | 
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:902:21: warning: main actor-isolated property 'state' can not be referenced from a Sendable closure
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:906:21: warning: main actor-isolated property 'state' can not be referenced from a Sendable closure
    7 | 
    8 |     private var islandPanel: IslandPanel!
    9 |     private var state: AppState { AppState.shared }
@@ -339,20 +339,20 @@ Building for production...
   10 | 
   11 |     // State machine (replaces all hover/absence/auto-close timers)
      :
- 900 |         NotificationCenter.default.addObserver(forName: .openWardrobeFromDesktop, object: nil, queue: .main) { [weak self] _ in
- 901 |             guard let self else { return }
- 902 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
+ 904 |             guard let self else { return }
+ 905 |             guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { return }   // white-label: wardrobe is the donor play layer
+ 906 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
      |                     `- warning: main actor-isolated property 'state' can not be referenced from a Sendable closure
- 903 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
- 904 |                     self.state.view = .overview
+ 907 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+ 908 |                     self.state.view = .overview
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:902:59: warning: main actor-isolated property 'view' can not be referenced from a nonisolated autoclosure
- 900 |         NotificationCenter.default.addObserver(forName: .openWardrobeFromDesktop, object: nil, queue: .main) { [weak self] _ in
- 901 |             guard let self else { return }
- 902 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:906:59: warning: main actor-isolated property 'view' can not be referenced from a nonisolated autoclosure
+ 904 |             guard let self else { return }
+ 905 |             guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { return }   // white-label: wardrobe is the donor play layer
+ 906 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
      |                                                           `- warning: main actor-isolated property 'view' can not be referenced from a nonisolated autoclosure
- 903 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
- 904 |                     self.state.view = .overview
+ 907 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+ 908 |                     self.state.view = .overview
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/AppState.swift:12:20: note: property declared here
  10 |     // Island state
@@ -362,7 +362,7 @@ Building for production...
  13 | 
  14 |     // Tasks
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:902:53: warning: main actor-isolated property 'state' can not be referenced from a nonisolated autoclosure
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:906:53: warning: main actor-isolated property 'state' can not be referenced from a nonisolated autoclosure
    7 | 
    8 |     private var islandPanel: IslandPanel!
    9 |     private var state: AppState { AppState.shared }
@@ -370,20 +370,20 @@ Building for production...
   10 | 
   11 |     // State machine (replaces all hover/absence/auto-close timers)
      :
- 900 |         NotificationCenter.default.addObserver(forName: .openWardrobeFromDesktop, object: nil, queue: .main) { [weak self] _ in
- 901 |             guard let self else { return }
- 902 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
+ 904 |             guard let self else { return }
+ 905 |             guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { return }   // white-label: wardrobe is the donor play layer
+ 906 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
      |                                                     `- warning: main actor-isolated property 'state' can not be referenced from a nonisolated autoclosure
- 903 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
- 904 |                     self.state.view = .overview
+ 907 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+ 908 |                     self.state.view = .overview
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:904:32: warning: main actor-isolated property 'view' can not be mutated from a nonisolated context
- 902 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
- 903 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
- 904 |                     self.state.view = .overview
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:908:32: warning: main actor-isolated property 'view' can not be mutated from a nonisolated context
+ 906 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
+ 907 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+ 908 |                     self.state.view = .overview
      |                                `- warning: main actor-isolated property 'view' can not be mutated from a nonisolated context
- 905 |                 }
- 906 |             } else {
+ 909 |                 }
+ 910 |             } else {
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/AppState.swift:12:20: note: mutation of this property is only permitted within the actor
  10 |     // Island state
@@ -393,7 +393,7 @@ Building for production...
  13 | 
  14 |     // Tasks
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:904:26: warning: main actor-isolated property 'state' can not be mutated from a nonisolated context
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:908:26: warning: main actor-isolated property 'state' can not be mutated from a nonisolated context
    7 | 
    8 |     private var islandPanel: IslandPanel!
    9 |     private var state: AppState { AppState.shared }
@@ -401,14 +401,14 @@ Building for production...
   10 | 
   11 |     // State machine (replaces all hover/absence/auto-close timers)
      :
- 902 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
- 903 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
- 904 |                     self.state.view = .overview
+ 906 |             if self.state.mode == .expanded && self.state.view == .wardrobe {
+ 907 |                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+ 908 |                     self.state.view = .overview
      |                          `- warning: main actor-isolated property 'state' can not be mutated from a nonisolated context
- 905 |                 }
- 906 |             } else {
+ 909 |                 }
+ 910 |             } else {
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:907:22: warning: call to main actor-isolated instance method 'expand(to:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:911:22: warning: call to main actor-isolated instance method 'expand(to:)' in a synchronous nonisolated context [#ActorIsolatedCall]
  603 |     }
  604 | 
  605 |     func expand(to view: IslandView) {
@@ -416,35 +416,35 @@ Building for production...
  606 |         state.view = view
  607 |         if state.mode == .expanded {
      :
- 905 |                 }
- 906 |             } else {
- 907 |                 self.expand(to: .wardrobe)
+ 909 |                 }
+ 910 |             } else {
+ 911 |                 self.expand(to: .wardrobe)
      |                      `- warning: call to main actor-isolated instance method 'expand(to:)' in a synchronous nonisolated context [#ActorIsolatedCall]
- 908 |             }
- 909 |         }
+ 912 |             }
+ 913 |         }
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:913:19: warning: call to main actor-isolated instance method 'handleDizzy()' in a synchronous nonisolated context [#ActorIsolatedCall]
- 911 |         // .botDizzy — posted by BotEngine.slap() on 3rd hit; show confused view + recover after 3.3s
- 912 |         NotificationCenter.default.addObserver(forName: .botDizzy, object: nil, queue: .main) { [weak self] _ in
- 913 |             self?.handleDizzy()
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:917:19: warning: call to main actor-isolated instance method 'handleDizzy()' in a synchronous nonisolated context [#ActorIsolatedCall]
+ 915 |         // .botDizzy — posted by BotEngine.slap() on 3rd hit; show confused view + recover after 3.3s
+ 916 |         NotificationCenter.default.addObserver(forName: .botDizzy, object: nil, queue: .main) { [weak self] _ in
+ 917 |             self?.handleDizzy()
      |                   `- warning: call to main actor-isolated instance method 'handleDizzy()' in a synchronous nonisolated context [#ActorIsolatedCall]
- 914 |         }
- 915 | 
+ 918 |         }
+ 919 | 
      :
-1313 |     // MARK: - Dizzy recovery (triggered by BotEngine.slap via .botDizzy)
-1314 | 
-1315 |     private func handleDizzy() {
+1317 |     // MARK: - Dizzy recovery (triggered by BotEngine.slap via .botDizzy)
+1318 | 
+1319 |     private func handleDizzy() {
      |                  `- note: calls to instance method 'handleDizzy()' from outside of its actor context are implicitly asynchronous
-1316 |         let prevView = state.view
-1317 |         state.stateOverride = .dizzy
+1320 |         let prevView = state.view
+1321 |         state.stateOverride = .dizzy
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:1074:28: warning: main actor-isolated property 'lastExternalApp' can not be mutated from a Sendable closure
-1072 |             if let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
-1073 |                app.bundleIdentifier != ourBundle {
-1074 |                 self.state.lastExternalApp = app
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:1078:28: warning: main actor-isolated property 'lastExternalApp' can not be mutated from a Sendable closure
+1076 |             if let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+1077 |                app.bundleIdentifier != ourBundle {
+1078 |                 self.state.lastExternalApp = app
      |                            `- warning: main actor-isolated property 'lastExternalApp' can not be mutated from a Sendable closure
-1075 |             }
-1076 |         }
+1079 |             }
+1080 |         }
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/AppState.swift:27:9: note: mutation of this property is only permitted within the actor
  25 | 
@@ -454,7 +454,7 @@ Building for production...
  28 | 
  29 |     // Bot drag-attach state (hides original bot while ghost follows cursor)
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:1074:22: warning: main actor-isolated property 'state' can not be mutated from a Sendable closure
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:1078:22: warning: main actor-isolated property 'state' can not be mutated from a Sendable closure
    7 | 
    8 |     private var islandPanel: IslandPanel!
    9 |     private var state: AppState { AppState.shared }
@@ -462,12 +462,12 @@ Building for production...
   10 | 
   11 |     // State machine (replaces all hover/absence/auto-close timers)
      :
-1072 |             if let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
-1073 |                app.bundleIdentifier != ourBundle {
-1074 |                 self.state.lastExternalApp = app
+1076 |             if let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+1077 |                app.bundleIdentifier != ourBundle {
+1078 |                 self.state.lastExternalApp = app
      |                      `- warning: main actor-isolated property 'state' can not be mutated from a Sendable closure
-1075 |             }
-1076 |         }
+1079 |             }
+1080 |         }
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/MusicController.swift:302:36: warning: 'activateIgnoringOtherApps' was deprecated in macOS 14.0: ignoringOtherApps is deprecated in macOS 14 and will have no effect. [#DeprecatedDeclaration]
 300 |     func openMusic() {
@@ -537,6 +537,6 @@ Building for production...
 [#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
 [12/14] Write Objects.LinkFileList
 [13/14] Linking Lupy
-Build complete! (389.20s)
+Build complete! (364.69s)
 == built binary (must say arm64):
 /Users/runner/work/lupy/lupy/Mac/.build/arm64-apple-macosx/release/Lupy: Mach-O 64-bit executable arm64
