@@ -6,11 +6,11 @@ PASS dependency released after completion
 PASS manual relay stays 'delivery unconfirmed'
 PASS a bare 'done' claim is not verified — claimOnly
 PASS restart after torn write recovers all committed work — truncated 23 bytes
-PASS backup round-trip preserves state — 112 KB
-PASS 400 durable task writes — 689 ms total (1.7 ms/write incl. fsync)
-PASS ranking + attention over 400+ tasks under 1.5 s — 54 ms
+PASS backup round-trip preserves state — 110 KB
+PASS 400 durable task writes — 683 ms total (1.7 ms/write incl. fsync)
+PASS ranking + attention over 400+ tasks under 1.5 s — 44 ms
 PASS cold reload of all data under 3 s — 33 ms
 PASS Keychain save/load/delete round trip
-INFO resident memory after self-test: 19.3 MB
-INFO duration 1027 ms
+INFO resident memory after self-test: 18.9 MB
+INFO duration 960 ms
 SELFTEST PASSED (0 failure(s))
