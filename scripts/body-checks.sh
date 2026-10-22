@@ -95,6 +95,8 @@ echo "== 6f · cross-reference audit (no imagined APIs in the never-compiled fro
 python3 tools/ui/audit_xref.py | tail -1
 echo "== 6g · text bounds council (dynamic text declares its bound)"
 python3 tools/ui/audit_text.py | tail -2
+echo "== 6h · white-label brand council (donor brand/dev-layer stays invisible)"
+python3 tools/ui/audit_brand.py | tail -2
 python3 tools/ui/audit_ui.py | tail -1
 python3 tools/ui/audit_all.py | tail -1
 python3 tools/ui/audit_micro.py | tail -1

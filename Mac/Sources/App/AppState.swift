@@ -566,6 +566,10 @@ final class AppState: ObservableObject {
            PillCatalog.available.contains(where: { $0.id == v && $0.category == .workspace && !$0.comingSoon }) {
             mainPillId = v
         }
+        // LUPY white-label: the island's home pill is Lupy itself, not a code
+        // editor. A saved editor main pill is honoured only when the donor
+        // developer layer is explicitly opted into (lupyDevHooks).
+        if !ud.bool(forKey: "lupyDevHooks") { mainPillId = "agent_lupy" }
         if let d = ud.data(forKey: "claudePlanUsage"),
            let u = try? JSONDecoder().decode(PlanUsage.self, from: d) { claudePlanUsage = u }
         #if !APPSTORE

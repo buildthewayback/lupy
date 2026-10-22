@@ -29,66 +29,13 @@ struct DesktopBotView: View {
     @ObservedObject var viewState: DesktopBotViewState
 
     var body: some View {
-        TimelineView(.animation(paused: viewState.paused)) { timeline in
-            Canvas { ctx, size in
-                _ = timeline.date   // force redraw every tick (see BotCanvasView)
-
-                // Eye tracking based on the panel's own screen position
-                engine.lookX = tanh((appState.mousePosition.x - viewState.lookOrigin.x) / 260)
-                engine.lookY = -tanh((appState.mousePosition.y - viewState.lookOrigin.y) / 200)
-                engine.moodTarget = MachineVitals.shared.mood
-
-                // Desktop Mochi is always the "main" Mochi — always dressed
-                engine.setOutfit(appState.resolvedOutfit, animated: true)
-
-                // Dance when music plays (same rules as compact mode)
-                let dancing: Bool = {
-                    #if !APPSTORE
-                    let music = appState.musicPlaying && appState.activeIntegrations.contains("integration_music")
-                    let spotify = SpotifyController.shared.isPlaying
-                        && appState.activeIntegrations.contains(SpotifyController.pillId)
-                    guard music || spotify else { return false }
-                    let allowed: Set<BotState> = [.idle, .working, .thinking, .searching, .finished]
-                    return allowed.contains(appState.effectiveState)
-                    #else
-                    return false
-                    #endif
-                }()
-                engine.setDancing(dancing)
-                MochiFrameClock.advance(engine)
-
-                var c = ctx
-                engine.applyDance(&c, size: size)
-
-                // Rigid roll when outfit is present (matches BotCanvasView)
-                if engine.outfit != .none && engine.outfitPresence > 0.05 && abs(engine.roll) > 0.001 {
-                    let center = engine.bodyCenter(size: size)
-                    var rigidCtx = c
-                    rigidCtx.translateBy(x: center.x, y: center.y)
-                    rigidCtx.rotate(by: .radians(engine.roll))
-                    rigidCtx.translateBy(x: -center.x, y: -center.y)
-                    engine.drawHandsBehind(context: rigidCtx, size: size)
-                    engine.drawOutfitBehind(context: rigidCtx, size: size)
-                    engine.draw(context: rigidCtx, size: size)
-                    engine.drawOutfitFront(context: rigidCtx, size: size)
-                } else {
-                    engine.drawHandsBehind(context: c, size: size)
-                    engine.drawOutfitBehind(context: c, size: size)
-                    engine.draw(context: c, size: size)
-                    engine.drawOutfitFront(context: c, size: size)
-                }
-                engine.drawHandsAndExtras(context: c, size: size)
-            }
-        }
+        // LUPY white-label: the desktop companion is OUR character (rig),
+        // following the island's live state — never the donor BotEngine
+        // with outfits and hands. Panel/drag/alert behaviour unchanged.
+        LupyCanvasView(state: LupyStateMapping.state(from: appState.effectiveState),
+                       paused: viewState.paused)
         .scaleEffect(viewState.isHovered ? 1.07 : 1.0)
         .animation(.spring(response: 0.25, dampingFraction: 0.6), value: viewState.isHovered)
-        .onChange(of: appState.effectiveState) { _, newState in
-            engine.setState(newState)
-        }
-        .onAppear {
-            engine.setState(appState.effectiveState, force: true)
-            engine.setOutfit(appState.resolvedOutfit, animated: false)
-        }
     }
 }
 

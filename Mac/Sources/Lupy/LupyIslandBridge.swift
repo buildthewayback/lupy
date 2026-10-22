@@ -1,5 +1,5 @@
 // Lupy — drives Coucou's own island from Lupy's state, without changing its views:
-// - a "Lupy" pill (an agent, like a coding-agent session) whose Mochi state and step ticker show
+// - a "Lupy" pill (an agent, like a coding-agent session) whose character state and step ticker show
 //   what needs you, what is delegated and what Lupy is doing (including computer control);
 // - Lupy's policy approvals on Coucou's approval card (Deny / Allow), answered through
 //   HookServer.sendApprovalDecision, which hands Lupy's cards back here;
@@ -77,8 +77,13 @@ final class LupyIslandBridge {
                 st.addTask(task)
                 if st.mode == .hidden { NotificationCenter.default.post(name: .hookReveal, object: nil) }
             }
-        } else if st.tasks.contains(where: { $0.id == Self.pillId }), card == nil {
-            st.removeTask(id: Self.pillId)
+        } else if let idx = st.tasks.firstIndex(where: { $0.id == Self.pillId }), card == nil {
+            // LUPY white-label: this pill is the island's HOME now (the main pill) —
+            // at rest it stays, calm, instead of vanishing and leaving an
+            // editor's card as the island's face.
+            if st.tasks[idx].state != .idle { st.tasks[idx].state = .idle }
+            let quiet = ["All quiet"]
+            if st.tasks[idx].steps != quiet { st.tasks[idx].steps = quiet; st.tasks[idx].stepIndex = 0 }
         }
         syncApprovalCard(pending)
     }
@@ -105,7 +110,7 @@ final class LupyIslandBridge {
         for item in a.items.prefix(3) { lines.append(TextUtil.truncate(item.title, 70)) }
         if busy { lines.append("Thinking with your cloud model…") }
         if control.isActive { lines.append(control.statusLine) }
-        return lines.isEmpty ? ["All clear"] : lines
+        return lines.isEmpty ? ["All quiet"] : lines
     }
 
     // MARK: - Approvals on Coucou's card

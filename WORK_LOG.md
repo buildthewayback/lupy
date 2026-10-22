@@ -533,3 +533,72 @@ Coucou sizes, icon-first, one installer window, screenshot QA at
   popup train is dead (gated). Fresh-Mac tools path keeps the honest
   modal wait; with the window up, the wait happens inside it.
 - CI photographs Dark AND Light appearances (real screencaptures).
+
+## 2026-10-22 · White-label correction (founder: Coucou = blueprint only)
+
+Founder ran PR #11 and rejected the direction: the product was Coucou's
+developer tool with Lupy pages grafted in ("Mochi", Active-pills editor page,
+coding-session recap, tinted donor faces in page heroes, donor menu-bar icon
+and sounds). Redone as a true white-label on `arena/72661103-lupy`:
+
+- Catalog: all 80 "Mochi" mentions → Lupy (keys+values, 11 locales); the
+  sidebar group "Notch" → "Island"; only the "Based on Coucou by Louis Raillé" credit
+  value still names Coucou (attribution, not branding).
+- Hub: `.pills` page removed from `notchPages`; Settings window rows
+  Active pills/Agents/Chat/Integrations removed; Demo + Weekly-recap
+  GroupBoxes cut from General; status menu loses Demo mode + Weekly recap.
+- Runtime: HookServer, 7 service pollers, crypto/portfolio, Monday recap now
+  start only under defaults `lupyDevHooks=1` (default off) — a general-purpose
+  Lupy never runs the developer layer.
+- Heroes: page-header faces now drawn by the Lupy rig (`LupyRenderer` via a
+  per-walker `LupyCharacterDriver`); troupe motion (walks/hops/shadows) kept.
+- Assets: menu-bar icon forged from the locked outline (`forge_menubar.py`,
+  template silhouette + punched eyes, 18/36 px, `isTemplate` set in code);
+  29 interface sounds synthesized as originals (`forge_sounds.py`); both live
+  in `Mac/LupyAssets/` and the founder build copies ONLY those.
+- New council 6h `tools/ui/audit_brand.py` in body-checks: fails if the donor
+  brand/dev layer returns. BODY GREEN + BETA SATISFIED locally.
+- Internal identifiers (hook protocol keys, defaults keys) intentionally kept:
+  invisible plumbing / saved-state compatibility, exempt by design.
+Next in this redo: engine→island bridge (Louis Raillé island mirrors LupyModel tasks,
+not editor pills), then CI + visual grading of window pages.
+
+### White-label step 2 — the island's home is Lupy
+- `agent_lupy` is now a catalog pill (first entry) AND `defaultMainPillId`;
+  a saved editor main pill is honoured only under `lupyDevHooks` (AppState
+  migration). Focus/mood therefore derive from the bridge's engine mirrors:
+  his tasks in the home card ticker, approval/question/error moods, our
+  15 s word escalation — Coucou mechanics, Lupy content.
+- Bridge keeps the pill at rest (idle, "All quiet") instead of removing it;
+  the card introduces itself as "Your assistant · on this Mac" (no hook/
+  service setup language; `isConfigured` true).
+- Overview others + compact minis filter out donor integration/editor
+  pills unless `lupyDevHooks`; tapping the Lupy pill opens Lupy chat
+  (`openFromIsland`, previously uncalled — now wired in both pill grids).
+
+### White-label step 3 — one character, everywhere
+- Launch greeting: identical timing/lifecycle, rendered by the Lupy rig
+  (sleeping → finished → idle); donor `drawGreeting` uncalled in source.
+- Desktop companion: face swapped to the rig on `effectiveState`; donor
+  engine draw (outfits/hands/dance) removed from the view.
+- Wardrobe (donor outfit play): shortcut + desktop-menu entries gated
+  behind `lupyDevHooks`.
+- Wake phrase answers only to "OK/Hey Lupy" (+ loopy/lupi mis-hearings);
+  recognizer hints + filler strip lists purged of the donor name.
+- About credit corrected: donor engineering = MIT code by Louis Raillé;
+  character/icons/sounds = Lupy originals by The Way Back.
+- Council 6h extended (home pill, filters, greeting/desktop/wake laws).
+Purge step PROVEN: CI run 39700100454 — 3/3 macOS jobs success, 0 build
+errors, launch photo shows white rig heroes + forged menu-bar icon.
+
+### White-label step 4 — asking goes to Lupy
+- Empty island: "Ask Claude" → "Ask Lupy", routing to `.lupyChat` (the donor
+  Claude-chat prompt is no longer the generic ask path). Remaining "Claude"
+  labels live only on donor session surfaces (dev layer, unreachable
+  otherwise); the hooks-install alert fires only from the unlisted Agents
+  settings section.
+- Catalog: dictionary placeholder "Written, e.g. Claude Code" → "…e.g. Lupy".
+CI proofs: purge 39700100454 (3/3, launch photo: white heroes, forged
+menu-bar icon in a real menu bar) and steps 2–3 39701375573 (3/3, 0 build
+errors; overview/compact shots show rig faces + state-glow minis, no
+editor/integration pills).

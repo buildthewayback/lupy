@@ -21,11 +21,11 @@ enum WakePhrase {
     /// preserving the original casing and punctuation of the command portion.
     ///
     /// Accepted patterns (case-insensitive, after phonetic normalisation):
-    /// - "ok coucou" and variants: "okay coucou", "ok cuckoo", "ok kuku", "ok cou cou" …
-    /// - "hey coucou"
+    /// - "ok Lupy" / "hey Lupy" — and the speech engine's common
+    ///   mis-hearings of the name: "loopy", "lupi".
     ///
-    /// Word-boundary search means "euh ok coucou add" matches and returns "add".
-    /// Standalone "coucou" never matches (no preceding "ok"/"hey").
+    /// Word-boundary search means "euh ok lupy add" matches and returns "add".
+    /// Standalone "lupy" never matches (no preceding "ok"/"hey").
     static func split(_ raw: String) -> SplitResult {
         // Split original into whitespace-separated tokens (punctuation stays attached to words)
         let originalWords = raw.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
@@ -34,14 +34,9 @@ enum WakePhrase {
         // Normalise each word independently for wake-phrase matching only
         let normWords = originalWords.map(normWord)
 
-        // Wake phrase patterns (normalised).
-        // "ok cou cou" handled as a 3-token pattern in case the STT splits it.
+        // Wake phrase patterns (normalised). LUPY white-label: only Lupy's
+        // own name wakes it ("loopy"/"lupi" are STT mis-hearings of "Lupy").
         let patterns: [[String]] = [
-            ["ok",  "coucou"],
-            ["ok",  "cou", "cou"],
-            ["hey", "coucou"],
-            ["hey", "cou", "cou"],
-            // Lupy: its own name wakes it too ("loopy", "lupi": common transcriptions of "Lupy").
             ["ok",  "lupy"], ["hey", "lupy"],
             ["ok",  "loopy"], ["hey", "loopy"],
             ["ok",  "lupi"], ["hey", "lupi"],

@@ -69,6 +69,9 @@ enum PillCatalog {
     // All declared pills in display order.
     static let all: [PillDefinition] = [
         // ── Where you code ───────────────────────────────────────────────────
+        // ── Lupy — the white-label home pill (everything below is the donor catalog, dev opt-in) ──
+        .init(id: "agent_lupy",          name: "Lupy",        color: "#FB923C",
+              category: .workspace, subtitle: "Assistant",    source: .agent),
         .init(id: "integration_claude",  name: "VS Code",     color: "#F5F6F8",
               category: .workspace, subtitle: "Integration",  source: .claudeCode),
         .init(id: "agent_cursor",        name: "Cursor",      color: "#C0C4CC",
@@ -142,7 +145,7 @@ enum PillCatalog {
     }
 
     /// Default ID for the always-on main workspace pill.
-    static let defaultMainPillId = "integration_claude"
+    static let defaultMainPillId = "agent_lupy"   // LUPY white-label: home is Lupy, not an editor
 
     /// Looks up a definition by task ID (nil if not in catalog).
     static func definition(for id: String) -> PillDefinition? {

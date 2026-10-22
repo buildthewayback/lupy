@@ -329,8 +329,9 @@ struct EmptyStateView: View {
                         .foregroundColor(Color(hex: "#9398A1"))
                 }
                 Spacer()
-                PrimaryButton("Ask Claude") {
-                    state.view = .prompt
+                // LUPY: asking goes to Lupy's own conversation, never a donor chat brain.
+                PrimaryButton("Ask Lupy") {
+                    state.view = .lupyChat
                 }
             }
             .padding(.leading, 118)
@@ -1903,6 +1904,8 @@ struct IntegrationCardView: View {
             #else
             return false
             #endif
+        case "agent_lupy":
+            return true  // Lupy itself: always ready, nothing to set up
         case "agent_claude-desktop":
             return true  // nothing to install: the relay tags desktop sessions on its own
         case "integration_music":
@@ -2085,6 +2088,7 @@ struct IntegrationCardView: View {
             if isHooks { return String(localized: "Hooks installed") }
             // No key or poller behind this pill: it only reflects hook events.
             if task.id == "agent_claude-desktop" { return String(localized: "Ready · no setup needed") }
+            if task.id == "agent_lupy" { return String(localized: "Your assistant · on this Mac") }
             if isAI {
                 let provider = ChatProvider(pillID: task.id)!
                 if provider.isLocal {
@@ -4033,9 +4037,11 @@ struct TickerShimmerText: View {
 struct AgentPillsView: View {
     @ObservedObject var state: AppState
     @State private var swapping = false
+    // LUPY white-label: donor integration/editor pills render only with the dev layer on.
+    @AppStorage("lupyDevHooks") private var devHooks = false
 
     private var others: [AgentTask] {
-        state.tasks.filter { $0.id != state.focusId }
+        state.tasks.filter { $0.id != state.focusId && (devHooks || $0.id == "agent_lupy" || !$0.isIntegration) }
     }
 
     private var displayTasks: [AgentTask] {
@@ -4069,18 +4075,28 @@ struct AgentPillsView: View {
                         }
                     } else {
                         AgentPill(task: task, state: state, swapping: $swapping) {
+                            if task.id == LupyIslandBridge.pillId {
+                                state.setFocus(task.id)
+                                LupyIslandBridge.shared.openFromIsland()
+                            } else {
+                                swapping = true
+                                state.setFocus(task.id)
+                                SoundEngine.shared.play("blip")
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { swapping = false }
+                            }
+                        }
+                    }
+                    #else
+                    AgentPill(task: task, state: state, swapping: $swapping) {
+                        if task.id == LupyIslandBridge.pillId {
+                            state.setFocus(task.id)
+                            LupyIslandBridge.shared.openFromIsland()
+                        } else {
                             swapping = true
                             state.setFocus(task.id)
                             SoundEngine.shared.play("blip")
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { swapping = false }
                         }
-                    }
-                    #else
-                    AgentPill(task: task, state: state, swapping: $swapping) {
-                        swapping = true
-                        state.setFocus(task.id)
-                        SoundEngine.shared.play("blip")
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { swapping = false }
                     }
                     #endif
                 }

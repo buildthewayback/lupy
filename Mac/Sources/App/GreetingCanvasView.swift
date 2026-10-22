@@ -642,13 +642,11 @@ struct GreetingCanvasView: View {
     var body: some View {
         TimelineView(.animation) { timeline in
             let t = timeline.date.timeIntervalSince(startDate)
-            Canvas { context, size in
-                context.withCGContext { cgCtx in
-                    drawGreeting(cgCtx, size: size, t: t, tc: tc,
-                                 compact: IslandRestingLayout(width: state.notchWidth + 160,
-                                                              height: state.notchHeight))
-                }
-            }
+            // LUPY white-label: the launch greeting is OUR character from the
+            // rig — never the donor's choreography canvas. Lifecycle unchanged.
+            LupyCanvasView(state: greetState(t), paused: false)
+                .frame(width: 190, height: 150)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             .onChange(of: !greetFired && t >= GT.end && tc >= GT.autoLeave) { _, trigger in
                 if trigger { fireGreetComplete() }
             }
@@ -677,6 +675,13 @@ struct GreetingCanvasView: View {
             doneWork?.cancel(); doneWork = nil
             SoundEngine.shared.fadeOut("greeting", duration: 0.25)
         }
+    }
+
+    /// The hello arc, in rig states only: asleep → delighted → calm.
+    private func greetState(_ t: Double) -> LupyCharacterState {
+        if t < GT.pop0 { return .sleeping }
+        if t < GT.content0 { return .finished }
+        return .idle
     }
 
     private func fireGreetComplete() {

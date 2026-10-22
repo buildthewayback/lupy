@@ -99,8 +99,9 @@ printf 'APPL????' > "$APP/Contents/PkgInfo"
 # noticing; body-checks step 6a now refuses green if it ever goes missing.)
 cp LupyAppIcon/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 # named image lookups read loose files in Resources: give the icon its catalogue name
-cp CoucouAssets/Assets.xcassets/MenuBarIcon.imageset/menubar@2x.png "$APP/Contents/Resources/MenuBarIcon.png"
-cp -R CoucouAssets/sounds "$APP/Contents/Resources/sounds"
+cp LupyAssets/MenuBarIcon.png "$APP/Contents/Resources/MenuBarIcon.png"
+cp "LupyAssets/MenuBarIcon@2x.png" "$APP/Contents/Resources/MenuBarIcon@2x.png"
+cp -R LupyAssets/sounds "$APP/Contents/Resources/sounds"
 codesign --force -s - "$APP" 2>/dev/null || true
 if [ "${1:-}" = "--install" ]; then
   echo "== installing to /Applications"

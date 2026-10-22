@@ -636,8 +636,9 @@ struct LupyAboutSettings: View {
     var body: some View {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.2.0"
         LupySettingsCard(title: "About Lupy", subtitle: "") {
-            // Lupy: the character is Lupy now; the credit stays because the code and artwork are Louis Raillé's.
-            Text("Lupy \(version) — your assistant. Built on the open-source Coucou app by Louis Raillé (github.com/Louis-CFM/coucou); its code is MIT-licensed (notice inside the app). Lupy's character, icon and sounds are © Louis Raillé and are included only in this private build for your own Mac — not for sharing or publishing.")
+            // Lupy: honest credits — the donor's ENGINEERING (MIT code) is
+            // credited; the character, icons and sounds are Lupy originals.
+            Text("Lupy \(version) — your assistant. The notch and island engineering builds on the open-source Coucou app by Louis Raillé (github.com/Louis-CFM/coucou), whose code is MIT-licensed (notice inside the app). Lupy's character, app icon, menu-bar icon and sounds are original works made for Lupy.")
                 .font(.system(size: 11.5)).foregroundColor(LupyTheme.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }

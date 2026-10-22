@@ -13,10 +13,10 @@ enum HubPage: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     static let flowPages: [HubPage] = [.dictation, .notes, .insights, .dictionary, .snippets, .styles, .settings]
-    // Lupy: the coding-agent and chat-brain setups (agents/chat/integrations) are hidden —
+    // Lupy: the coding-agent and chat-brain setups (agents/chat/integrations/pills) are hidden —
     // the founder doesn't use coding tools and the ONE place for AI keys is Lupy → Assistant.
     // Their sections still exist in SettingsView; only the sidebar entries are gone.
-    static let notchPages: [HubPage] = [.general, .pills, .voice, .shortcuts]
+    static let notchPages: [HubPage] = [.general, .voice, .shortcuts]
 
     /// The section of Settings this page shows, for the notch's pages.
     var settingsSection: String? {

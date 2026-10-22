@@ -19,19 +19,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi and your Mac"
+            "value" : "Lupy and your Mac"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi y tu Mac"
+            "value" : "Lupy y tu Mac"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi et ton Mac"
+            "value" : "Lupy et ton Mac"
           }
         },
         "hi" : {
@@ -43,13 +43,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi dan Mac-mu"
+            "value" : "Lupy dan Mac-mu"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi e seu Mac"
+            "value" : "Lupy e seu Mac"
           }
         },
         "ru" : {
@@ -61,7 +61,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi 和你的 Mac"
+            "value" : "Lupy 和你的 Mac"
           }
         }
       }
@@ -84,19 +84,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi reacts to your Mac"
+            "value" : "Lupy reacts to your Mac"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi reacciona a tu Mac"
+            "value" : "Lupy reacciona a tu Mac"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi réagit à ton Mac"
+            "value" : "Lupy réagit à ton Mac"
           }
         },
         "hi" : {
@@ -108,13 +108,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi bereaksi pada Mac-mu"
+            "value" : "Lupy bereaksi pada Mac-mu"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi reage ao seu Mac"
+            "value" : "Lupy reage ao seu Mac"
           }
         },
         "ru" : {
@@ -126,7 +126,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi 会对你的 Mac 做出反应"
+            "value" : "Lupy 会对你的 Mac 做出反应"
           }
         }
       }
@@ -149,19 +149,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "He sweats when the processor is at full load, flushes when the Mac is hot, puffs up when memory is short and gets sleepy when the battery is low. Point at Mochi to see why. Read only while Mochi is on screen; nothing leaves your Mac."
+            "value" : "Lupy sweats when the processor is at full load, flushes when the Mac is hot, puffs up when memory is short and gets sleepy when the battery is low. Point at Lupy to see why. Read only while Lupy is on screen; nothing leaves your Mac."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suda cuando el procesador va al máximo, se pone rojo cuando el Mac se calienta, se hincha cuando falta memoria y le entra sueño cuando la batería está baja. Señala a Mochi para ver por qué. Solo se lee mientras Mochi está en pantalla; nada sale de tu Mac."
+            "value" : "Suda cuando el procesador va al máximo, se pone rojo cuando el Mac se calienta, se hincha cuando falta memoria y le entra sueño cuando la batería está baja. Señala a Lupy para ver por qué. Solo se lee mientras Lupy está en pantalla; nada sale de tu Mac."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il transpire quand le processeur est à fond, rougit quand le Mac chauffe, gonfle quand la mémoire manque et s'endort quand la batterie est faible. Pointe Mochi pour voir pourquoi. Lu seulement quand Mochi est à l'écran ; rien ne quitte ton Mac."
+            "value" : "Il transpire quand le processeur est à fond, rougit quand le Mac chauffe, gonfle quand la mémoire manque et s'endort quand la batterie est faible. Pointe Lupy pour voir pourquoi. Lu seulement quand Lupy est à l'écran ; rien ne quitte ton Mac."
           }
         },
         "hi" : {
@@ -173,13 +173,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dia berkeringat saat prosesor bekerja penuh, memerah saat Mac panas, menggembung saat memori kurang, dan mengantuk saat baterai lemah. Arahkan penunjuk ke Mochi untuk melihat alasannya. Hanya dibaca saat Mochi ada di layar; tidak ada yang keluar dari Mac-mu."
+            "value" : "Dia berkeringat saat prosesor bekerja penuh, memerah saat Mac panas, menggembung saat memori kurang, dan mengantuk saat baterai lemah. Arahkan penunjuk ke Lupy untuk melihat alasannya. Hanya dibaca saat Lupy ada di layar; tidak ada yang keluar dari Mac-mu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ele sua quando o processador está no máximo, fica vermelho quando o Mac esquenta, incha quando falta memória e fica com sono quando a bateria está fraca. Aponte para o Mochi para ver por quê. Só é lido enquanto o Mochi está na tela; nada sai do seu Mac."
+            "value" : "Ele sua quando o processador está no máximo, fica vermelho quando o Mac esquenta, incha quando falta memória e fica com sono quando a bateria está fraca. Aponte para o Lupy para ver por quê. Só é lido enquanto o Lupy está na tela; nada sai do seu Mac."
           }
         },
         "ru" : {
@@ -191,7 +191,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "处理器满载时他会流汗，Mac 发热时他会脸红，内存不足时他会鼓起来，电量低时他会犯困。把指针放到 Mochi 上就能看到原因。仅在 Mochi 显示时读取，所有数据都留在你的 Mac 上。"
+            "value" : "处理器满载时他会流汗，Mac 发热时他会脸红，内存不足时他会鼓起来，电量低时他会犯困。把指针放到 Lupy 上就能看到原因。仅在 Lupy 显示时读取，所有数据都留在你的 Mac 上。"
           }
         }
       }
@@ -929,19 +929,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Captured. Mochi has it."
+            "value" : "Captured. Lupy has it."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Capturado. Mochi lo tiene."
+            "value" : "Capturado. Lupy lo tiene."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Capturé. Mochi l'a avalé."
+            "value" : "Capturé. Lupy l'a avalé."
           }
         },
         "hi" : {
@@ -953,13 +953,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tertangkap. Mochi menyimpannya."
+            "value" : "Tertangkap. Lupy menyimpannya."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Capturado. O Mochi pegou."
+            "value" : "Capturado. O Lupy pegou."
           }
         },
         "ru" : {
@@ -971,7 +971,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "截好了，Mochi 吞下了它。"
+            "value" : "截好了，Lupy 吞下了它。"
           }
         }
       }
@@ -5618,19 +5618,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code, Codex and the other agents Mochi follows."
+            "value" : "Claude Code, Codex and the other agents Lupy follows."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code, Codex y los demás agentes que sigue Mochi."
+            "value" : "Claude Code, Codex y los demás agentes que sigue Lupy."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code, Codex et les autres agents que Mochi suit."
+            "value" : "Claude Code, Codex et les autres agents que Lupy suit."
           }
         },
         "hi" : {
@@ -5642,13 +5642,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code, Codex, dan agen lain yang diikuti Mochi."
+            "value" : "Claude Code, Codex, dan agen lain yang diikuti Lupy."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code, Codex e os outros agentes que o Mochi acompanha."
+            "value" : "Claude Code, Codex e os outros agentes que o Lupy acompanha."
           }
         },
         "ru" : {
@@ -5660,7 +5660,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi 关注的 Claude Code、Codex 和其他智能体。"
+            "value" : "Lupy 关注的 Claude Code、Codex 和其他智能体。"
           }
         }
       }
@@ -5748,19 +5748,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi, his sounds and how the notch behaves."
+            "value" : "Lupy, sounds and how the island behaves."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi, sus sonidos y cómo se comporta el notch."
+            "value" : "Lupy, sus sonidos y cómo se comporta el notch."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi, ses sons et le comportement du notch."
+            "value" : "Lupy, ses sons et le comportement du notch."
           }
         },
         "hi" : {
@@ -5772,13 +5772,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi, suaranya, dan perilaku notch."
+            "value" : "Lupy, suaranya, dan perilaku notch."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O Mochi, seus sons e o comportamento do notch."
+            "value" : "O Lupy, seus sons e o comportamento do notch."
           }
         },
         "ru" : {
@@ -5790,7 +5790,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi、它的声音和刘海的行为。"
+            "value" : "Lupy、它的声音和刘海的行为。"
           }
         }
       }
@@ -6008,19 +6008,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Lupy », Mochi's voice and the dictation key."
+            "value" : "« OK Lupy », Lupy's voice and the dictation key."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "«OK Lupy», la voz de Mochi y la tecla de dictado."
+            "value" : "«OK Lupy», la voz de Lupy y la tecla de dictado."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« OK Lupy », la voix de Mochi et la touche de dictée."
+            "value" : "« OK Lupy », la voix de Lupy et la touche de dictée."
           }
         },
         "hi" : {
@@ -6032,13 +6032,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“OK Lupy”, suara Mochi, dan tombol dikte."
+            "value" : "“OK Lupy”, suara Lupy, dan tombol dikte."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“OK Lupy”, a voz do Mochi e a tecla de ditado."
+            "value" : "“OK Lupy”, a voz do Lupy e a tecla de ditado."
           }
         },
         "ru" : {
@@ -6050,7 +6050,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "“OK Lupy”、Mochi 的声音和听写按键。"
+            "value" : "“OK Lupy”、Lupy 的声音和听写按键。"
           }
         }
       }
@@ -7438,7 +7438,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notch"
+            "value" : "Island"
           }
         },
         "es" : {
@@ -11403,7 +11403,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Written, e.g. Claude Code"
+            "value" : "Written, e.g. Lupy"
           }
         },
         "es" : {
@@ -19530,66 +19530,66 @@
         }
       }
     },
-    "Drop a file named like one of Mochi's sounds (finish.wav, approval.mp3, greet.m4a…) in the sounds folder to replace it, then Reload." : {
+    "Drop a file named like one of Lupy's sounds (finish.wav, approval.mp3, greet.m4a…) in the sounds folder to replace it, then Reload." : {
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ضع في مجلد الأصوات ملفًا يحمل اسم أحد أصوات Mochi (finish.wav وapproval.mp3 وgreet.m4a…) ليحل محله، ثم أعد التحميل."
+            "value" : "ضع في مجلد الأصوات ملفًا يحمل اسم أحد أصوات Lupy (finish.wav وapproval.mp3 وgreet.m4a…) ليحل محله، ثم أعد التحميل."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi-র কোনো সাউন্ডের নামে একটি ফাইল (finish.wav, approval.mp3, greet.m4a…) সাউন্ড ফোল্ডারে রাখুন, সেটি বদলে যাবে; তারপর Reload করুন।"
+            "value" : "Lupy-র কোনো সাউন্ডের নামে একটি ফাইল (finish.wav, approval.mp3, greet.m4a…) সাউন্ড ফোল্ডারে রাখুন, সেটি বদলে যাবে; তারপর Reload করুন।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Drop a file named like one of Mochi's sounds (finish.wav, approval.mp3, greet.m4a…) in the sounds folder to replace it, then Reload."
+            "value" : "Drop a file named like one of Lupy's sounds (finish.wav, approval.mp3, greet.m4a…) in the sounds folder to replace it, then Reload."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deja en la carpeta de sonidos un archivo con el nombre de uno de los sonidos de Mochi (finish.wav, approval.mp3, greet.m4a…) para reemplazarlo y luego recarga."
+            "value" : "Deja en la carpeta de sonidos un archivo con el nombre de uno de los sonidos de Lupy (finish.wav, approval.mp3, greet.m4a…) para reemplazarlo y luego recarga."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Déposez dans le dossier des sons un fichier nommé comme l'un des sons de Mochi (finish.wav, approval.mp3, greet.m4a…) pour le remplacer, puis rechargez."
+            "value" : "Déposez dans le dossier des sons un fichier nommé comme l'un des sons de Lupy (finish.wav, approval.mp3, greet.m4a…) pour le remplacer, puis rechargez."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi की किसी साउंड के नाम वाली फ़ाइल (finish.wav, approval.mp3, greet.m4a…) साउंड फ़ोल्डर में रखें, वह उसकी जगह ले लेगी; फिर Reload करें।"
+            "value" : "Lupy की किसी साउंड के नाम वाली फ़ाइल (finish.wav, approval.mp3, greet.m4a…) साउंड फ़ोल्डर में रखें, वह उसकी जगह ले लेगी; फिर Reload करें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Taruh file bernama seperti salah satu suara Mochi (finish.wav, approval.mp3, greet.m4a…) di folder suara untuk menggantinya, lalu muat ulang."
+            "value" : "Taruh file bernama seperti salah satu suara Lupy (finish.wav, approval.mp3, greet.m4a…) di folder suara untuk menggantinya, lalu muat ulang."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coloque na pasta de sons um arquivo com o nome de um dos sons do Mochi (finish.wav, approval.mp3, greet.m4a…) para substituí-lo e depois recarregue."
+            "value" : "Coloque na pasta de sons um arquivo com o nome de um dos sons do Lupy (finish.wav, approval.mp3, greet.m4a…) para substituí-lo e depois recarregue."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Положите в папку звуков файл с именем одного из звуков Mochi (finish.wav, approval.mp3, greet.m4a…), чтобы заменить его, затем перезагрузите."
+            "value" : "Положите в папку звуков файл с именем одного из звуков Lupy (finish.wav, approval.mp3, greet.m4a…), чтобы заменить его, затем перезагрузите."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在声音文件夹中放入与 Mochi 某个声音同名的文件（finish.wav、approval.mp3、greet.m4a…）即可替换它，然后重新载入。"
+            "value" : "在声音文件夹中放入与 Lupy 某个声音同名的文件（finish.wav、approval.mp3、greet.m4a…）即可替换它，然后重新载入。"
           }
         }
       }
@@ -22495,61 +22495,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "نقل Mochi إلى Dynamic Island في iPhone عند إغلاق Mac"
+            "value" : "نقل Lupy إلى Dynamic Island في iPhone عند إغلاق Mac"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mac লক থাকলে Mochi-কে আমার iPhone-এর Dynamic Island-এ নিয়ে যান"
+            "value" : "Mac লক থাকলে Lupy-কে আমার iPhone-এর Dynamic Island-এ নিয়ে যান"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Move Mochi to my iPhone's Dynamic Island when my Mac is locked"
+            "value" : "Move Lupy to my iPhone's Dynamic Island when my Mac is locked"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mover a Mochi a la Dynamic Island de mi iPhone cuando mi Mac esté bloqueado"
+            "value" : "Mover a Lupy a la Dynamic Island de mi iPhone cuando mi Mac esté bloqueado"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Déplacer Mochi vers la Dynamic Island de mon iPhone quand mon Mac est verrouillé"
+            "value" : "Déplacer Lupy vers la Dynamic Island de mon iPhone quand mon Mac est verrouillé"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mac लॉक होने पर Mochi को मेरे iPhone की Dynamic Island पर ले जाएं"
+            "value" : "Mac लॉक होने पर Lupy को मेरे iPhone की Dynamic Island पर ले जाएं"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pindahkan Mochi ke Dynamic Island iPhone saya saat Mac terkunci"
+            "value" : "Pindahkan Lupy ke Dynamic Island iPhone saya saat Mac terkunci"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mover o Mochi para a Dynamic Island do meu iPhone quando meu Mac estiver bloqueado"
+            "value" : "Mover o Lupy para a Dynamic Island do meu iPhone quando meu Mac estiver bloqueado"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Переносить Mochi на Dynamic Island моего iPhone, когда Mac заблокирован"
+            "value" : "Переносить Lupy на Dynamic Island моего iPhone, когда Mac заблокирован"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mac 锁定时将 Mochi 移至我 iPhone 的灵动岛"
+            "value" : "Mac 锁定时将 Lupy 移至我 iPhone 的灵动岛"
           }
         }
       }
@@ -24945,7 +24945,7 @@
     "Ollama" : {
 
     },
-    "On a screen without a notch, Mochi sits in a small bar at the top. Follow the mouse moves it to your cursor's screen while it is closed." : {
+    "On a screen without a notch, Lupy sits in a small bar at the top. Follow the mouse moves it to your cursor's screen while it is closed." : {
 
     },
     "Open" : {
@@ -32907,61 +32907,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi على / إيقاف سطح المكتب"
+            "value" : "Lupy على / إيقاف سطح المكتب"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi ডেস্কটপে চালু / বন্ধ"
+            "value" : "Lupy ডেস্কটপে চালু / বন্ধ"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi to desktop on/off"
+            "value" : "Lupy to desktop on/off"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi en el escritorio sí / no"
+            "value" : "Lupy en el escritorio sí / no"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi sur le bureau oui / non"
+            "value" : "Lupy sur le bureau oui / non"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi डेस्कटॉप पर चालू / बंद"
+            "value" : "Lupy डेस्कटॉप पर चालू / बंद"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi di desktop ya / tidak"
+            "value" : "Lupy di desktop ya / tidak"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi na área de trabalho sim / não"
+            "value" : "Lupy na área de trabalho sim / não"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi на рабочем столе вкл / выкл"
+            "value" : "Lupy на рабочем столе вкл / выкл"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mochi 桌面开/关"
+            "value" : "Lupy 桌面开/关"
           }
         }
       }
@@ -33111,7 +33111,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notch shortcuts — active when the notch is in front"
+            "value" : "Island shortcuts — active when the island is in front"
           }
         },
         "es" : {

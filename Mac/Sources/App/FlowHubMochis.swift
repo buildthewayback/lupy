@@ -63,6 +63,8 @@ final class HubMochiTroupe: ObservableObject {
     @MainActor final class Walker {
         let spec: HubMochiSpec
         let engine: BotEngine
+        /// LUPY white-label: the FACE is drawn by our own rig; the donor BotEngine only keeps time for walks and hops.
+        let lupyDriver = LupyCharacterDriver()
         var x: CGFloat
         var target: CGFloat
         var speed: CGFloat = 0.06
@@ -78,6 +80,8 @@ final class HubMochiTroupe: ObservableObject {
             if spec.outfit != .none { e.setOutfit(spec.outfit, animated: false) }
             if spec.state != .idle { e.setState(spec.state, force: true) }
             engine = e
+            lupyDriver.set(state: LupyStateMapping.state(from: spec.state))
+            lupyDriver.resume()
             x = spec.start
             target = spec.start
             restUntil = CACurrentMediaTime() + Double.random(in: 0.5...3)
@@ -170,7 +174,9 @@ final class HubMochiTroupe: ObservableObject {
             }
             var c = context
             c.translateBy(x: cx - w / 2, y: size.height - w * 0.92 - lift)
-            actor.engine.draw(context: c, size: CGSize(width: w, height: w))
+            // LUPY white-label: heroes are white Lupys from our rig — never tinted donor bots.
+            let frame = actor.lupyDriver.snapshot(at: Date(), size: CGSize(width: w, height: w))
+            LupyRenderer.draw(frame, state: nil, statusBubble: false, in: &c)
         }
     }
 }

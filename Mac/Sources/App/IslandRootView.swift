@@ -696,9 +696,11 @@ struct ClaudePlanHeaderPill: View {
 
 struct CompactMiniGrid: View {
     @ObservedObject var state: AppState
+    // LUPY white-label: donor integration/editor minis render only with the dev layer on.
+    @AppStorage("lupyDevHooks") private var devHooks = false
 
     private var others: [AgentTask] {
-        Array(state.tasks.filter { $0.id != state.focusId }.prefix(4))
+        Array(state.tasks.filter { $0.id != state.focusId && (devHooks || $0.id == "agent_lupy" || !$0.isIntegration) }.prefix(4))
     }
 
     var body: some View {
