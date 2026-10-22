@@ -533,3 +533,32 @@ Coucou sizes, icon-first, one installer window, screenshot QA at
   popup train is dead (gated). Fresh-Mac tools path keeps the honest
   modal wait; with the window up, the wait happens inside it.
 - CI photographs Dark AND Light appearances (real screencaptures).
+
+## 2026-10-22 · White-label correction (founder: Coucou = blueprint only)
+
+Founder ran PR #11 and rejected the direction: the product was Coucou's
+developer tool with Lupy pages grafted in ("Mochi", Active-pills editor page,
+coding-session recap, tinted donor faces in page heroes, donor menu-bar icon
+and sounds). Redone as a true white-label on `arena/72661103-lupy`:
+
+- Catalog: all 80 "Mochi" mentions → Lupy (keys+values, 11 locales); the
+  sidebar group "Notch" → "Island"; only the "Based on Coucou by Louis Raillé" credit
+  value still names Coucou (attribution, not branding).
+- Hub: `.pills` page removed from `notchPages`; Settings window rows
+  Active pills/Agents/Chat/Integrations removed; Demo + Weekly-recap
+  GroupBoxes cut from General; status menu loses Demo mode + Weekly recap.
+- Runtime: HookServer, 7 service pollers, crypto/portfolio, Monday recap now
+  start only under defaults `lupyDevHooks=1` (default off) — a general-purpose
+  Lupy never runs the developer layer.
+- Heroes: page-header faces now drawn by the Lupy rig (`LupyRenderer` via a
+  per-walker `LupyCharacterDriver`); troupe motion (walks/hops/shadows) kept.
+- Assets: menu-bar icon forged from the locked outline (`forge_menubar.py`,
+  template silhouette + punched eyes, 18/36 px, `isTemplate` set in code);
+  29 interface sounds synthesized as originals (`forge_sounds.py`); both live
+  in `Mac/LupyAssets/` and the founder build copies ONLY those.
+- New council 6h `tools/ui/audit_brand.py` in body-checks: fails if the donor
+  brand/dev layer returns. BODY GREEN + BETA SATISFIED locally.
+- Internal identifiers (hook protocol keys, defaults keys) intentionally kept:
+  invisible plumbing / saved-state compatibility, exempt by design.
+Next in this redo: engine→island bridge (Louis Raillé island mirrors LupyModel tasks,
+not editor pills), then CI + visual grading of window pages.

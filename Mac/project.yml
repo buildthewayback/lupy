@@ -71,7 +71,7 @@ targets:
         type: group
       - path: CoucouAssets/Assets.xcassets
         buildPhase: resources
-      - path: CoucouAssets/sounds
+      - path: LupyAssets/sounds
         buildPhase: resources
         type: folder
       - path: Resources/Localizable.xcstrings

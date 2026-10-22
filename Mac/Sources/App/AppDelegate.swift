@@ -114,6 +114,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem?.button else { return }
         button.image = NSImage(named: "MenuBarIcon") ?? NSImage(systemSymbolName: "circle.fill", accessibilityDescription: "Lupy")
+        button.image?.isTemplate = true   // LUPY: our own forged template icon tints with the menu bar
         button.image?.size = NSSize(width: 24, height: 18)
         button.image?.accessibilityDescription = "Lupy"
         button.image?.isTemplate = true
@@ -131,11 +132,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(.separator())
         let demoItem = NSMenuItem(title: NSLocalizedString("Demo mode", comment: ""), action: #selector(toggleDemoMode), keyEquivalent: "")
         demoMenuItem = demoItem
-        menu.addItem(demoItem)
-        menu.addItem(.separator())
         menu.addItem(withTitle: NSLocalizedString("Open Lupy", comment: ""), action: #selector(openIsland), keyEquivalent: "")
         menu.addItem(.separator())
-        menu.addItem(withTitle: NSLocalizedString("Weekly recap", comment: ""), action: #selector(openWeeklyRecap), keyEquivalent: "")
         #if !APPSTORE
         menu.addItem(withTitle: String(localized: "hub.menu"), action: #selector(openFlowHub), keyEquivalent: "")
         #endif
@@ -256,6 +254,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// On Monday ≥ 8 am, show the recap card once (if there is activity to display).
     /// Called from greetComplete, SessionStart/UserPromptSubmit hooks, and on wake.
     func checkMondayRecap() {
+        guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { return }   // donor coding recap: opt-in only
         let cal = Calendar(identifier: .iso8601)
         let now = Date()
         // weekday in ISO 8601 calendar: 2 = Monday
@@ -297,7 +296,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         islandController = IslandWindowController()
         islandController?.showWindow(nil)
         islandController?.fsm.launch()
-        HookServer.shared.start()
+        if UserDefaults.standard.bool(forKey: "lupyDevHooks") { HookServer.shared.start() }   // LUPY white-label: donor dev hooks off unless opted in
         // ONE-NOTCH LAW (founder, 2026-10-22 — after seeing two pills on his own
         // screen): the v0.2 Coucou island above is the ONLY island. The LUPY 3
         // director's twin window is retired; it still compiles and can be revived
@@ -315,13 +314,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         _ = VoiceEngine.shared  // registers system observers; starts mic only if the user enabled voice
         FlowDictation.shared.start()  // watches the dictation key only if Flow dictation is on
         #endif
-        N8nPoller.shared.start()
-        VercelPoller.shared.start()
-        ResendPoller.shared.start()
-        GithubPoller.shared.start()
-        StripePoller.shared.start()
-        CalcomPoller.shared.start()
-        NotionPoller.shared.start()
+        if UserDefaults.standard.bool(forKey: "lupyDevHooks") {
+            N8nPoller.shared.start()
+            VercelPoller.shared.start()
+            ResendPoller.shared.start()
+            GithubPoller.shared.start()
+            StripePoller.shared.start()
+            CalcomPoller.shared.start()
+            NotionPoller.shared.start()
+        }
         NotificationCenter.default.addObserver(self, selector: #selector(openSettingsFromNotification(_:)),
                                                name: .openFullSettings, object: nil)
         // After the greeting ends, fly Mochi back to the desktop if it was there at last quit
@@ -342,8 +343,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         _ = SpotifyController.shared
         MailController.shared.start()
         #endif
-        CryptoController.shared.start()
-        PortfolioController.shared.start()
+        if UserDefaults.standard.bool(forKey: "lupyDevHooks") {
+            CryptoController.shared.start()
+            PortfolioController.shared.start()
+        }
     }
 }
 

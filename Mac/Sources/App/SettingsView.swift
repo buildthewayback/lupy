@@ -186,10 +186,6 @@ struct SettingsView: View {
                         set: { if let v = $0 { selectedSection = v; statusMessage = "" } }
                     )) {
                         SettingsSidebarRow(title: "General",      icon: "gearshape.fill",                    color: "#8E939C").tag("general")
-                        SettingsSidebarRow(title: "Active pills", icon: "square.grid.2x2.fill",              color: "#F5A524").tag("activepills")
-                        SettingsSidebarRow(title: "Agents",       icon: "terminal.fill",                     color: "#3B9EFF").tag("agents")
-                        SettingsSidebarRow(title: "Chat",         icon: "bubble.left.and.bubble.right.fill", color: "#E07950").tag("chat")
-                        SettingsSidebarRow(title: "Integrations", icon: "puzzlepiece.extension.fill",        color: "#7C5CFF").tag("integrations")
                         #if !APPSTORE
                         SettingsSidebarRow(title: "Voice",        icon: "mic.fill",                          color: "#F97316").tag("voice")
                         #endif
@@ -289,21 +285,6 @@ struct SettingsView: View {
     // MARK: - General section
 
     @ViewBuilder private var generalSection: some View {
-        GroupBox(String(localized: "demo.groupbox.title")) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(String(localized: "demo.description"))
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Button(demoEngine.isActive ? String(localized: "demo.stop") : String(localized: "demo.start")) {
-                    if demoEngine.isActive { DemoEngine.shared.stop() }
-                    else { DemoEngine.shared.start() }
-                }
-                .buttonStyle(.borderedProminent)
-            }
-            .padding(6)
-        }
-
         GroupBox("Sound") {
             VStack(alignment: .leading, spacing: 10) {
                 Toggle("Enable sounds", isOn: $state.soundEnabled)
@@ -434,20 +415,6 @@ struct SettingsView: View {
             Toggle("Launch at Mac startup", isOn: $launchAtStartup)
                 .onChange(of: launchAtStartup) { _, on in toggleStartup(on) }
                 .padding(6)
-        }
-
-        GroupBox(String(localized: "Weekly recap")) {
-            VStack(alignment: .leading, spacing: 10) {
-                Toggle(String(localized: "Keep a history of my coding sessions"), isOn: $state.recapEnabled)
-                Text(String(localized: "Stored locally on your Mac. Nothing leaves your Mac. Retained for 12 weeks."))
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Toggle(String(localized: "Hide project names in shared images"), isOn: $state.recapHideProjects)
-                    .disabled(!state.recapEnabled)
-                Button(String(localized: "Clear history")) { RecapStore.shared.clearHistory() }
-            }
-            .padding(6)
         }
 
         GroupBox(String(localized: "Language")) {
