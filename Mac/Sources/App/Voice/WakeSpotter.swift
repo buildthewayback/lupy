@@ -4,7 +4,7 @@ import Speech
 
 // MARK: - WakeSpotter
 //
-// Runs a single SFSpeechRecognizer window to detect the "OK Coucou" wake phrase,
+// Runs a single SFSpeechRecognizer window to detect the "OK Lupy" wake phrase,
 // then switches to command mode in the same recognition session so words spoken
 // immediately after the wake phrase are not lost.
 //
@@ -98,8 +98,7 @@ final class WakeSpotter: @unchecked Sendable {
             req.shouldReportPartialResults  = true
             req.requiresOnDeviceRecognition = true
             let extra = startInCommandPhase ? additionalContextualStrings : [String]()
-            req.contextualStrings = ["Lupy", "OK Lupy", "okay Lupy", "hey Lupy", "loopy",
-                                     "Coucou", "OK Coucou", "okay Coucou", "hey Coucou"] + extra
+            req.contextualStrings = ["Lupy", "OK Lupy", "okay Lupy", "hey Lupy", "loopy"] + extra
             preroll.forEach { req.append($0) }
 
             recognizer   = r

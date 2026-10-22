@@ -436,7 +436,7 @@ enum VoiceQuery {
             ["est", "ce", "que", "tu", "pourrais"], ["est", "ce", "que", "tu", "peux"], ["je", "veux", "que", "tu"],
             ["i", "want", "you", "to"], ["tu", "pourrais"], ["pourrais", "tu"], ["tu", "peux"], ["peux", "tu"],
             ["can", "you"], ["could", "you"], ["would", "you"],
-            ["ok"], ["okay"], ["coucou"], ["hey"], ["dis"], ["alors"], ["bon"], ["euh"], ["please"], ["stp"],
+            ["ok"], ["okay"], ["lupy"], ["loopy"], ["hey"], ["dis"], ["alors"], ["bon"], ["euh"], ["please"], ["stp"],
             ["fais", "moi", "une", "recherche"], ["fais", "une", "recherche"], ["faire", "une", "recherche"],
             ["fais", "des", "recherches"], ["do", "a", "web", "search"], ["do", "a", "search"],
             ["recherche", "internet"], ["recherche"], ["recherches"], ["rechercher"],
@@ -478,7 +478,7 @@ enum VoiceQuery {
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         var n = IntentParser.normalise(trimmed).split(separator: " ").map(String.init)
         while let f = n.first, n.count > 1,
-              ["ok", "okay", "coucou", "hey", "alors", "bon", "euh", "et", "and", "so", "mais", "but"].contains(f) {
+              ["ok", "okay", "lupy", "loopy", "hey", "alors", "bon", "euh", "et", "and", "so", "mais", "but"].contains(f) {
             n.removeFirst()
         }
         guard let first = n.first else { return false }

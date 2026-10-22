@@ -700,6 +700,9 @@ final class IslandWindowController: NSWindowController {
             DesktopMochiController.shared.flyOutOrHome()
 
         case .wardrobeToggle:
+            // LUPY white-label: the outfit wardrobe belongs to the donor's
+            // character; ours wears nothing. Developer layer only.
+            guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { break }
             if state.mode == .expanded && state.view == .wardrobe {
                 collapse()
             } else {
@@ -899,6 +902,7 @@ final class IslandWindowController: NSWindowController {
         // Wardrobe open/close from desktop Mochi right-click (does NOT post .hookExpand)
         NotificationCenter.default.addObserver(forName: .openWardrobeFromDesktop, object: nil, queue: .main) { [weak self] _ in
             guard let self else { return }
+            guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { return }   // white-label: wardrobe is the donor play layer
             if self.state.mode == .expanded && self.state.view == .wardrobe {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                     self.state.view = .overview
