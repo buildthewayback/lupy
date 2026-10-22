@@ -119,11 +119,9 @@ enum LupySnapshotHarness {
 
         // — White-label evidence (2026-10-22): the window surfaces the founder
         // photographs from his chair, and proof every face is the Lupy rig —
-        snap("window-settings-dark", SettingsView().environment(\.colorScheme, .dark),
-             CGSize(width: 980, height: 640))
-        snap("window-hub-general-dark",
-             SettingsView(embeddedSection: "general").environment(\.colorScheme, .dark),
-             CGSize(width: 760, height: 640))
+        // (Settings window pages use List/ScrollView: ImageRenderer draws those
+        // as the yellow no-image placeholder — proven artifact, so the window's
+        // truth stays with the live launch screenshot, not renderer snaps.)
         snap("face-greeting-dark", GreetingCanvasView(state: state).environment(\.colorScheme, .dark),
              CGSize(width: 640, height: 150))
         snap("face-desktop-dark",
