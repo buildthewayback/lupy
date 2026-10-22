@@ -1,19 +1,19 @@
 Fetching https://github.com/FluidInference/FluidAudio
 [1/48423] Fetching fluidaudio
-Fetched https://github.com/FluidInference/FluidAudio from cache (8.62s)
+Fetched https://github.com/FluidInference/FluidAudio from cache (8.49s)
 Computing version for https://github.com/FluidInference/FluidAudio
-Computed https://github.com/FluidInference/FluidAudio at 0.17.7 (19.41s)
+Computed https://github.com/FluidInference/FluidAudio at 0.17.7 (12.54s)
 Creating working copy for https://github.com/FluidInference/FluidAudio
 Working copy of https://github.com/FluidInference/FluidAudio resolved at 0.17.7
 Downloading binary artifact https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
-[32750/87267919] Downloading https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
-Downloaded https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip (5.03s)
+[16375/87267919] Downloading https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
+Downloaded https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip (4.84s)
 Building for production...
 [0/11] Copying libtext_processing_rs.a
 [0/11] Write sources
-[1/11] Copying luxtts_en_us_lexicon.tsv.zz
+[3/11] Copying luxtts_en_us_lexicon.tsv.zz
 [4/11] Copying luxtts_en_us_g2p_aux.json
-[4/11] Write sources
+[5/11] Write sources
 [6/11] Write swift-version--79AA4F9932D1E87A.txt
 [7/12] Compiling MachTaskSelfWrapper MachTaskSelf.c
 [8/12] Compiling FastClusterWrapper FastClusterWrapper.cpp
@@ -526,6 +526,6 @@ Building for production...
 185 |             reply("I can't take over the screen yet: \(why)\nWhen it's on, you watch every move as my own cursor — Esc or “stop” cancels what's queued.")
 [12/14] Write Objects.LinkFileList
 [13/14] Linking Lupy
-Build complete! (380.55s)
+Build complete! (340.99s)
 == built binary (must say arm64):
 /Users/runner/work/lupy/lupy/Mac/.build/arm64-apple-macosx/release/Lupy: Mach-O 64-bit executable arm64
