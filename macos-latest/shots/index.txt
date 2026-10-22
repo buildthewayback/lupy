@@ -1,7 +1,7 @@
 island-compact-dark 344x72 13490B
 island-compact-light 344x72 13490B
-island-empty-dark 640x200 61164B
-island-empty-light 640x200 61164B
+island-empty-dark 640x200 60420B
+island-empty-light 640x200 60420B
 island-overview-dark 640x200 52956B
 island-overview-light 640x200 52956B
 island-approval-dark 640x200 139376B
@@ -20,7 +20,7 @@ island-settings-dark 640x200 57920B
 island-settings-light 640x200 57920B
 live-approval 640x200 156992B
 live-question 640x376 205695B
-live-overview 640x200 77423B
+live-overview 640x200 77446B
 live-error 640x200 170027B
 live-finished 640x200 168133B
 live-chat 640x320 124790B
