@@ -1,19 +1,19 @@
 Fetching https://github.com/FluidInference/FluidAudio
 [1/48391] Fetching fluidaudio
-Fetched https://github.com/FluidInference/FluidAudio from cache (9.26s)
+Fetched https://github.com/FluidInference/FluidAudio from cache (16.06s)
 Computing version for https://github.com/FluidInference/FluidAudio
-Computed https://github.com/FluidInference/FluidAudio at 0.17.7 (17.02s)
+Computed https://github.com/FluidInference/FluidAudio at 0.17.7 (24.07s)
 Creating working copy for https://github.com/FluidInference/FluidAudio
 Working copy of https://github.com/FluidInference/FluidAudio resolved at 0.17.7
 Downloading binary artifact https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
-[32750/87267919] Downloading https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
-Downloaded https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip (6.29s)
+[39649/87267919] Downloading https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
+Downloaded https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip (6.38s)
 Building for production...
 [0/11] Copying libtext_processing_rs.a
-[1/11] Write sources
-[1/11] Copying luxtts_en_us_lexicon.tsv.zz
-[1/11] Copying luxtts_en_us_g2p_aux.json
-[5/11] Write sources
+[0/11] Write sources
+[2/11] Copying luxtts_en_us_lexicon.tsv.zz
+[2/11] Copying luxtts_en_us_g2p_aux.json
+[2/11] Write sources
 [6/11] Write swift-version--79AA4F9932D1E87A.txt
 [7/12] Compiling MachTaskSelfWrapper MachTaskSelf.c
 [8/12] Compiling FastClusterWrapper FastClusterWrapper.cpp
@@ -129,13 +129,13 @@ Building for production...
  230 |             } else {
  231 |                 NSWorkspace.shared.open(URL(fileURLWithPath: "/Applications/Visual Studio Code.app"))
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandViewContent.swift:2418:40: warning: 'activateIgnoringOtherApps' was deprecated in macOS 14.0: ignoringOtherApps is deprecated in macOS 14 and will have no effect.
-2416 |             NSWorkspace.shared.runningApplications.first { $0.bundleIdentifier == id }
-2417 |         }).first {
-2418 |             running.activate(options: .activateIgnoringOtherApps)
+/Users/runner/work/lupy/lupy/Mac/Sources/App/IslandViewContent.swift:2419:40: warning: 'activateIgnoringOtherApps' was deprecated in macOS 14.0: ignoringOtherApps is deprecated in macOS 14 and will have no effect.
+2417 |             NSWorkspace.shared.runningApplications.first { $0.bundleIdentifier == id }
+2418 |         }).first {
+2419 |             running.activate(options: .activateIgnoringOtherApps)
      |                                        `- warning: 'activateIgnoringOtherApps' was deprecated in macOS 14.0: ignoringOtherApps is deprecated in macOS 14 and will have no effect.
-2419 |             return
-2420 |         }
+2420 |             return
+2421 |         }
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/IslandWindowController.swift:399:79: warning: main actor-isolated static property 'fastPoll' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
  389 |     // is elsewhere, so a hidden island costs next to nothing (CLAUDE.md: 0 % CPU when hidden).
@@ -526,6 +526,6 @@ Building for production...
 185 |             reply("I can't take over the screen yet: \(why)\nWhen it's on, you watch every move as my own cursor — Esc or “stop” cancels what's queued.")
 [12/14] Write Objects.LinkFileList
 [13/14] Linking Lupy
-Build complete! (467.72s)
+Build complete! (552.91s)
 == built binary (must say arm64):
 /Users/runner/work/lupy/lupy/Mac/.build/arm64-apple-macosx/release/Lupy: Mach-O 64-bit executable arm64
