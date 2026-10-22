@@ -59,6 +59,15 @@ grep -q 'Localizable.xcstrings' scripts/build-no-xcode.sh
 grep -q 'lproj' scripts/build-no-xcode.sh
 grep -q 'CFBundleIconFile' Mac/Resources/Info.plist
 grep -q 'face_start' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+# SELF-CONTAINED INSTALLER LAW (3.4 field failure): the clicked app may be
+# translocated or separated from its download folder. It must resolve a
+# complete kit from every root, including its verified embedded payload.
+grep -q 'LupyKit.zip' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+grep -q 'resolve_kit' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+grep -q -- '--self-test-kit' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+grep -q 'LUPY_INSTALLER_NONINTERACTIVE' "Install LUPY.app/Contents/MacOS/Install-LUPY"
+test -x scripts/package-installer.sh
+grep -q 'PACKAGE-INSTALLER-OK' scripts/package-installer.sh
 # ONE-WINDOW LAW (founder 2026-10-22): the face compiles behind the welcome
 # and the window carries steps 2-6; the 3-second popup train stays dead.
 grep -q 'face_precompile' "Install LUPY.app/Contents/MacOS/Install-LUPY"
@@ -83,9 +92,11 @@ for STEPN in "Check this Mac" "Apple's free tools" "Download one small library" 
   grep -q "$STEPN" "Install LUPY.app/Contents/MacOS/Install-LUPY"
   grep -q "$STEPN" "Install LUPY.app/Contents/Resources/LupyProgress.swift"
 done
-echo "INSTALL WIRING: SATISFIED (icon ships, registers; standard Setup window; credential-blind; steps in sync)"
+echo "INSTALL WIRING: SATISFIED (icon ships, registers; standard Setup window; credential-blind; self-contained kit roots; steps in sync)"
 echo "== 6c · installer rehearsal (the step machine, stress-run in simulation)"
 bash tools/ui/installer-harness.sh | tail -1
+echo "== 6c2 · installer roots (beside, nested, translocated, payload, download)"
+bash tools/ui/installer-roots-test.sh | tail -1
 echo "== 6d · isolation census (the sandbox can parse AppKit, not type-check it —
           no controller may ever again miss its @MainActor: kit 3.3 field, 2026-10-20)"
 python3 tools/ui/audit_isolation.py | tail -1

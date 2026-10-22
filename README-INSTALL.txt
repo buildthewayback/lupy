@@ -1,35 +1,35 @@
-LUPY 3 — INSTALL (three clicks, no Terminal, nothing to type)
+LUPY 3 — INSTALL (self-contained installer, no Terminal)
 
-1. Double-click the downloaded zip → a folder opens.
-2. Double-click "Install LUPY" — the app with his own face (the white Lupy
-   glowing on dark). He has the same face he will wear in your Applications.
-   If macOS says it cannot verify it: RIGHT-click it → Open → Open. (Once, ever.)
-3. From there, a normal Mac window walks you through — no Terminal ever opens.
-   It shows the six steps by name (check this Mac · Apple's free tools ·
-   download one small library · compile · install · prove he's alive), each
-   ticking green as it finishes, with a progress bar, honest elapsed/remaining
-   times, and the build text flowing past. Minimize it any time — the Dock
-   icon shows the %; click to peek. The close button just tucks it away;
-   Cancel is the real stop.
-   The first install builds for a few minutes: it fetches one small library and
-   compiles LUPY with Apple's free tools — everything public, so nothing will
-   ever ask for a password. If those tools are missing, the installer offers
-   Apple's own small download and then carries on by itself. If a step ever
-   stalls, the window warns you instead of sitting silent.
-   At the end the window becomes your proof: all six steps green, with checks
-   that LUPY is in Applications, wearing his face, and actually running — then
-   he launches by himself and lives there, his own icon, like any app. If
-   anything fails, the same screen names the step and the reason, and a
-   plain-words report lands on your Desktop to send back.
-   (Keep "Install LUPY" inside this kit folder — he looks for his files around
-   himself. If macOS ever hides the folder from him, he simply asks you to
-   point at it.)
+Use the LUPY Installer DMG (or the matching ZIP if DMG is not convenient):
 
-He is the small dark pill at the top centre of your screen, under the menu bar.
-Menu bar → Lupy → Demo mode shows his approval card; click his box to talk to him.
+1. Double-click the DMG.
+2. Double-click “Install LUPY”.
+   The complete installation kit is inside that app and is checked before use.
+   It does not need the files around it, so it still works if macOS runs it
+   from its temporary download location or if you copy it somewhere else.
+3. If macOS says it cannot verify the installer, open
+   System Settings → Privacy & Security, choose “Open Anyway” for Install
+   LUPY, then open it again. This one-time step is needed because this private
+   build is ad-hoc signed rather than notarized with a paid Apple account.
+4. Click “Install LUPY” and keep the Setup window in view or minimized.
 
-Needs: macOS 15 or newer, Apple Silicon. No Xcode. No pastes. No Terminal typing.
-If anything ever goes wrong, the installer tells you in plain words and offers
-the install log — screenshot it, send it, and a new kit arrives.
-Backup road: "Install LUPY.command" in this folder does the same install in a
-Terminal window, for anyone who wants to watch the build text.
+The Setup window names all six stages — Check this Mac; Apple's free tools;
+Download one small library; Compile LUPY; Install into Applications; Launch &
+prove he's alive — and keeps the percentage on its Dock icon while minimized.
+The installer does not ask for repository passwords. It does need internet on
+the first install for Apple's tools (if missing) and one small public library.
+
+At the end it proves, rather than merely claims, that Lupy.app is in
+Applications, carries his icon, has its program inside, and is running under
+your menu bar. If a stage stops, the same final screen names it and a
+plain-words report is written for diagnosis.
+
+After installation, use Lupy from Applications like any other Mac app. The
+installer DMG/ZIP no longer needs to stay beside him.
+
+Needs: macOS 15 or newer, Apple Silicon, and permission to write to
+/Applications. No Xcode download is required; Apple's free Command Line Tools
+are enough and the installer offers them if they are missing.
+
+Developer/backup road: the source kit's “Install LUPY.command” performs the
+same local build in Terminal.

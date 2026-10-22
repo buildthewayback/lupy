@@ -45,9 +45,33 @@ CANCEL_FILE="$STATUS_DIR/cancel"
 HEART_FILE="$STATUS_DIR/heartbeat"
 RESULT_FILE="$STATUS_DIR/result.txt"
 
+# Kit roots and test modes. The packaged installer carries LupyKit.zip inside
+# its own Resources; a repository copy has no payload and uses the kit beside
+# it. KIT_URL is the last automatic recovery if this app is ever separated.
+KIT_INITIAL_GUESS="$KIT"
+KIT_ORIGIN="unresolved"
+KIT_CANDIDATE=""
+KIT_PAYLOAD="$APP_BUNDLE/Contents/Resources/LupyKit.zip"
+KIT_PAYLOAD_SHA256="$APP_BUNDLE/Contents/Resources/LupyKit.sha256"
+KIT_URL="${LUPY_KIT_URL:-https://github.com/buildthewayback/lupy/archive/refs/tags/lupy3-final.zip}"
+# Extract and build under macOS's per-user temporary root, never inside the
+# folder the app happened to be launched from. TMPDIR is absolute, private to
+# this user, and avoids fragile build paths inherited from a download folder.
+KIT_CACHE_DIR="${TMPDIR:-/tmp}/app.lupy.installer-$UID"
+KIT_CACHE_DIR="${KIT_CACHE_DIR%/}"
+INSTALLER_NONINTERACTIVE="${LUPY_INSTALLER_NONINTERACTIVE:-0}"
+INSTALLER_NO_FACE="${LUPY_INSTALLER_NO_FACE:-0}"
+SELF_TEST_KIT=0
+case "${1:-}" in
+  --self-test-kit) SELF_TEST_KIT=1 ;;
+esac
+
+# Keep a handle on the caller's stdout for --self-test-kit before all normal
+# installer chatter is redirected into the log.
+exec 3>&1
 : > "$LOG"
 exec >>"$LOG" 2>&1
-echo "== Install LUPY (3.3) — $(date) — kit: $KIT"
+echo "== Install LUPY (3.4) — $(date) — initial kit guess: $KIT"
 
 cleanup() {
   touch "$DONE_FILE" 2>/dev/null
@@ -59,6 +83,7 @@ trap cleanup EXIT
 # ── native dialogues (osascript; text travels as argv, never string-spliced) ─
 dialog() {
   # $1 text · $2 buttons (comma-separated) · $3 default button → echoes the choice
+  if [ "$INSTALLER_NONINTERACTIVE" = "1" ]; then printf '%s\n' "$3"; return 0; fi
   /usr/bin/osascript - "$1" "$2" "$3" "$ICON" <<'APPLESCRIPT' 2>/dev/null
 on run argv
   set theText to item 1 of argv
@@ -80,6 +105,7 @@ APPLESCRIPT
 }
 
 modal() {
+  if [ "$INSTALLER_NONINTERACTIVE" = "1" ]; then sleep 1; printf '%s\n' "$3"; return 0; fi
   # Like dialog(), but gives up after $4 seconds and echoes "" — the building
   # block of every self-refreshing fallback window, so a long wait is always a
   # visible window with fresh numbers, never a vanished installer.
@@ -255,7 +281,7 @@ step_dur() { # $1 idx → "M:SS" once ended, "-" otherwise
 write_report() { # $1 result word · $2 reason (may be "")
   {
     echo "LUPY install report — $(date)"
-    echo "Installer 3.3 · macOS $(sw_vers -productVersion 2>/dev/null) · $(sysctl -n machdep.cpu.brand_string 2>/dev/null || uname -m) · kit: $KIT"
+    echo "Installer 3.4 · macOS $(sw_vers -productVersion 2>/dev/null) · $(sysctl -n machdep.cpu.brand_string 2>/dev/null || uname -m) · kit: $KIT"
     echo "Result: $1${2:+ — $2}"
     echo
     echo "Steps:"
@@ -285,51 +311,278 @@ write_report() { # $1 result word · $2 reason (may be "")
   echo "report written: $REPORT_FILE"
 }
 
-# ── finding the kit ───────────────────────────────────────────────────────────
+# ── kit resolution (test-extracted) ───────────────────────────────────────────
+# The installer must not depend on one lucky folder layout. A double-clicked,
+# quarantined app can be translocated away from the folder it arrived in; a kit
+# can be direct in Downloads, nested under several folders, on the Desktop, in
+# Documents, beside the app, or absent entirely. Resolution order is therefore:
+# explicit test/support override → beside this app → verified payload
+# embedded in this app → working folder/app ancestors → common download places →
+# the official public kit download. The manual folder picker in the main flow
+# is the last resort, not the design.
+kit_log() { printf '%s\n' "$*" >&2; }
+
+kit_status() {
+  # compose_face is defined by the installer before this section; the isolated
+  # roots test provides a stub. Guarding keeps the extracted functions safe.
+  if command -v compose_face >/dev/null 2>&1; then
+    compose_face "${1:-3}" "${2:-}"
+  fi
+}
+
 looks_like_kit() {
-  # Absolute paths only (every caller resolves to one). This also refuses the
-  # "." a `dirname ""` produces when a find returns nothing — the current
-  # directory is not the kit just because it might look like one.
+  # Absolute paths only: launch paths and every resolver below produce one.
+  # This refuses the "." that dirname "" can produce, and partial folders that
+  # merely contain a build script are not treated as a complete kit.
   case "$1" in (/*) ;; (*) return 1 ;; esac
-  [ -f "$1/scripts/build-no-xcode.sh" ] && [ -d "$1/Install LUPY.app" ] && [ -f "$1/Mac/Package.swift" ]
+  [ -f "$1/scripts/build-no-xcode.sh" ] &&
+    [ -f "$1/Mac/Package.swift" ] &&
+    [ -f "$1/LupyCore/Package.swift" ] &&
+    [ -d "$1/Mac/Sources" ] &&
+    [ -d "$1/Install LUPY.app" ]
 }
 
 kit_under() {
-  # $1 = a folder that may contain the kit a level or two down → echoes the kit
+  # $1 = a folder that may contain the kit down to seven path levels.
   local f d
   while IFS= read -r f; do
     [ -n "$f" ] || continue
     d="$(dirname "$(dirname "$f")")"
     if looks_like_kit "$d"; then printf '%s\n' "$d"; return 0; fi
   done <<KITFIND
-$(find "$1" -maxdepth 3 -type f -name build-no-xcode.sh -path '*/scripts/build-no-xcode.sh' 2>/dev/null | head -10)
+$(find "$1" -maxdepth 7 -type f -name build-no-xcode.sh -path '*/scripts/build-no-xcode.sh' 2>/dev/null | head -40)
 KITFIND
   return 1
 }
 
 find_kit() {
-  # Search where an unzipped download lives. The newest matching kit wins
-  # (an older clone elsewhere must not beat the one just unzipped; a kit
-  # from before Install LUPY.app existed can never match at all).
+  # Search the places a browser download can plausibly be unzipped. Newest
+  # complete kit wins, so an older clone cannot beat the kit just downloaded.
   local root f d m best="" best_m=0
-  for root in "$HOME/Downloads" "$HOME/Desktop" "$HOME/Documents"; do
+  for root in "$HOME/Downloads" "$HOME/Desktop" "$HOME/Documents" "$HOME/Applications" "/Applications"; do
     [ -d "$root" ] || continue
     while IFS= read -r f; do
       [ -n "$f" ] || continue
       d="$(dirname "$(dirname "$f")")"
       looks_like_kit "$d" || continue
-      m="$(stat -f %m "$d" 2>/dev/null || stat -c %Y "$d" 2>/dev/null || echo 0)"
+      m="$(stat -c %Y "$d" 2>/dev/null || stat -f %m "$d" 2>/dev/null || echo 0)"
       case "$m" in (*[!0-9]*|'') m=0 ;; esac
       if [ -z "$best" ] || [ "$m" -gt "$best_m" ]; then best="$d"; best_m="$m"; fi
     done <<KITFIND
-$(find "$root" -maxdepth 4 -type f -name build-no-xcode.sh -path '*/scripts/build-no-xcode.sh' 2>/dev/null | head -20)
+$(find "$root" -maxdepth 8 -type f -name build-no-xcode.sh -path '*/scripts/build-no-xcode.sh' 2>/dev/null | head -60)
 KITFIND
   done
   [ -n "$best" ] && printf '%s\n' "$best"
 }
 
+sha256_file() {
+  if command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$1" 2>/dev/null | awk '{print $1}'
+  elif command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" 2>/dev/null | awk '{print $1}'
+  elif command -v openssl >/dev/null 2>&1; then
+    openssl dgst -sha256 "$1" 2>/dev/null | awk '{print $NF}'
+  fi
+}
+
+extract_zip_archive() {
+  # ditto is Archive Utility's engine on macOS and preserves executable bits.
+  # unzip is only the Linux/CI sandbox fallback for the extracted resolver.
+  mkdir -p "$2" || return 1
+  if command -v ditto >/dev/null 2>&1; then
+    ditto -x -k "$1" "$2"
+  elif command -v unzip >/dev/null 2>&1; then
+    unzip -q "$1" -d "$2"
+  else
+    return 1
+  fi
+}
+
+find_extracted_kit() {
+  if looks_like_kit "$1"; then
+    printf '%s\n' "$1"
+    return 0
+  fi
+  kit_under "$1"
+}
+
+prepare_payload_kit() {
+  KIT_CANDIDATE=""
+  [ -f "$KIT_PAYLOAD" ] || return 1
+
+  local expected="" actual="" short_hash="" dest="" tmp="" found=""
+  kit_status 3 "opening the complete installation kit inside this app…"
+  actual="$(sha256_file "$KIT_PAYLOAD")"
+  case "$actual" in
+    (*[!0-9a-fA-F]*|'') kit_log "payload: could not calculate SHA-256"; return 1 ;;
+  esac
+  if [ -f "$KIT_PAYLOAD_SHA256" ]; then
+    expected="$(awk 'NR == 1 {print $1}' "$KIT_PAYLOAD_SHA256" 2>/dev/null)"
+    if [ -z "$expected" ] || [ "$actual" != "$expected" ]; then
+      kit_log "payload: SHA-256 mismatch (expected $expected, got $actual)"
+      return 1
+    fi
+  fi
+
+  short_hash="$(printf '%s' "$actual" | cut -c1-16)"
+  dest="$KIT_CACHE_DIR/payload-$short_hash"
+  if [ -d "$dest" ]; then
+    found="$(find_extracted_kit "$dest" 2>/dev/null || true)"
+    if [ -n "$found" ]; then
+      KIT_CANDIDATE="$found"
+      kit_log "payload: verified cached kit at $KIT_CANDIDATE"
+      return 0
+    fi
+  fi
+
+  tmp="$dest.tmp.$$"
+  rm -rf "$tmp"
+  mkdir -p "$KIT_CACHE_DIR" "$tmp" || return 1
+  if ! extract_zip_archive "$KIT_PAYLOAD" "$tmp"; then
+    kit_log "payload: extraction failed"
+    rm -rf "$tmp"
+    return 1
+  fi
+  found="$(find_extracted_kit "$tmp" 2>/dev/null || true)"
+  if [ -z "$found" ]; then
+    kit_log "payload: extracted files do not contain a complete kit"
+    rm -rf "$tmp"
+    return 1
+  fi
+  rm -rf "$dest"
+  mv "$tmp" "$dest" || return 1
+  found="$(find_extracted_kit "$dest" 2>/dev/null || true)"
+  [ -n "$found" ] || return 1
+  KIT_CANDIDATE="$found"
+  kit_log "payload: verified embedded kit at $KIT_CANDIDATE"
+  return 0
+}
+
+prepare_downloaded_kit() {
+  KIT_CANDIDATE=""
+  [ "${LUPY_INSTALLER_NO_DOWNLOAD:-0}" = "1" ] && return 1
+  command -v curl >/dev/null 2>&1 || return 1
+
+  local archive="" partial="" extract_root="" found="" pid="" code=0 size=0 mb=0 choice=""
+  mkdir -p "$KIT_CACHE_DIR/downloads" || return 1
+  archive="$KIT_CACHE_DIR/downloads/lupy-kit-$$.zip"
+  partial="$archive.part"
+  extract_root="$KIT_CACHE_DIR/downloaded-$$"
+  rm -f "$partial"
+  rm -rf "$extract_root"
+  mkdir -p "$extract_root" || return 1
+
+  kit_status 3 "downloading the complete official installation kit…"
+  kit_log "download: fetching official kit from $KIT_URL"
+  curl --fail --location --retry 2 --connect-timeout 20 --output "$partial" "$KIT_URL" >/dev/null 2>&1 &
+  pid=$!
+  while kill -0 "$pid" 2>/dev/null; do
+    size=0
+    [ -f "$partial" ] && size="$(wc -c < "$partial" 2>/dev/null | tr -d ' ')"
+    case "$size" in (*[!0-9]*|'') size=0 ;; esac
+    mb=$((size / 1048576))
+    kit_status 3 "downloading the complete official installation kit… ${mb} MB so far"
+    if [ "${INSTALLER_NONINTERACTIVE:-0}" = "1" ]; then
+      sleep 1
+    else
+      choice="$(modal "Finding the installation files
+
+This copy of Install LUPY is separated from its source kit, so I am downloading the complete official kit myself. Nothing for you to find or move.
+
+Downloaded so far: ${mb} MB." "Keep waiting,Not now" "Keep waiting" 10)"
+      if [ "$choice" = "Not now" ]; then
+        kill "$pid" 2>/dev/null
+        wait "$pid" 2>/dev/null
+        rm -f "$partial"
+        rm -rf "$extract_root"
+        return 1
+      fi
+    fi
+  done
+  wait "$pid" 2>/dev/null
+  code=$?
+  if [ "$code" -ne 0 ] || [ ! -s "$partial" ]; then
+    kit_log "download: official kit download failed (curl exit $code)"
+    rm -f "$partial"
+    rm -rf "$extract_root"
+    return 1
+  fi
+  mv "$partial" "$archive" || return 1
+
+  kit_status 3 "checking the downloaded installation kit…"
+  if ! extract_zip_archive "$archive" "$extract_root"; then
+    kit_log "download: extraction failed"
+    rm -rf "$extract_root"
+    return 1
+  fi
+  found="$(find_extracted_kit "$extract_root" 2>/dev/null || true)"
+  if [ -z "$found" ]; then
+    kit_log "download: archive did not contain a complete kit"
+    rm -rf "$extract_root"
+    return 1
+  fi
+  KIT_CANDIDATE="$found"
+  kit_log "download: verified official kit at $KIT_CANDIDATE"
+  return 0
+}
+
+resolve_kit() {
+  local candidate="" found="" ancestor="" depth=0
+  KIT_ORIGIN="unresolved"
+
+  if [ -n "${LUPY_KIT_DIR:-}" ]; then
+    candidate="${LUPY_KIT_DIR%/}"
+    if looks_like_kit "$candidate"; then
+      KIT="$candidate"; KIT_ORIGIN="LUPY_KIT_DIR"; return 0
+    fi
+    found="$(kit_under "$candidate" 2>/dev/null || true)"
+    if [ -n "$found" ]; then
+      KIT="$found"; KIT_ORIGIN="LUPY_KIT_DIR (nested)"; return 0
+    fi
+    kit_log "resolve: LUPY_KIT_DIR is not a complete kit: $candidate"
+  fi
+
+  if looks_like_kit "$KIT"; then
+    KIT_ORIGIN="beside installer"
+    return 0
+  fi
+
+  if prepare_payload_kit; then
+    KIT="$KIT_CANDIDATE"; KIT_ORIGIN="embedded payload"; return 0
+  fi
+
+  candidate="$(pwd 2>/dev/null || true)"
+  if [ -n "$candidate" ] && looks_like_kit "$candidate"; then
+    KIT="$candidate"; KIT_ORIGIN="working folder"; return 0
+  fi
+
+  ancestor="$APP_BUNDLE"
+  depth=0
+  while [ "$depth" -lt 8 ]; do
+    ancestor="$(dirname "$ancestor")"
+    if looks_like_kit "$ancestor"; then
+      KIT="$ancestor"; KIT_ORIGIN="installer ancestor"; return 0
+    fi
+    [ "$ancestor" = "/" ] && break
+    depth=$((depth + 1))
+  done
+
+  found="$(find_kit || true)"
+  if [ -n "$found" ] && looks_like_kit "$found"; then
+    KIT="$found"; KIT_ORIGIN="found in a download place"; return 0
+  fi
+
+  if prepare_downloaded_kit; then
+    KIT="$KIT_CANDIDATE"; KIT_ORIGIN="official download"; return 0
+  fi
+
+  return 1
+}
+# ── end kit resolution ────────────────────────────────────────────────────────
+
 choose_kit() {
   # $1 = prompt → echoes the folder the founder points at ("" if cancelled)
+  if [ "$INSTALLER_NONINTERACTIVE" = "1" ]; then printf '%s\n' "${LUPY_KIT_DIR:-}"; return 0; fi
   /usr/bin/osascript - "$1" <<'APPLESCRIPT' 2>/dev/null
 on run argv
   try
@@ -342,10 +595,22 @@ end run
 APPLESCRIPT
 }
 
+# Hidden support/CI entry point: prove this exact app copy can obtain a
+# complete kit from whatever root it was launched in, without installing.
+if [ "$SELF_TEST_KIT" = "1" ]; then
+  if resolve_kit; then
+    printf 'LUPY_KIT_OK\nKIT=%s\nORIGIN=%s\n' "$KIT" "$KIT_ORIGIN" >&3
+    exit 0
+  fi
+  printf 'LUPY_KIT_NOT_FOUND\nAPP_BUNDLE=%s\nINITIAL_GUESS=%s\n' "$APP_BUNDLE" "$KIT_INITIAL_GUESS" >&3
+  exit 1
+fi
+
 # ── the face ──────────────────────────────────────────────────────────────────
 FACE_PID=""
 FACE_CPID=""
 face_precompile() {
+  [ "$INSTALLER_NO_FACE" = "1" ] && return 0
   # Compile the face NOW, in the background behind the welcome dialog, so the
   # window is ready the moment the founder clicks Install. The old order
   # compiled it after step 2 behind a train of 3-second refreshing popups —
@@ -378,6 +643,7 @@ face_compile_wait() {
 }
 
 face_start() {
+  [ "$INSTALLER_NO_FACE" = "1" ] && return 0
   # Put the face window up — once. Called after step 1 (the window then
   # carries steps 2–6) and again after Apple's tools for Macs where the
   # compiler only arrived there. Any failure → FACE_PID stays empty and
@@ -463,31 +729,28 @@ case "$APP_BUNDLE" in
   *AppTranslocation*) echo "note: macOS translocated this launch (fresh-download safe corner) — will hunt for the real kit" ;;
 esac
 
-if ! looks_like_kit "$KIT"; then
-  compose_face 3 "looking for the kit in Downloads, Desktop, Documents…"
-  FOUND_KIT="$(find_kit)"
-  if [ -n "$FOUND_KIT" ]; then
-    KIT="$FOUND_KIT"
-    echo "kit found by search: $KIT"
+compose_face 3 "finding the complete installation kit…"
+if resolve_kit; then
+  echo "kit resolved ($KIT_ORIGIN): $KIT"
+else
+  echo "automatic kit resolution failed — asking the founder to point at it"
+  CHOICE="$(dialog "I could not automatically find a complete Lupy installation kit.
+
+I have already looked inside this installer, around it, in Downloads, Desktop and Documents, and tried the official download. Show me the folder you unzipped and I'll carry on from there. Nothing was changed." "Not now,Choose the kit folder…" "Choose the kit folder…")"
+  [ "$CHOICE" = "Choose the kit folder…" ] || exit 0
+  CHOSEN="$(choose_kit "Choose the Lupy kit folder — the one you unzipped, with Mac, LupyCore and scripts inside")"
+  CHOSEN="${CHOSEN%/}"
+  if [ -n "$CHOSEN" ] && ! looks_like_kit "$CHOSEN"; then
+    CHOSEN="$(kit_under "$CHOSEN" || true)"
+  fi
+  if [ -n "$CHOSEN" ] && looks_like_kit "$CHOSEN"; then
+    KIT="$CHOSEN"
+    KIT_ORIGIN="chosen by founder"
+    echo "kit chosen by founder: $KIT"
   else
-    echo "kit not found by search — asking the founder to point at it"
-    CHOICE="$(dialog "macOS runs freshly downloaded apps from a hidden safe corner, so I've lost sight of the Lupy kit folder I arrived in.
+    sorry "That folder isn't a complete Lupy kit (I look for Mac, LupyCore and scripts inside it).
 
-Show me the folder you unzipped (look in Downloads) and I'll carry on from there. Nothing was changed." "Not now,Choose the kit folder…" "Choose the kit folder…")"
-    [ "$CHOICE" = "Choose the kit folder…" ] || exit 0
-    CHOSEN="$(choose_kit "Choose the Lupy kit folder — the one you unzipped, with Mac, LupyCore and scripts inside")"
-    CHOSEN="${CHOSEN%/}"
-    if [ -n "$CHOSEN" ] && ! looks_like_kit "$CHOSEN"; then
-      CHOSEN="$(kit_under "$CHOSEN")"
-    fi
-    if [ -n "$CHOSEN" ] && looks_like_kit "$CHOSEN"; then
-      KIT="$CHOSEN"
-      echo "kit chosen by founder: $KIT"
-    else
-      sorry "That folder isn't the Lupy kit (I look for Mac, LupyCore and scripts inside it).
-
-Try this: download the kit zip again, double-click it, and run Install LUPY from inside the folder that appears — don't move him out of it. Nothing was changed."
-    fi
+Use the self-contained LUPY Installer download if you have it; its app carries the kit inside. Nothing was changed."
   fi
 fi
 echo "kit: $KIT"

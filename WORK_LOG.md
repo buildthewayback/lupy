@@ -602,3 +602,37 @@ CI proofs: purge 39700100454 (3/3, launch photo: white heroes, forged
 menu-bar icon in a real menu bar) and steps 2–3 39701375573 (3/3, 0 build
 errors; overview/compact shots show rig faces + state-glow minis, no
 editor/integration pills).
+
+## 2026-10-22 · Installer 3.4 — self-contained after the "files not found" field failure
+
+The shipped 3.3 design still depended on finding a surrounding source kit.
+That was structurally wrong for a double-clicked download: macOS can
+translocate the installer away from its unzipped folder, and the old search
+only covered shallow Downloads/Desktop/Documents layouts. Reproduced the old
+search locally: direct Downloads worked, but a kit nested a few ordinary
+folders deep returned NOT_FOUND.
+
+Installer 3.4 makes the package itself the source of truth:
+- `scripts/package-installer.sh` embeds the complete source kit as
+  `Contents/Resources/LupyKit.zip` (with SHA-256) in staged Install LUPY.app,
+  then publishes DMG/ZIP artifacts with their own SHA-256 files.
+- The installer resolves a complete kit in this order: explicit override,
+  beside the app, verified embedded payload, working folder, app ancestors,
+  deep search across Downloads/Desktop/Documents/Applications, official
+  public-kit download, and only then a manual picker.
+- Payload/download extraction is under the per-user TMPDIR, not wherever the
+  app was clicked. The build and its reports point at that controlled root.
+- Hidden `--self-test-kit` proves the exact app copy can obtain a complete kit
+  without installing. Noninteractive/no-face modes exist only so CI can run
+  the real installer end-to-end from an isolated app copy.
+- New `tools/ui/installer-roots-test.sh`: 30 checks covering beside, nested,
+  ancestor, explicit, direct/deep download, newest kit, verified payload,
+  corrupt payload refusal, working folder, and download recovery.
+- Compile CI now has a dedicated macos-15 installer job: it packages the
+  DMG/ZIP, tests direct + LaunchServices launches, mounted DMG and unzipped
+  ZIP roots, then performs a full install from only the app in a deep path
+  with spaces and verifies /Applications/Lupy.app is running.
+- Release workflow publishes the self-contained DMG/ZIP assets instead of
+  relying on GitHub's source archive as the product download.
+Local gates after the change: installer roots 30/30, installer rehearsal
+34/34, BODY GREEN, BETA SATISFIED.
