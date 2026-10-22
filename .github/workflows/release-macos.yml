@@ -1,40 +1,121 @@
-# THE PRODUCT PIPELINE — GitHub's own Mac builds the reference app with the repo's
-# proven scripts, packs a DMG, publishes a Release. The founder downloads ONE file.
+# THE DOWNLOAD PIPELINE — GitHub's Mac builds ONE self-contained installer.
+#
+# The old source ZIP made Install LUPY depend on the folder around it; macOS
+# can translocate a freshly downloaded app away from that folder, producing
+# the founder's "files not found". This pipeline instead uses
+# scripts/package-installer.sh: the staged Install LUPY.app carries the whole
+# SHA-256-verified kit inside itself, is root-tested from a mounted DMG, an
+# unzipped ZIP and an isolated deep path, then performs a real noninteractive
+# install from only that one app before anything is published.
 name: release-macos
+
 on:
-  # dormant: this account's macOS runners stopped provisioning (0-ms startup failures,
-  # even for the previously proven workflow). Kept for the day the allowance returns.
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish or update
+        required: true
+        default: lupy3-final
+  push:
+    tags: ["lupy3-*"]
+
+permissions:
+  contents: write
 
 jobs:
   build:
-    runs-on: macos-latest          # the label with a proven success in this repo
+    name: Self-contained installer release
+    runs-on: macos-15
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
-      - name: XcodeGen (the project generator build-mac-app.sh expects)
-        run: brew install xcodegen
-
-      - name: Reference build — Lupy.app, ad-hoc signed, zipped (proven script)
-        run: bash scripts/build-mac-app.sh
-
-      - name: Native smoke evidence on the built app
-        continue-on-error: true
-        run: bash scripts/smoke-mac-app.sh || true
-
-      - name: Pack the DMG (Lupy.app + Applications symlink, drag-to-install)
+      - name: Pick a Swift 6 Xcode
         run: |
-          mkdir -p dist stage
-          unzip -q dist/Lupy-*.zip -d stage
-          ln -s /Applications stage/Applications
-          hdiutil create -volname "Lupy" -srcfolder stage -ov -format UDZO dist/Lupy.dmg
-          shasum -a 256 dist/Lupy.dmg | tee dist/Lupy.dmg.sha256
+          ls /Applications | grep -i xcode || true
+          NEWEST=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$NEWEST" ]; then sudo xcode-select -s "$NEWEST"; fi
+          swift --version
+          uname -m
+          bash --version | head -1
 
-      - name: Publish Release with the DMG
+      - name: Installer logic from every root
+        run: |
+          set -o pipefail
+          bash -n "Install LUPY.app/Contents/MacOS/Install-LUPY" scripts/package-installer.sh tools/ui/installer-roots-test.sh
+          bash tools/ui/installer-harness.sh | tail -1
+          bash tools/ui/installer-roots-test.sh
+
+      - name: Build and root-test the installer DMG/ZIP
+        run: |
+          set -o pipefail
+          bash scripts/package-installer.sh dist/installer 2>&1 | tee /tmp/package-installer.log
+          grep -qx 'PACKAGE-INSTALLER-OK' /tmp/package-installer.log
+
+      - name: Full install from ONLY the app in an isolated deep root
+        run: |
+          set -euo pipefail
+          TEST_ROOT="$RUNNER_TEMP/Lupy Isolated Root/AppTranslocation/RANDOM/d"
+          FAKE_HOME="$RUNNER_TEMP/Lupy Founder Home"
+          mkdir -p "$TEST_ROOT" "$FAKE_HOME/Downloads" "$FAKE_HOME/Desktop" "$FAKE_HOME/Documents"
+          ditto "dist/installer/stage/Install LUPY.app" "$TEST_ROOT/Install LUPY.app"
+          pkill -x Lupy >/dev/null 2>&1 || true
+          rm -rf /Applications/Lupy.app
+          HOME="$FAKE_HOME" LUPY_INSTALLER_NONINTERACTIVE=1 LUPY_INSTALLER_NO_FACE=1 \
+            "$TEST_ROOT/Install LUPY.app/Contents/MacOS/Install-LUPY" \
+            > /tmp/full-installer-stdout.txt 2>&1
+          test -x /Applications/Lupy.app/Contents/MacOS/Lupy
+          grep -q 'kit resolved (embedded payload)' /tmp/lupy-install.log
+          grep -q 'OK — installed and running' /tmp/lupy-install-report.txt
+          alive=0
+          for i in $(seq 1 20); do
+            if pgrep -x Lupy >/dev/null; then alive=1; break; fi
+            sleep 1
+          done
+          test "$alive" = "1"
+          echo "FULL-ISOLATED-INSTALL-OK" | tee /tmp/full-isolated-install.txt
+          pkill -x Lupy >/dev/null 2>&1 || true
+
+      - name: Publish or update the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG=${GITHUB_REF_NAME}
-          gh release create "$TAG" dist/Lupy.dmg dist/Lupy.dmg.sha256 dist/Lupy-*.zip \
-            --title "LUPY 3 — ${TAG}" --notes-file docs/RELEASE_NOTES.md
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${{ github.ref_name }}"
+          fi
+          echo "release tag: $TAG"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" \
+              dist/installer/LUPY-Installer-*.dmg \
+              dist/installer/LUPY-Installer-*.dmg.sha256 \
+              dist/installer/LUPY-Installer-*.zip \
+              dist/installer/LUPY-Installer-*.zip.sha256 \
+              --clobber
+          else
+            gh release create "$TAG" \
+              dist/installer/LUPY-Installer-*.dmg \
+              dist/installer/LUPY-Installer-*.dmg.sha256 \
+              dist/installer/LUPY-Installer-*.zip \
+              dist/installer/LUPY-Installer-*.zip.sha256 \
+              --title "LUPY 3 — self-contained installer" \
+              --notes-file README-INSTALL.txt
+          fi
+
+      - name: Keep all packaging proof as workflow artifacts too
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lupy-self-contained-installer-release
+          path: |
+            dist/installer/LUPY-Installer-*
+            dist/installer/BUILD_INFO.txt
+            dist/installer/self-test-*.txt
+            /tmp/package-installer.log
+            /tmp/full-installer-stdout.txt
+            /tmp/full-isolated-install.txt
+            /tmp/lupy-install.log
+            /tmp/lupy-install-report.txt
+          if-no-files-found: warn

@@ -8,6 +8,10 @@ xcuserdata/
 dist/
 out/
 
+# Generated only inside the staged, self-contained installer package
+Install LUPY.app/Contents/Resources/LupyKit.zip
+Install LUPY.app/Contents/Resources/LupyKit.sha256
+
 # Dev-only Swift-on-WebAssembly toolchain (fetched by npm, never committed)
 tools/swiftwasm/node_modules/
 tools/swiftwasm/.cache/
