@@ -1,16 +1,16 @@
 Fetching https://github.com/FluidInference/FluidAudio
 [1/48391] Fetching fluidaudio
-Fetched https://github.com/FluidInference/FluidAudio from cache (9.37s)
+Fetched https://github.com/FluidInference/FluidAudio from cache (9.04s)
 Computing version for https://github.com/FluidInference/FluidAudio
-Computed https://github.com/FluidInference/FluidAudio at 0.17.7 (4.93s)
+Computed https://github.com/FluidInference/FluidAudio at 0.17.7 (4.48s)
 Creating working copy for https://github.com/FluidInference/FluidAudio
 Working copy of https://github.com/FluidInference/FluidAudio resolved at 0.17.7
 [16375/87267919] Downloading https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
 Downloading binary artifact https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
-Downloaded https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip (4.48s)
+Downloaded https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip (4.31s)
 Building for production...
 [0/11] Copying libtext_processing_rs.a
-[1/11] Write sources
+[0/11] Write sources
 [3/11] Copying luxtts_en_us_lexicon.tsv.zz
 [4/11] Copying luxtts_en_us_g2p_aux.json
 [5/11] Write sources
@@ -20,13 +20,13 @@ Building for production...
 [10/13] Compiling LupyCore Actions.swift
 [11/13] Compiling FluidAudio CanaryConfig.swift
 [12/14] Compiling Lupy AppDelegate.swift
-/Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:329:43: warning: call to main actor-isolated instance method 'launchFlyIfNeeded()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
-327 |         // After the greeting ends, fly Mochi back to the desktop if it was there at last quit
-328 |         NotificationCenter.default.addObserver(forName: .greetComplete, object: nil, queue: .main) { [weak self] _ in
-329 |             DesktopMochiController.shared.launchFlyIfNeeded()
+/Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:330:43: warning: call to main actor-isolated instance method 'launchFlyIfNeeded()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
+328 |         // After the greeting ends, fly Mochi back to the desktop if it was there at last quit
+329 |         NotificationCenter.default.addObserver(forName: .greetComplete, object: nil, queue: .main) { [weak self] _ in
+330 |             DesktopMochiController.shared.launchFlyIfNeeded()
     |                                           `- warning: call to main actor-isolated instance method 'launchFlyIfNeeded()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
-330 |             self?.checkMondayRecap()
-331 |         }
+331 |             self?.checkMondayRecap()
+332 |         }
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/DesktopMochi.swift:251:10: note: calls to instance method 'launchFlyIfNeeded()' from outside of its actor context are implicitly asynchronous
 249 |     /// Fly a new panel from the notch to the saved desktop position.
@@ -36,13 +36,13 @@ Building for production...
 252 |         guard UserDefaults.standard.bool(forKey: DesktopMochiController.enabledKey) else { return }
 253 |         guard phase == .home else { return }
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:329:36: warning: main actor-isolated static property 'shared' can not be referenced from a Sendable closure; this is an error in the Swift 6 language mode
-327 |         // After the greeting ends, fly Mochi back to the desktop if it was there at last quit
-328 |         NotificationCenter.default.addObserver(forName: .greetComplete, object: nil, queue: .main) { [weak self] _ in
-329 |             DesktopMochiController.shared.launchFlyIfNeeded()
+/Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:330:36: warning: main actor-isolated static property 'shared' can not be referenced from a Sendable closure; this is an error in the Swift 6 language mode
+328 |         // After the greeting ends, fly Mochi back to the desktop if it was there at last quit
+329 |         NotificationCenter.default.addObserver(forName: .greetComplete, object: nil, queue: .main) { [weak self] _ in
+330 |             DesktopMochiController.shared.launchFlyIfNeeded()
     |                                    `- warning: main actor-isolated static property 'shared' can not be referenced from a Sendable closure; this is an error in the Swift 6 language mode
-330 |             self?.checkMondayRecap()
-331 |         }
+331 |             self?.checkMondayRecap()
+332 |         }
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/DesktopMochi.swift:107:16: note: static property declared here
 105 | @MainActor
@@ -52,50 +52,50 @@ Building for production...
 108 |     private init() {
 109 |         observeScreenSleep()
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:330:19: warning: call to main actor-isolated instance method 'checkMondayRecap()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
-256 |     /// On Monday ≥ 8 am, show the recap card once (if there is activity to display).
-257 |     /// Called from greetComplete, SessionStart/UserPromptSubmit hooks, and on wake.
-258 |     func checkMondayRecap() {
+/Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:331:19: warning: call to main actor-isolated instance method 'checkMondayRecap()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
+254 |     /// On Monday ≥ 8 am, show the recap card once (if there is activity to display).
+255 |     /// Called from greetComplete, SessionStart/UserPromptSubmit hooks, and on wake.
+256 |     func checkMondayRecap() {
     |          `- note: calls to instance method 'checkMondayRecap()' from outside of its actor context are implicitly asynchronous
-259 |         let cal = Calendar(identifier: .iso8601)
-260 |         let now = Date()
+257 |         guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { return }   // donor coding recap: opt-in only
+258 |         let cal = Calendar(identifier: .iso8601)
     :
-328 |         NotificationCenter.default.addObserver(forName: .greetComplete, object: nil, queue: .main) { [weak self] _ in
-329 |             DesktopMochiController.shared.launchFlyIfNeeded()
-330 |             self?.checkMondayRecap()
+329 |         NotificationCenter.default.addObserver(forName: .greetComplete, object: nil, queue: .main) { [weak self] _ in
+330 |             DesktopMochiController.shared.launchFlyIfNeeded()
+331 |             self?.checkMondayRecap()
     |                   `- warning: call to main actor-isolated instance method 'checkMondayRecap()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
-331 |         }
-332 |         // Check for Monday recap on wake and when a new session/prompt arrives
+332 |         }
+333 |         // Check for Monday recap on wake and when a new session/prompt arrives
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:335:19: warning: call to main actor-isolated instance method 'checkMondayRecap()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
-256 |     /// On Monday ≥ 8 am, show the recap card once (if there is activity to display).
-257 |     /// Called from greetComplete, SessionStart/UserPromptSubmit hooks, and on wake.
-258 |     func checkMondayRecap() {
+/Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:336:19: warning: call to main actor-isolated instance method 'checkMondayRecap()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
+254 |     /// On Monday ≥ 8 am, show the recap card once (if there is activity to display).
+255 |     /// Called from greetComplete, SessionStart/UserPromptSubmit hooks, and on wake.
+256 |     func checkMondayRecap() {
     |          `- note: calls to instance method 'checkMondayRecap()' from outside of its actor context are implicitly asynchronous
-259 |         let cal = Calendar(identifier: .iso8601)
-260 |         let now = Date()
+257 |         guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { return }   // donor coding recap: opt-in only
+258 |         let cal = Calendar(identifier: .iso8601)
     :
-333 |         NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification,
-334 |                                                           object: nil, queue: .main) { [weak self] _ in
-335 |             self?.checkMondayRecap()
+334 |         NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification,
+335 |                                                           object: nil, queue: .main) { [weak self] _ in
+336 |             self?.checkMondayRecap()
     |                   `- warning: call to main actor-isolated instance method 'checkMondayRecap()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
-336 |         }
-337 |         NotificationCenter.default.addObserver(forName: .checkMondayRecap, object: nil, queue: .main) { [weak self] _ in
+337 |         }
+338 |         NotificationCenter.default.addObserver(forName: .checkMondayRecap, object: nil, queue: .main) { [weak self] _ in
 
-/Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:338:19: warning: call to main actor-isolated instance method 'checkMondayRecap()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
-256 |     /// On Monday ≥ 8 am, show the recap card once (if there is activity to display).
-257 |     /// Called from greetComplete, SessionStart/UserPromptSubmit hooks, and on wake.
-258 |     func checkMondayRecap() {
+/Users/runner/work/lupy/lupy/Mac/Sources/App/AppDelegate.swift:339:19: warning: call to main actor-isolated instance method 'checkMondayRecap()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
+254 |     /// On Monday ≥ 8 am, show the recap card once (if there is activity to display).
+255 |     /// Called from greetComplete, SessionStart/UserPromptSubmit hooks, and on wake.
+256 |     func checkMondayRecap() {
     |          `- note: calls to instance method 'checkMondayRecap()' from outside of its actor context are implicitly asynchronous
-259 |         let cal = Calendar(identifier: .iso8601)
-260 |         let now = Date()
+257 |         guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { return }   // donor coding recap: opt-in only
+258 |         let cal = Calendar(identifier: .iso8601)
     :
-336 |         }
-337 |         NotificationCenter.default.addObserver(forName: .checkMondayRecap, object: nil, queue: .main) { [weak self] _ in
-338 |             self?.checkMondayRecap()
+337 |         }
+338 |         NotificationCenter.default.addObserver(forName: .checkMondayRecap, object: nil, queue: .main) { [weak self] _ in
+339 |             self?.checkMondayRecap()
     |                   `- warning: call to main actor-isolated instance method 'checkMondayRecap()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
-339 |         }
-340 |         #if !APPSTORE
+340 |         }
+341 |         #if !APPSTORE
 
 /Users/runner/work/lupy/lupy/Mac/Sources/App/HookServer.swift:2650:13: warning: variable 'exited' was written to, but never read
 2648 |         // Wait up to 3 seconds
@@ -526,6 +526,6 @@ Building for production...
 185 |             reply("I can't take over the screen yet: \(why)\nWhen it's on, you watch every move as my own cursor — Esc or “stop” cancels what's queued.")
 [12/14] Write Objects.LinkFileList
 [13/14] Linking Lupy
-Build complete! (377.99s)
+Build complete! (356.83s)
 == built binary (must say arm64):
 /Users/runner/work/lupy/lupy/Mac/.build/arm64-apple-macosx/release/Lupy: Mach-O 64-bit executable arm64
