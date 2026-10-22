@@ -109,6 +109,12 @@ iwc = read("Mac/Sources/App/IslandWindowController.swift")
 check('guard UserDefaults.standard.bool(forKey: "lupyDevHooks") else { break }' in iwc,
       "wardrobe shortcut no longer gated behind the dev layer")
 
+# 4d · The empty island asks Lupy
+_i = content.find("struct EmptyStateView")
+_block = content[_i:content.find("struct ", _i + 10)] if _i >= 0 else ""
+check('"Ask Lupy"' in _block and ".lupyChat" in _block,
+      "empty island no longer routes asking to Lupy")
+
 # 5 · Bundle assets are ours
 build = read("scripts/build-no-xcode.sh")
 check("CoucouAssets" not in build, "founder build copies donor assets into the bundle")

@@ -329,8 +329,9 @@ struct EmptyStateView: View {
                         .foregroundColor(Color(hex: "#9398A1"))
                 }
                 Spacer()
-                PrimaryButton("Ask Claude") {
-                    state.view = .prompt
+                // LUPY: asking goes to Lupy's own conversation, never a donor chat brain.
+                PrimaryButton("Ask Lupy") {
+                    state.view = .lupyChat
                 }
             }
             .padding(.leading, 118)

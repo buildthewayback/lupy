@@ -590,3 +590,15 @@ not editor pills), then CI + visual grading of window pages.
 - Council 6h extended (home pill, filters, greeting/desktop/wake laws).
 Purge step PROVEN: CI run 39700100454 — 3/3 macOS jobs success, 0 build
 errors, launch photo shows white rig heroes + forged menu-bar icon.
+
+### White-label step 4 — asking goes to Lupy
+- Empty island: "Ask Claude" → "Ask Lupy", routing to `.lupyChat` (the donor
+  Claude-chat prompt is no longer the generic ask path). Remaining "Claude"
+  labels live only on donor session surfaces (dev layer, unreachable
+  otherwise); the hooks-install alert fires only from the unlisted Agents
+  settings section.
+- Catalog: dictionary placeholder "Written, e.g. Claude Code" → "…e.g. Lupy".
+CI proofs: purge 39700100454 (3/3, launch photo: white heroes, forged
+menu-bar icon in a real menu bar) and steps 2–3 39701375573 (3/3, 0 build
+errors; overview/compact shots show rig faces + state-glow minis, no
+editor/integration pills).
