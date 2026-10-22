@@ -20,7 +20,7 @@ island-settings-dark 640x200 57920B
 island-settings-light 640x200 57920B
 live-approval 640x200 156992B
 live-question 640x376 205695B
-live-overview 640x200 77385B
+live-overview 640x200 77473B
 live-error 640x200 170027B
 live-finished 640x200 168133B
 live-chat 640x320 124790B
