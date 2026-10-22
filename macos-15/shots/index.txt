@@ -22,7 +22,7 @@ face-greeting-dark 640x150 84030B
 face-desktop-dark 220x220 99897B
 live-approval 640x200 156491B
 live-question 640x376 205874B
-live-overview 640x200 76864B
+live-overview 640x200 76862B
 live-error 640x200 169755B
 live-finished 640x200 168035B
 live-chat 640x320 124954B
