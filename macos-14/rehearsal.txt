@@ -1,5 +1,10 @@
 INSTALLER REHEARSAL: SATISFIED (34 checks)
+payload: verified embedded kit at /var/folders/s6/5hzmn6lx4dz5nxs7k_0slzph0000gn/T/tmp.LykaR2Oybb/Founder Home 8/Library/Caches/app.lupy.installer/payload-02130f7a344bfd12/lupy-kit
+payload: SHA-256 mismatch (expected 0000000000000000000000000000000000000000000000000000000000000000, got 02130f7a344bfd12741be85b85ee75851a85b2f9f8827c6f0a3d46a56511165e)
+download: fetching official kit from file:///var/folders/s6/5hzmn6lx4dz5nxs7k_0slzph0000gn/T/tmp.LykaR2Oybb/official.zip
+download: verified official kit at /var/folders/s6/5hzmn6lx4dz5nxs7k_0slzph0000gn/T/tmp.LykaR2Oybb/Founder Home 11/Library/Caches/app.lupy.installer/downloaded-3779/lupy-kit
+INSTALLER ROOTS: SATISFIED (30 checks)
 COUNCIL, ISOLATION: SATISFIED (101 window/view sites, all isolated)
 COUNCIL, DECLARATIONS: SATISFIED (647 top-level types, all unique)
-COUNCIL, CROSS-REFERENCE: SATISFIED (907 static refs resolve across 647 declared types)
+COUNCIL, CROSS-REFERENCE: SATISFIED (908 static refs resolve across 647 declared types)
 COUNCIL, TEXT: SATISFIED (21 dynamic texts, all bounded)

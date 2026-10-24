@@ -1,13 +1,13 @@
 Fetching https://github.com/FluidInference/FluidAudio
-[1/48391] Fetching fluidaudio
-Fetched https://github.com/FluidInference/FluidAudio from cache (12.01s)
+[1/48469] Fetching fluidaudio
+Fetched https://github.com/FluidInference/FluidAudio from cache (8.82s)
 Computing version for https://github.com/FluidInference/FluidAudio
-Computed https://github.com/FluidInference/FluidAudio at 0.17.7 (5.37s)
+Computed https://github.com/FluidInference/FluidAudio at 0.17.7 (4.92s)
 Creating working copy for https://github.com/FluidInference/FluidAudio
 Working copy of https://github.com/FluidInference/FluidAudio resolved at 0.17.7
-[15548/87267919] Downloading https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
+[15506/87267919] Downloading https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
 Downloading binary artifact https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip
-Downloaded https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip (5.27s)
+Downloaded https://github.com/FluidInference/text-processing-rs/releases/download/v0.3.1/NemoTextProcessing.xcframework.zip (4.80s)
 Building for production...
 [0/11] Copying libtext_processing_rs.a
 [0/11] Write sources
@@ -526,6 +526,6 @@ Building for production...
 185 |             reply("I can't take over the screen yet: \(why)\nWhen it's on, you watch every move as my own cursor — Esc or “stop” cancels what's queued.")
 [12/14] Write Objects.LinkFileList
 [13/14] Linking Lupy
-Build complete! (416.18s)
+Build complete! (434.00s)
 == built binary (must say arm64):
 /Users/runner/work/lupy/lupy/Mac/.build/arm64-apple-macosx/release/Lupy: Mach-O 64-bit executable arm64

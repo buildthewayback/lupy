@@ -1,5 +1,5 @@
 [test-core] native swiftc swift-driver version: 1.115.1 Apple Swift version 6.0.3 (swiftlang-6.0.3.1.10 clang-1600.0.30.1)
-LupyCore tests — 108 cases
+LupyCore tests — 110 cases
   ✓ Primitives.json round trip with escapes and unicode
   ✓ Primitives.json rejects malformed input
   ✓ Primitives.json depth limit defends against hostile nesting
@@ -94,6 +94,8 @@ LupyCore tests — 108 cases
   ✓ Conversation.a conversation turn includes the history, through the policy gate
   ✓ Conversation.conversation history never grows without bound
   ✓ Conversation.any key just works: a custom provider is usable right after adding it
+  ✓ Conversation.dictation clean-up routes through Gemini without creating a draft
+  ✓ Conversation.dictation clean-up failure is silent and leaves the raw words to the caller
   ✓ Conversation.auto-failover: a rate-limited API moves over to another allowed one
   ✓ Control.matcher finds the named element, prefers exact text, and never guesses
   ✓ Control.matcher picks the main text field when the query names none, and never a password field
@@ -109,4 +111,4 @@ LupyCore tests — 108 cases
   ✓ Control.engine: a computer-control delivery is recorded honestly (seen → sent; unseen → unconfirmed)
   ✓ Control.engine: a model-driven step needs an approved cloud model (offline: unavailable, no call)
 
-RESULT: 108/108 tests passed, 668 checks, 0 failed
+RESULT: 110/110 tests passed, 679 checks, 0 failed
