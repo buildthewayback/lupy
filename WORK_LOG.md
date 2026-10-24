@@ -636,3 +636,26 @@ Installer 3.4 makes the package itself the source of truth:
   relying on GitHub's source archive as the product download.
 Local gates after the change: installer roots 30/30, installer rehearsal
 34/34, BODY GREEN, BETA SATISFIED.
+
+## 2026-10-23 · Dictation clean-up uses Lupy's provider router
+
+Field gap found while checking API/dictation capabilities: Flow clean-up still
+read only the legacy Anthropic `anthropic-api-key`, so a founder-approved
+Gemini/CodeCraft/OpenAI-compatible key in Lupy → Assistant powered chat,
+planning and screen control but not polished dictation.
+
+- Added a dedicated `dictationCleanup` model job in LupyCore. It sends only
+  the rewrite instructions and the redacted transcript (no project context or
+  founder memory), respects provider approval, global pause, budget and the
+  cloud-context limit, records usage once, and returns the rewritten text
+  without creating a draft or notification.
+- Failure on the paste path is silent: one alternate approved provider may be
+  tried inside the same four-second deadline, then Flow pastes the words as
+  heard. No approval card interrupts dictation.
+- Flow now tries Lupy's provider router first and keeps the direct legacy
+  Anthropic path only as a fallback when no Lupy route exists.
+- Styles now opens Lupy → Assistant → AI APIs instead of the hidden legacy
+  Chat settings section, and its English copy says "approved AI provider"
+  rather than Claude-only.
+- Core tests prove Gemini routing/request shape, no draft creation, one
+  usage record, and silent failure with no effects.

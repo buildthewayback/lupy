@@ -7,6 +7,8 @@ public enum ModelJobKind: Codable, Equatable, Sendable {
     case analyzeReply(handoffID: LupyID)
     case ask(question: String, projectID: LupyID?)
     case testConnection(providerID: String)
+    /// Dictation clean-up: rewrite one transcript and return it to the shell. Never stored as a draft.
+    case dictationCleanup
     /// Computer control: the next step a cloud model proposes (see ControlAgent). Not stored as a draft.
     case controlStep(runID: String, step: Int)
 }
@@ -157,6 +159,61 @@ extension LupyEngine {
         return .job(job)
     }
 
+    /// Dictation clean-up through any founder-approved Lupy provider (Gemini, CodeCraft,
+    /// OpenAI-compatible services, Anthropic, …), not one hard-wired vendor.
+    ///
+    /// This deliberately bypasses ContextBuilder: a dictation rewrite must receive only the
+    /// supplied rewrite instructions and transcript, never project context or founder memory.
+    /// It still uses the normal router, provider consent, budget guard and usage ledger.
+    /// Approval-required or blocked calls return `.unavailable` rather than parking an approval:
+    /// dictation must fall back to the words as heard instead of interrupting a paste.
+    public func prepareDictationCleanup(system: String, text: String) throws -> PreparedCall {
+        let user = "<dictation>\n\(text)\n</dictation>"
+        return try makeDictationCleanupJob(system: system, user: user, excluded: [])
+    }
+
+    private func makeDictationCleanupJob(system: String, user: String, excluded: [ModelRef]) throws -> PreparedCall {
+        guard let route = ModelRouter.route(.drafting, state: state, excluding: Set(excluded)) else {
+            let anyProvider = state.providers.values.contains { $0.enabled && $0.hasKey }
+            return .unavailable(anyProvider
+                ? "No approved cloud model is available for dictation clean-up. Approve a provider in Lupy → Assistant → AI APIs."
+                : "No cloud model is set up for dictation clean-up. Add one in Lupy → Assistant → AI APIs.")
+        }
+
+        let (cleanText, hits) = Redactor.redact(user)
+        let maxOutput = min(2048, state.budget.maxOutputTokensPerCall, route.model.maxOutputTokens)
+        let req = LLMRequest(purpose: .drafting,
+                             messages: [LLMMessage(.system, system), LLMMessage(.user, cleanText)],
+                             maxOutputTokens: maxOutput, temperature: 0, jsonMode: false)
+        guard req.characterCount <= state.settings.dataSharing.maxContextCharacters else {
+            return .unavailable("This dictation is longer than Lupy's cloud-context limit, so it will be pasted as heard.")
+        }
+        let estimate = CostEstimator.worstCaseCents(req, model: route.model)
+        let budget = BudgetGuard.check(estimatedCents: estimate, taskID: nil, state: state, now: now)
+        let action = makeAction(kind: .modelCall,
+                                title: "Clean up dictation with \(route.model.displayName) (\(route.provider.displayName))",
+                                target: route.ref.label,
+                                detail: "Dictation text only; no project context or founder memory is included.",
+                                cost: estimate, reversible: true, originator: .lupy)
+        let decision = PolicyEngine.evaluate(action, context: policyContext(for: action, provider: route.provider, budget: budget))
+        guard decision.verdict == .allow else {
+            return .unavailable(decision.explanation)
+        }
+
+        let manifest = ContextManifest(purpose: .drafting, projectID: nil, includedMemoryIDs: [],
+                                       excludedSensitiveCount: 0, excludedOtherProjectCount: 0,
+                                       redactions: hits.map(\.kind), untrustedSources: [], injectionWarnings: [],
+                                       characters: req.characterCount, truncated: false)
+        let job = ModelJob(id: ids.next("mjb"), kind: .dictationCleanup, providerID: route.provider.id,
+                           providerKind: route.provider.kind, modelID: route.model.id, request: req,
+                           http: ProviderAPI.buildChat(route.provider, modelID: route.model.id, request: req),
+                           estimatedCents: estimate, manifest: manifest, taskID: nil, attempt: 1,
+                           excluded: excluded, createdAt: now, notBefore: nil,
+                           routeExplanation: route.explanation)
+        pendingModelJobs[job.id] = job
+        return .job(job)
+    }
+
     public func pendingJob(_ id: LupyID) -> ModelJob? { pendingModelJobs[id] }
 
     // MARK: Completing calls
@@ -193,6 +250,25 @@ extension LupyEngine {
         if case .testConnection(let pid) = job.kind {
             return ModelJobResult(ok: false, message: "\(state.providers[pid]?.displayName ?? pid): \(err.category.label). \(err.message)", effects: [], planID: nil, draftID: nil)
         }
+        if case .dictationCleanup = job.kind {
+            // The founder is waiting to paste. Try another approved route once, silently;
+            // never raise a notification or an approval card for a failed rewrite.
+            guard state.routing.allowFallback else {
+                return ModelJobResult(ok: false, message: err.message, effects: [], planID: nil, draftID: nil)
+            }
+            // One alternate provider is enough for a latency-critical paste; do not burn
+            // the remaining time trying every other model behind the same failing key.
+            let failedProviderRefs = state.providers[job.providerID]?.models.map {
+                ModelRef(providerID: job.providerID, modelID: $0.id)
+            } ?? [failedRef]
+            let again = try reprepare(job, excluding: job.excluded + failedProviderRefs)
+            switch again {
+            case .job(let next):
+                return ModelJobResult(ok: false, message: err.message, effects: [.callModel(next)], planID: nil, draftID: nil)
+            case .needsApproval, .unavailable:
+                return ModelJobResult(ok: false, message: err.message, effects: [], planID: nil, draftID: nil)
+            }
+        }
         let alternative = ModelRouter.route(job.request.purpose, state: state, excluding: Set(job.excluded + [failedRef])) != nil
         let decision = RetryPolicy.decide(err, attempt: job.attempt, maxRetries: state.budget.maxRetriesPerCall, hasAlternative: alternative && state.routing.allowFallback,
                                           seed: UInt64(truncatingIfNeeded: job.createdAt.millis))
@@ -222,6 +298,10 @@ extension LupyEngine {
 
     func reprepare(_ job: ModelJob, excluding: [ModelRef]) throws -> PreparedCall {
         switch job.kind {
+        case .dictationCleanup:
+            let sys = job.request.messages.first { $0.role == .system }?.content ?? ""
+            let user = job.request.messages.first { $0.role == .user }?.content ?? ""
+            return try makeDictationCleanupJob(system: sys, user: user, excluded: excluding)
         case .plan(let gid):
             guard let g = state.goals[gid] else { return .unavailable("goal missing") }
             return try prepareCall(kind: job.kind, purpose: .planning, system: Prompts.planning, projectID: g.projectID, sections: [("Goal", g.statement)],
@@ -325,6 +405,12 @@ extension LupyEngine {
                                     source: by, createdAt: now, contentHash: SHA256Digest.hex(resp.text))
             try commit([ev(by, "Answered a question", .draftUpserted(doc))])
             return ModelJobResult(ok: true, message: resp.text, effects: [], planID: nil, draftID: doc.id)
+
+        case .dictationCleanup:
+            guard !resp.truncated else {
+                return ModelJobResult(ok: false, message: "Dictation clean-up was cut off.", effects: [], planID: nil, draftID: nil)
+            }
+            return ModelJobResult(ok: true, message: resp.text, effects: [], planID: nil, draftID: nil)
 
         case .testConnection(let pid):
             return ModelJobResult(ok: true, message: "\(state.providers[pid]?.displayName ?? pid) works (model \(resp.modelID)).", effects: [], planID: nil, draftID: nil)

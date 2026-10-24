@@ -231,8 +231,8 @@ struct HubStylesPage: View {
                             .foregroundColor(Color(hex: "#C7CAD0"))
                             .fixedSize(horizontal: false, vertical: true)
                         Spacer()
-                        Button(String(localized: "hub.open-settings")) {
-                            NotificationCenter.default.post(name: .openFullSettings, object: "chat")
+                        Button("Open AI APIs") {
+                            router.page = .lupyAssistant
                         }
                         .buttonStyle(HubButtonStyle())
                     }

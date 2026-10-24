@@ -3408,7 +3408,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Clean up with Claude"
+            "value" : "Clean up with Lupy AI"
           }
         },
         "es" : {
@@ -3538,7 +3538,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The clean-up uses your Claude key. Add it in Settings → Chat."
+            "value" : "Clean-up uses an approved AI API. Add one in Lupy → Assistant → AI APIs."
           }
         },
         "es" : {
@@ -3603,7 +3603,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "With the clean-up on, the text (never your voice) goes to Anthropic with your Claude key. Off, everything stays on your Mac."
+            "value" : "With clean-up on, the text (never your voice) goes to the approved AI provider Lupy selects. Off, everything stays on your Mac."
           }
         },
         "es" : {

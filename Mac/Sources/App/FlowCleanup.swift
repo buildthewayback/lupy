@@ -1,23 +1,48 @@
 #if !APPSTORE
 import Foundation
 
-/// The clean-up of Flow dictation: Claude removes the "euh", the repeats and the corrections said
-/// on the way ("at 3, no, at 4" → "at 4"), fixes the punctuation and writes in the app's style.
-/// Only when it is turned on in the Coucou Flow window and a Claude key is set in Settings; the words
-/// then go to Anthropic with that key, and nowhere else. Any problem (no network, slow answer, odd
-/// reply) and the words are pasted as they were heard.
+/// The clean-up of Flow dictation: an approved Lupy cloud model removes the "euh", the repeats and
+/// the corrections said on the way ("at 3, no, at 4" → "at 4"), fixes the punctuation and writes
+/// in the app's style. The normal path is Lupy's provider router, so Gemini, CodeCraft and other
+/// OpenAI-compatible services configured in Lupy → Assistant → AI APIs work as well as Anthropic.
+/// A legacy direct Anthropic key remains a fallback for older setups. Any problem (no network,
+/// slow answer, odd reply) and the words are pasted as they were heard.
 enum FlowCleanup {
     static let model = "claude-haiku-4-5"
     /// Past this, the words are pasted as heard rather than keeping you waiting.
     static let timeout: TimeInterval = 4
 
+    /// Legacy direct-Anthropic key. Other features (notably the old Claude summary
+    /// engine in Notes) still key off this exact meaning, so do not broaden it.
     static var hasKey: Bool {
         !(KeychainStore.shared.get("anthropic-api-key") ?? "").isEmpty
     }
 
+    /// Clean-up is available with either the legacy Anthropic key or any usable
+    /// founder-approved provider configured for Lupy itself.
+    @MainActor
+    static var isAvailable: Bool {
+        hasKey || LupyModel.shared.hasUsableModel
+    }
+
+    @MainActor
     static func clean(_ text: String, style: FlowStyle, app: String?, words: [String]) async -> String {
-        guard style != .verbatim, let key = KeychainStore.shared.get("anthropic-api-key"), !key.isEmpty,
-              FlowText.wordCount(text) >= 3 else { return text }
+        guard style != .verbatim, FlowText.wordCount(text) >= 3 else { return text }
+
+        let prompt = system(style: style, app: app, words: words)
+        let lupyHasRoute = LupyModel.shared.hasUsableModel
+        if let cleaned = await LupyModel.shared.cleanDictation(text, systemPrompt: prompt, timeout: timeout) {
+            let normalized = cleaned
+                .replacingOccurrences(of: "<dictation>", with: "")
+                .replacingOccurrences(of: "</dictation>", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            return plausible(normalized, from: text) ? normalized : text
+        }
+
+        // If Lupy already had an approved route and it failed or timed out, paste now
+        // rather than making the founder wait through a second network call.
+        if lupyHasRoute { return text }
+        guard let key = KeychainStore.shared.get("anthropic-api-key"), !key.isEmpty else { return text }
         var request = URLRequest(url: URL(string: "https://api.anthropic.com/v1/messages")!)
         request.httpMethod = "POST"
         request.timeoutInterval = timeout
@@ -28,7 +53,7 @@ enum FlowCleanup {
             "model": model,
             "max_tokens": 2048,
             "temperature": 0,
-            "system": system(style: style, app: app, words: words),
+            "system": prompt,
             "messages": [["role": "user", "content": "<dictation>\n\(text)\n</dictation>"]],
         ]
         guard let data = try? JSONSerialization.data(withJSONObject: body) else { return text }
