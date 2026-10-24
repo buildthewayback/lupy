@@ -193,6 +193,57 @@ final class LupyModel {
         changed()
     }
 
+    /// Rewrites one dictation through any usable, founder-approved Lupy provider.
+    /// This is a bounded paste-path operation: approval-required, blocked, slow or
+    /// failed calls return nil so Flow can paste the words exactly as heard.
+    func cleanDictation(_ text: String, systemPrompt: String, timeout: TimeInterval = 4) async -> String? {
+        guard let engine else { return nil }
+        syncSecretsPresence()
+        do {
+            switch try engine.prepareDictationCleanup(system: systemPrompt, text: text) {
+            case .job(var current):
+                let deadline = Date().addingTimeInterval(timeout)
+                while true {
+                    let remaining = deadline.timeIntervalSinceNow
+                    guard remaining > 0.05 else { return nil }
+                    if let notBefore = current.notBefore {
+                        let delay = Double(notBefore.millis - LupySystemClock().now().millis) / 1000
+                        if delay >= remaining { return nil }
+                        if delay > 0 {
+                            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                        }
+                    }
+
+                    var http = current.http
+                    http.timeoutSeconds = max(0.05, deadline.timeIntervalSinceNow)
+                    busyJobs.insert(current.id.raw)
+                    changed()
+                    let result = await LupyHTTP.perform(http)
+                    busyJobs.remove(current.id.raw)
+                    let r = try engine.completeModelJob(current.id, status: result.status, headers: result.headers,
+                                                        body: result.body, latencyMillis: result.latencyMillis)
+                    changed()
+                    if r.ok {
+                        if !r.effects.isEmpty { run(r.effects) }
+                        return r.message
+                    }
+                    let retryJobs: [ModelJob] = r.effects.compactMap {
+                        if case .callModel(let job) = $0 { return job } else { return nil }
+                    }
+                    guard let next = retryJobs.first else {
+                        if !r.effects.isEmpty { run(r.effects) }
+                        return nil
+                    }
+                    current = next
+                }
+            case .needsApproval, .unavailable:
+                return nil
+            }
+        } catch {
+            return nil
+        }
+    }
+
     // MARK: Lifecycle
 
     func start() {
