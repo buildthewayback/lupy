@@ -1,8 +1,8 @@
 INSTALLER REHEARSAL: SATISFIED (34 checks)
-payload: verified embedded kit at /var/folders/s6/5hzmn6lx4dz5nxs7k_0slzph0000gn/T/tmp.mOTjCiOOlE/Founder Home 8/Library/Caches/app.lupy.installer/payload-6ffb33dbc240c47e/lupy-kit
-payload: SHA-256 mismatch (expected 0000000000000000000000000000000000000000000000000000000000000000, got 6ffb33dbc240c47edbb04dcfeb7c7e7408d35567a8a77feef1578486cd5e943f)
-download: fetching official kit from file:///var/folders/s6/5hzmn6lx4dz5nxs7k_0slzph0000gn/T/tmp.mOTjCiOOlE/official.zip
-download: verified official kit at /var/folders/s6/5hzmn6lx4dz5nxs7k_0slzph0000gn/T/tmp.mOTjCiOOlE/Founder Home 11/Library/Caches/app.lupy.installer/downloaded-1856/lupy-kit
+payload: verified embedded kit at /var/folders/s6/5hzmn6lx4dz5nxs7k_0slzph0000gn/T/tmp.Y33FTAkq5l/Founder Home 8/Library/Caches/app.lupy.installer/payload-a3459148284b33b5/lupy-kit
+payload: SHA-256 mismatch (expected 0000000000000000000000000000000000000000000000000000000000000000, got a3459148284b33b52cfc045d915c53b5ac13ce9c9f8e1847c8bdaa2cbab3e95f)
+download: fetching official kit from file:///var/folders/s6/5hzmn6lx4dz5nxs7k_0slzph0000gn/T/tmp.Y33FTAkq5l/official.zip
+download: verified official kit at /var/folders/s6/5hzmn6lx4dz5nxs7k_0slzph0000gn/T/tmp.Y33FTAkq5l/Founder Home 11/Library/Caches/app.lupy.installer/downloaded-6841/lupy-kit
 INSTALLER ROOTS: SATISFIED (30 checks)
 COUNCIL, ISOLATION: SATISFIED (101 window/view sites, all isolated)
 COUNCIL, DECLARATIONS: SATISFIED (647 top-level types, all unique)
