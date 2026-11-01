@@ -1,5 +1,5 @@
-chat self-test, runner macOS: 15.7.9
-INFO Lupy conversation self-test · macOS Version 15.7.9 (Build 24G830)
+chat self-test, runner macOS: 15.8.2
+INFO Lupy conversation self-test · macOS Version 15.8.2 (Build 24H232)
 PASS a typed instruction is answered (goal → plan) — Self-test: invoice ACME by Friday then f | Here's my plan — approve it right here,  | Plan for: Self-test: invoice ACME by Fri
 PASS the goal is captured and a plan is proposed — 1 proposed
 PASS the conversation shows a plan card
