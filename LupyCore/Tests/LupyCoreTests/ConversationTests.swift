@@ -162,6 +162,44 @@ func conversationSuite() -> TestSuite {
             t.equal(h.engine.state.providers["custom.codecraft"]!.models.filter(\.enabled).count, 1, "still exactly one enabled model")
         },
 
+        TestCase("dictation clean-up routes through Gemini without creating a draft") { t in
+            let h = try Harness()
+            try h.enableProvider("gemini")
+            let draftsBefore = h.engine.state.drafts.count
+            guard case .job(let job) = try h.engine.prepareDictationCleanup(
+                system: "Rewrite only. Reply with the rewritten text only.",
+                text: "um invoice at 3 no at 4 please") else {
+                t.fail("expected a prepared dictation clean-up job")
+                return
+            }
+            if case .dictationCleanup = job.kind {} else { t.fail("expected a dictationCleanup job") }
+            t.equal(job.providerID, "gemini", "routes to the approved Gemini provider")
+            t.equal(job.modelID, "gemini-2.5-flash", "uses the low-cost drafting route")
+            t.expect(job.http.url.contains("generativelanguage.googleapis.com"), "request goes to Gemini")
+            t.equal(job.request.messages.count, 2, "only the rewrite instructions and dictation are sent")
+            t.equal(job.request.messages.first?.content, "Rewrite only. Reply with the rewritten text only.")
+            t.expect(job.request.messages.last?.content.contains("<dictation>") == true, "transcript is fenced as dictation")
+
+            let body = Array(#"{"candidates":[{"content":{"parts":[{"text":"Invoice at 4, please."}],"role":"model"},"finishReason":"STOP"}],"usageMetadata":{"promptTokenCount":20,"candidatesTokenCount":6}}"#.utf8)
+            let result = try h.engine.completeModelJob(job.id, status: 200, body: body, latencyMillis: 8)
+            t.expect(result.ok && result.message == "Invoice at 4, please.", "cleaned text comes back for the paste path")
+            t.equal(h.engine.state.drafts.count, draftsBefore, "dictation clean-up is not stored as a writing draft")
+            t.equal(h.engine.state.usage.count, 1, "usage is recorded exactly once")
+        },
+
+        TestCase("dictation clean-up failure is silent and leaves the raw words to the caller") { t in
+            let h = try Harness()
+            try h.enableProvider("gemini")
+            guard case .job(let job) = try h.engine.prepareDictationCleanup(system: "Rewrite only.", text: "send it tomorrow morning") else {
+                t.fail("expected a prepared dictation clean-up job")
+                return
+            }
+            let body = Array(#"{"error":{"code":401,"message":"API key not valid","status":"UNAUTHENTICATED"}}"#.utf8)
+            let result = try h.engine.completeModelJob(job.id, status: 401, body: body, latencyMillis: 5)
+            t.expect(!result.ok, "failed clean-up reports failure")
+            t.expect(result.effects.isEmpty, "failed clean-up produces no notification or approval effects")
+        },
+
         TestCase("auto-failover: a rate-limited API moves over to another allowed one") { t in
             let h = try Harness()
             try h.enableProvider("openai")
