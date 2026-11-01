@@ -207,7 +207,7 @@ struct HubSnippetsPage: View {
 
 // MARK: - Styles
 
-/// Coucou Flow → Styles: Claude's clean-up, and how the words are written in each app.
+/// Flow → Styles: AI clean-up, and how the words are written in each app.
 struct HubStylesPage: View {
     @ObservedObject var router: HubRouter
     @ObservedObject private var store = FlowStore.shared
@@ -220,9 +220,9 @@ struct HubStylesPage: View {
                     Toggle("", isOn: $store.cleanupEnabled)
                         .toggleStyle(.switch)
                         .labelsHidden()
-                        .disabled(!FlowCleanup.hasKey && !store.cleanupEnabled)
+                        .disabled(!FlowCleanup.isAvailable && !store.cleanupEnabled)
                 }
-                if !FlowCleanup.hasKey {
+                if !FlowCleanup.isAvailable {
                     HStack(spacing: 10) {
                         Image(systemName: "key")
                             .foregroundColor(HubTheme.accent)

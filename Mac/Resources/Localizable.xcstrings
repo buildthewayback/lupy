@@ -3526,13 +3526,13 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يستخدم التنقيح مفتاح Claude الخاص بك. أضفه في الإعدادات ← الدردشة."
+            "value" : "يستخدم التنقيح خدمة ذكاء اصطناعي معتمدة. أضف واحدة في Lupy ← المساعد ← واجهات الذكاء الاصطناعي."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "পরিষ্কার করতে আপনার Claude কী লাগে। সেটিংস → চ্যাট-এ যোগ করুন।"
+            "value" : "পরিষ্কারে অনুমোদিত AI API ব্যবহার হয়। Lupy → Assistant → AI APIs-এ একটি যোগ করুন।"
           }
         },
         "en" : {
@@ -3544,43 +3544,43 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La limpieza usa tu clave de Claude. Añádela en Ajustes → Chat."
+            "value" : "La limpieza usa una API de IA aprobada. Añade una en Lupy → Asistente → API de IA."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le nettoyage utilise ta clé Claude. Ajoute-la dans Réglages → Chat."
+            "value" : "Le nettoyage utilise une API IA approuvée. Ajoute-en une dans Lupy → Assistant → API IA."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "सफ़ाई आपकी Claude कुंजी से होती है। इसे सेटिंग्स → चैट में जोड़ें।"
+            "value" : "सफ़ाई में स्वीकृत AI API का उपयोग होता है। Lupy → Assistant → AI APIs में एक जोड़ें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Perapian memakai kunci Claude-mu. Tambahkan di Pengaturan → Obrolan."
+            "value" : "Perapian memakai API AI yang disetujui. Tambahkan di Lupy → Assistant → AI APIs."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A limpeza usa sua chave do Claude. Adicione-a em Ajustes → Chat."
+            "value" : "A limpeza usa uma API de IA aprovada. Adicione uma em Lupy → Assistente → APIs de IA."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Для чистки нужен ваш ключ Claude. Добавьте его в Настройки → Чат."
+            "value" : "Для очистки используется одобренный API ИИ. Добавьте его в Lupy → Assistant → AI APIs."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "整理会使用你的 Claude 密钥。请在“设置”→“聊天”中添加。"
+            "value" : "整理使用已批准的 AI API。请在 Lupy → Assistant → AI APIs 中添加。"
           }
         }
       }
@@ -3591,61 +3591,61 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "عند تشغيل التنقيح يُرسل النص (وليس صوتك أبدًا) إلى Anthropic بمفتاح Claude الخاص بك. وعند إيقافه يبقى كل شيء على جهاز Mac."
+            "value" : "عند تشغيل التنقيح، يُرسل النص إلى خدمة الذكاء الاصطناعي المعتمدة التي يختارها Lupy، أو إلى Anthropic عند استخدام المفتاح القديم. قد يستخدم التعرّف على الكلام من Apple الشبكة عندما لا يتوفر التعرّف على الجهاز."
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "পরিষ্কার চালু থাকলে লেখা (কখনো আপনার কণ্ঠ নয়) আপনার Claude কী দিয়ে Anthropic-এ যায়। বন্ধ থাকলে সব আপনার Mac-এই থাকে।"
+            "value" : "পরিষ্কার চালু থাকলে লেখা Lupy-র নির্বাচিত অনুমোদিত AI প্রদানকারীর কাছে, অথবা পুরোনো কী ব্যবহার করলে Anthropic-এ যায়। ডিভাইসে শনাক্তকরণ উপলব্ধ না হলে Apple-এর স্পিচ শনাক্তকরণ নেটওয়ার্ক ব্যবহার করতে পারে।"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "With clean-up on, the text (never your voice) goes to the approved AI provider Lupy selects. Off, everything stays on your Mac."
+            "value" : "With clean-up on, text goes to the approved AI provider Lupy selects, or to Anthropic with a legacy key. Apple speech recognition may use the network when on-device recognition is unavailable."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Con la limpieza activada, el texto (nunca tu voz) va a Anthropic con tu clave de Claude. Desactivada, todo se queda en tu Mac."
+            "value" : "Con la limpieza activada, el texto se envía al proveedor de IA aprobado que elija Lupy, o a Anthropic si se usa una clave anterior. El reconocimiento de voz de Apple puede usar la red si no está disponible en el dispositivo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avec le nettoyage, le texte (jamais ta voix) part chez Anthropic avec ta clé Claude. Sans, tout reste sur ton Mac."
+            "value" : "Avec le nettoyage, le texte est envoyé au fournisseur IA approuvé choisi par Lupy, ou à Anthropic avec une ancienne clé. La reconnaissance vocale Apple peut utiliser le réseau si la reconnaissance sur l’appareil est indisponible."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "सफ़ाई चालू होने पर टेक्स्ट (आपकी आवाज़ कभी नहीं) आपकी Claude कुंजी के साथ Anthropic को जाता है। बंद होने पर सब कुछ आपके Mac पर रहता है।"
+            "value" : "सफ़ाई चालू होने पर टेक्स्ट Lupy द्वारा चुने गए स्वीकृत AI प्रदाता को, या पुराने की के साथ Anthropic को भेजा जाता है। डिवाइस पर पहचान उपलब्ध न होने पर Apple वाक् पहचान नेटवर्क का उपयोग कर सकती है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Saat perapian aktif, teksnya (bukan suaramu) dikirim ke Anthropic dengan kunci Claude-mu. Saat mati, semuanya tetap di Mac-mu."
+            "value" : "Saat perapian aktif, teks dikirim ke penyedia AI yang disetujui dan dipilih Lupy, atau ke Anthropic dengan kunci lama. Pengenalan suara Apple dapat memakai jaringan jika pengenalan di perangkat tidak tersedia."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Com a limpeza ligada, o texto (nunca sua voz) vai para a Anthropic com sua chave do Claude. Desligada, tudo fica no seu Mac."
+            "value" : "Com a limpeza ligada, o texto vai para o provedor de IA aprovado escolhido pelo Lupy, ou para a Anthropic com uma chave antiga. O reconhecimento de fala da Apple pode usar a rede quando não estiver disponível no dispositivo."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Когда чистка включена, текст (но не голос) уходит в Anthropic с вашим ключом Claude. Когда выключена, всё остаётся на Mac."
+            "value" : "При включённой очистке текст отправляется выбранному Lupy одобренному провайдеру ИИ или в Anthropic при использовании старого ключа. Распознавание речи Apple может использовать сеть, если распознавание на устройстве недоступно."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启整理时，文字（绝不是你的声音）会用你的 Claude 密钥发送给 Anthropic。关闭时，一切都留在你的 Mac 上。"
+            "value" : "开启整理时，文字会发送给 Lupy 选定的已批准 AI 服务商；使用旧密钥时则发送给 Anthropic。无法在设备上识别时，Apple 语音识别可能使用网络。"
           }
         }
       }

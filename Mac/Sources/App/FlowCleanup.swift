@@ -22,7 +22,10 @@ enum FlowCleanup {
     /// founder-approved provider configured for Lupy itself.
     @MainActor
     static var isAvailable: Bool {
-        hasKey || LupyModel.shared.hasUsableModel
+        // Read the observable model even with a legacy key, so the settings view
+        // also refreshes when approved providers change while it is open.
+        let hasRoute = LupyModel.shared.hasUsableModel
+        return hasRoute || hasKey
     }
 
     @MainActor

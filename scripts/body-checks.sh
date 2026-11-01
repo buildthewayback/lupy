@@ -75,6 +75,7 @@ grep -q 'prepareDictationCleanup' LupyCore/Sources/LupyCore/EngineModels.swift
 grep -q 'case dictationCleanup' LupyCore/Sources/LupyCore/EngineModels.swift
 grep -q 'LupyModel.shared.cleanDictation' Mac/Sources/App/FlowCleanup.swift
 grep -q 'router.page = .lupyAssistant' Mac/Sources/App/FlowHubWords.swift
+python3 tools/ui/test_flow_cleanup_wiring.py
 # ONE-WINDOW LAW (founder 2026-10-22): the face compiles behind the welcome
 # and the window carries steps 2-6; the 3-second popup train stays dead.
 grep -q 'face_precompile' "Install LUPY.app/Contents/MacOS/Install-LUPY"
