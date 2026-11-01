@@ -1,5 +1,5 @@
 snapshot harness, runner macOS: 26.6.2
-SEEDED conversation.json (1184B)
+SEEDED conversation.json (1183B)
 OK island-compact-dark
 OK island-compact-light
 OK island-empty-dark
@@ -53,15 +53,15 @@ SNAPSHOTS: 48 written, 0 failed -> /tmp/evidence/shots
 snapshot exit: 0
 total 10640
 drwxr-xr-x  51 runner  wheel    1632 Nov  1 08:36 .
-drwxr-xr-x  12 runner  wheel     384 Nov  1 08:35 ..
+drwxr-xr-x  12 runner  wheel     384 Nov  1 08:36 ..
 -rw-r--r--   1 runner  wheel   99868 Nov  1 08:36 face-desktop-dark.png
 -rw-r--r--   1 runner  wheel   84183 Nov  1 08:36 face-greeting-dark.png
 -rw-r--r--@  1 runner  wheel    1563 Nov  1 08:36 index.txt
 -rw-r--r--   1 runner  wheel  139376 Nov  1 08:36 island-approval-dark.png
 -rw-r--r--   1 runner  wheel  139376 Nov  1 08:36 island-approval-light.png
--rw-r--r--   1 runner  wheel   13490 Nov  1 08:35 island-compact-dark.png
--rw-r--r--   1 runner  wheel   13490 Nov  1 08:35 island-compact-light.png
--rw-r--r--   1 runner  wheel   60420 Nov  1 08:35 island-empty-dark.png
+-rw-r--r--   1 runner  wheel   13490 Nov  1 08:36 island-compact-dark.png
+-rw-r--r--   1 runner  wheel   13490 Nov  1 08:36 island-compact-light.png
+-rw-r--r--   1 runner  wheel   60420 Nov  1 08:36 island-empty-dark.png
 -rw-r--r--   1 runner  wheel   60420 Nov  1 08:36 island-empty-light.png
 -rw-r--r--   1 runner  wheel  162479 Nov  1 08:36 island-error-dark.png
 -rw-r--r--   1 runner  wheel  162479 Nov  1 08:36 island-error-light.png
@@ -84,7 +84,7 @@ drwxr-xr-x  12 runner  wheel     384 Nov  1 08:35 ..
 -rw-r--r--   1 runner  wheel   18778 Nov  1 08:36 live-compact-working.png
 -rw-r--r--   1 runner  wheel  170027 Nov  1 08:36 live-error.png
 -rw-r--r--   1 runner  wheel  168133 Nov  1 08:36 live-finished.png
--rw-r--r--   1 runner  wheel   77392 Nov  1 08:36 live-overview.png
+-rw-r--r--   1 runner  wheel   77463 Nov  1 08:36 live-overview.png
 -rw-r--r--   1 runner  wheel  205695 Nov  1 08:36 live-question.png
 -rw-r--r--   1 runner  wheel  119977 Nov  1 08:36 mood-approval.png
 -rw-r--r--   1 runner  wheel  123067 Nov  1 08:36 mood-dizzy.png
